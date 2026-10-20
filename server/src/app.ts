@@ -372,8 +372,13 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
 
   // Browser viewing devices: serve the built app from the same origin (cookie sessions).
   if (config.webDist && existsSync(config.webDist)) {
-    await app.register(fastifyStatic, { root: config.webDist, wildcard: false });
-    app.setNotFoundHandler((req, reply) => (req.url.startsWith('/api/') ? reply.status(404).send({ error: 'NOT_FOUND' }) : reply.sendFile('index.html')));
+    await app.register(fastifyStatic, { root: config.webDist, wildcard: true });
+    // App routes fall back to index.html; API paths and missing files (anything with an extension) are real 404s.
+    app.setNotFoundHandler((req, reply) => {
+      const path = req.url.split('?')[0];
+      if (path.startsWith('/api/') || /\.[a-z0-9]+$/i.test(path)) return reply.status(404).send({ error: 'NOT_FOUND' });
+      return reply.sendFile('index.html');
+    });
   }
   return app;
 }

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Toosh">
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#0a5c36"/>
+  <path d="M18 46 L38 26" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M33 20 H46 V33" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="18" cy="46" r="4.5" fill="#8dd6a6"/>
+  <path d="M41 39 l4 4 l8 -9" fill="none" stroke="#8dd6a6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
