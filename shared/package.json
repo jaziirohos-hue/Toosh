@@ -1,0 +1,11 @@
+{
+  "name": "@toosh/shared",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

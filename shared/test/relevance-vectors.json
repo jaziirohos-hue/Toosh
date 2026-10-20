@@ -1,0 +1,11 @@
+[
+  { "sender": "192", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Qof Tusaale(61XXXXXXX), Haraagaagu waa $51.59.", "strict": true, "relevant": true },
+  { "sender": "EVCPlus", "body": "[-EVCPLUS-] waxaad $3 ka heshay 61XXXXXXX, Tar: 19/10/26 18:40:41 haraagagu waa $54.585.", "strict": true, "relevant": true },
+  { "sender": "321", "body": "Haraagaagu waa $10.00", "strict": true, "relevant": true },
+  { "sender": "192", "body": "Your OTP is 1234", "strict": true, "relevant": false },
+  { "sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": true, "relevant": false },
+  { "sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": false, "relevant": true },
+  { "sender": "+252615551288", "body": "Salaan, waxaad ka heshay hadiyad", "strict": false, "relevant": false },
+  { "sender": "Hormuud", "body": "Ku soo dhowow 4G", "strict": true, "relevant": false },
+  { "sender": "192", "body": "   ", "strict": true, "relevant": false }
+]

@@ -1,0 +1,26 @@
+{
+  "name": "@toosh/server",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=../.env --import tsx --watch src/index.ts",
+    "start": "node --env-file-if-exists=../.env --import tsx src/index.ts",
+    "migrate": "node --env-file-if-exists=../.env --import tsx src/migrate.ts",
+    "reprocess": "node --env-file-if-exists=../.env --import tsx src/reprocess.ts",
+    "test": "node --import tsx --test --test-concurrency=1 test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.1.3",
+    "@fastify/cors": "^11.3.1",
+    "@fastify/rate-limit": "^11.2.1",
+    "@fastify/static": "^10.1.6",
+    "@toosh/shared": "*",
+    "fastify": "^5.12.7",
+    "pg": "^8.23.1"
+  }
+}
