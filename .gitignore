@@ -18,3 +18,4 @@ app/android/capacitor-cordova-android-plugins/
 .idea/
 .run/
 .vercel/
+deliver/
