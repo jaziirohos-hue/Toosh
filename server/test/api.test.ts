@@ -349,3 +349,18 @@ describe('live updates', () => {
     controller.abort();
   });
 });
+
+describe('change polling (serverless hosting)', () => {
+  test('the change counter rises only for the account whose data changed', async () => {
+    const a = await sourceAccount(env.app);
+    const b = await sourceAccount(env.app);
+    const seq = async (token: string) => { const r = await call(env.app, 'GET', '/api/v1/changes', token); assert.equal(r.status, 200); return BigInt(r.body.seq); };
+    assert.equal((await call(env.app, 'GET', '/api/v1/changes')).status, 401);
+    const a0 = await seq(a.token), b0 = await seq(b.token);
+    await ingest(env.app, a.token, [sms(a.numberId, IN_SMS(), T('08:00:00'))]);
+    assert.ok(await seq(a.token) > a0, 'a sees its own new message');
+    assert.equal(await seq(b.token), b0, 'b sees nothing from a');
+    const health = await call(env.app, 'GET', '/api/v1/health?db=1');
+    assert.equal(health.body.database, 'ok');
+  });
+});

@@ -152,7 +152,7 @@ export function Dejinta() {
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-snug">Aaladahani waxay kaliya fiirsan karaan xogta la waafajiyay, ma heli karaan SMS-ka tooska ah.</p>
         </div>
         {[...(source ? [source] : []), ...viewers].map(d => {
-          const online = d.lastSeenAt && Date.now() - Date.parse(d.lastSeenAt) < 15 * 60000;
+          const online = d.lastSeenAt && Date.now() - Date.parse(d.lastSeenAt) < (d.role === 'SOURCE' ? 75 : 15) * 60000;
           return <div key={d.id} className="p-3 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className={`w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-sm ${online ? 'text-primary-container' : 'text-on-surface-variant'}`}><Icon name={deviceIcon(d)} className="text-[20px]" /></div>

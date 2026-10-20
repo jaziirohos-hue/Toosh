@@ -120,6 +120,7 @@ public final class Uploader {
             if (settings.lastError() != null) o.put("lastError", settings.lastError());
             Api.Response r = transport.send("POST", settings.apiBase() + "/api/v1/devices/me/heartbeat", token, o.toString());
             if (r.status == 401) settings.setAuthProblem(true);
+            else if (r.status >= 200 && r.status < 300) settings.setHeartbeat(System.currentTimeMillis(), smsPermission);
         } catch (Exception ignored) { /* best effort */ }
     }
 }

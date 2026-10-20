@@ -17,9 +17,28 @@ export interface Config {
   authRateLimit: number;
 }
 
+/**
+ * Connection used by the running API. Hosted databases (e.g. Neon via the Vercel integration) inject an OWNER
+ * connection as DATABASE_URL; the API must not use it. Preference:
+ *   1. TOOSH_DATABASE_URL - explicit runtime connection
+ *   2. DATABASE_URL with the user replaced by TOOSH_APP_DB_ROLE (default toosh_app) and TOOSH_APP_DB_PASSWORD
+ *   3. DATABASE_URL as is (local setups that already point at the runtime role)
+ */
+export function runtimeDatabaseUrl(env: NodeJS.ProcessEnv = process.env): string {
+  if (env.TOOSH_DATABASE_URL) return env.TOOSH_DATABASE_URL;
+  const base = env.DATABASE_URL ?? env.POSTGRES_URL ?? '';
+  if (base && env.TOOSH_APP_DB_PASSWORD) {
+    const u = new URL(base);
+    u.username = env.TOOSH_APP_DB_ROLE ?? 'toosh_app';
+    u.password = env.TOOSH_APP_DB_PASSWORD;
+    return u.toString();
+  }
+  return base;
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const production = env.NODE_ENV === 'production';
-  const databaseUrl = env.DATABASE_URL ?? '';
+  const databaseUrl = runtimeDatabaseUrl(env);
   if (!databaseUrl) throw new Error('DATABASE_URL is required');
   return {
     port: Number(env.PORT ?? 8787),

@@ -68,7 +68,11 @@ public final class Sync {
             Settings settings = new Settings(c);
             SmsStore store = SmsStore.get(c);
             Uploader.Result r = Uploader.run(c, store, settings, transport);
-            Uploader.heartbeat(c, store, settings, transport, smsPermission(c));
+            // A quiet phone reports in about once an hour, so a free database that sleeps when idle stays asleep.
+            String permission = smsPermission(c);
+            if (r != Uploader.Result.NOTHING_TO_DO || settings.heartbeatDue(System.currentTimeMillis(), permission)) {
+                Uploader.heartbeat(c, store, settings, transport, permission);
+            }
             if (r == Uploader.Result.RETRY_LATER) return Result.retry();
             return Result.success();
         }

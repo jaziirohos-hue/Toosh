@@ -85,6 +85,13 @@ public final class Settings {
     public void setLastAttempt(long at, String error) { prefs.edit().putLong("lastAttemptAt", at).putString("lastError", error).apply(); }
     public long lastAttemptAt() { return prefs.getLong("lastAttemptAt", 0); }
     public String lastError() { return prefs.getString("lastError", null); }
+    public static final long HEARTBEAT_EVERY_MS = 55L * 60 * 1000;
+    public void setHeartbeat(long at, String permission) { prefs.edit().putLong("heartbeatAt", at).putString("heartbeatPermission", permission).apply(); }
+    /** True when an hour has passed, the clock moved back, or the SMS permission changed since the last report. */
+    public boolean heartbeatDue(long now, String permission) {
+        long last = prefs.getLong("heartbeatAt", 0);
+        return now - last >= HEARTBEAT_EVERY_MS || now < last || !permission.equals(prefs.getString("heartbeatPermission", null));
+    }
     public void setImportDone(long at) { prefs.edit().putLong("importDoneAt", at).apply(); }
     public long importDoneAt() { return prefs.getLong("importDoneAt", 0); }
 }

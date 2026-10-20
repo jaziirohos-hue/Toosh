@@ -45,6 +45,8 @@ export function startLiveUpdates() {
       try {
         const res = await fetch(`${API_BASE}/api/v1/events`, { headers: authHeaders(), credentials: isNativeAndroid ? 'omit' : 'same-origin', signal: controller.signal });
         if (res.status === 401) { window.dispatchEvent(new CustomEvent('toosh:unauthenticated')); return; }
+        // Serverless hosting has no live stream: check for changes on a timer instead.
+        if (res.status === 404) { await pollChanges(controller.signal); return; }
         if (!res.ok || !res.body) throw new Error(String(res.status));
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -79,6 +81,39 @@ export function startLiveUpdates() {
   window.addEventListener('online', onOnline);
   window.addEventListener('offline', onOffline);
 }
+// Polling: one small request every POLL_MS while the app is on screen, none while it is hidden.
+const POLL_MS = 15000;
+async function pollChanges(signal: AbortSignal) {
+  let first = true;
+  while (!signal.aborted) {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') { await untilVisible(signal); continue; }
+    if (typeof navigator !== 'undefined' && !navigator.onLine) { setConnection('offline'); await sleep(3000, signal); continue; }
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/changes`, { headers: authHeaders(), credentials: isNativeAndroid ? 'omit' : 'same-origin', signal, cache: 'no-store' });
+      if (res.status === 401) { window.dispatchEvent(new CustomEvent('toosh:unauthenticated')); return; }
+      if (!res.ok) throw new Error(String(res.status));
+      const n = BigInt(((await res.json()) as { seq: string }).seq);
+      const wasOnline = connection === 'online';
+      setConnection('online');
+      if (first || !wasOnline) { first = false; invalidateAll(); flushOutbox().catch(() => {}); }
+      else if (n > highestSeq) invalidateAll();
+      if (n > highestSeq) highestSeq = n;
+    } catch {
+      if (signal.aborted) return;
+      setConnection(typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'connecting');
+    }
+    await sleep(POLL_MS, signal);
+  }
+}
+function untilVisible(signal: AbortSignal) {
+  return new Promise<void>(resolve => {
+    const done = () => { document.removeEventListener('visibilitychange', check); resolve(); };
+    const check = () => { if (document.visibilityState !== 'hidden') done(); };
+    document.addEventListener('visibilitychange', check);
+    signal.addEventListener('abort', done, { once: true });
+  });
+}
+
 function onOnline() { setConnection('connecting'); scheduleOutboxRetry(500); invalidateAll(); }
 function onOffline() { setConnection('offline'); }
 export function stopLiveUpdates() {

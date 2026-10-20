@@ -143,7 +143,22 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
 
   const authLimit = { config: { rateLimit: { max: config.authRateLimit, timeWindow: '1 minute' } } };
 
-  app.get('/api/v1/health', async () => ({ ok: true }));
+  app.get('/api/v1/health', async (req) => {
+    const out: Record<string, unknown> = { ok: true, live: hub !== null };
+    if ((req.query as any)?.db === '1') {
+      try { await db.query('SELECT 1'); out.database = 'ok'; } catch { out.ok = false; out.database = 'unreachable'; }
+    }
+    return out;
+  });
+
+  /** Latest change number for this account; serverless hosts poll this instead of holding an event stream open. */
+  app.get('/api/v1/changes', { preHandler: authed }, async req => scoped(req, async tx => {
+    const { rows } = await tx.query(`SELECT greatest(
+        (SELECT coalesce(max(change_seq), 0) FROM messages WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM devices WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM evc_numbers WHERE account_id = $1))::text AS seq`, [A(req).accountId]);
+    return { seq: rows[0].seq };
+  }));
 
   app.post('/api/v1/auth/register', authLimit, async (req, reply) => {
     const body: any = req.body ?? {};
@@ -360,6 +375,7 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
 
   /** Server-sent events: "something changed for this account". Clients refetch what they show. */
   app.get('/api/v1/events', { preHandler: authed }, async (req, reply) => {
+    if (!hub) return reply.status(404).send({ error: 'LIVE_UNAVAILABLE', message: 'Use /api/v1/changes polling on this host.' });
     reply.hijack();
     const res = reply.raw;
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive', 'X-Accel-Buffering': 'no',

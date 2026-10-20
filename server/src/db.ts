@@ -8,8 +8,8 @@ pg.types.setTypeParser(pg.types.builtins.NUMERIC, (v: string) => v);
 export type Db = pg.Pool;
 export type Tx = pg.PoolClient;
 
-export function createPool(connectionString: string): Db {
-  const pool = new pg.Pool({ connectionString, max: 10, idleTimeoutMillis: 30000 });
+export function createPool(connectionString: string, opts: { max?: number } = {}): Db {
+  const pool = new pg.Pool({ connectionString, max: opts.max ?? 10, idleTimeoutMillis: 30000, connectionTimeoutMillis: 15000 });
   pool.on('error', () => { /* idle client errors are retried on next checkout */ });
   return pool;
 }
