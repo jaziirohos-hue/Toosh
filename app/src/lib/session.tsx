@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DEFAULT_TIMEZONE } from '@toosh/shared';
 import { API_BASE, ApiFailure, api, loadNativeToken, setToken } from './api.ts';
 import { idbClear, idbGet, idbSet } from './idb.ts';
@@ -48,6 +48,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [selectedNumberId, setSelected] = useState<string | null>(null);
   const [signedOutReason, setSignedOutReason] = useState<string | null>(null);
   const [prefs, setPrefsState] = useState<DevicePrefs>(readPrefs);
+  const statusRef = useRef(status);
+  statusRef.current = status;
 
   const refreshNative = useCallback(async () => {
     if (!isNativeAndroid) return;
@@ -85,7 +87,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       await refreshNative();
       await refreshMe();
     })();
-    const onUnauth = () => { resetLocal('Fadhigaagu wuu dhacay ama aaladdan waa laga saaray akoonka. Fadlan dib u gal.'); };
+    // Only a device that was signed in is told its session ended; a first visit just shows the sign-in screen.
+    const onUnauth = () => { resetLocal(statusRef.current === 'signedIn' ? 'Fadhigaagu wuu dhacay ama aaladdan waa laga saaray akoonka. Fadlan dib u gal.' : null); };
     window.addEventListener('toosh:unauthenticated', onUnauth);
     return () => window.removeEventListener('toosh:unauthenticated', onUnauth);
     // eslint-disable-next-line react-hooks/exhaustive-deps

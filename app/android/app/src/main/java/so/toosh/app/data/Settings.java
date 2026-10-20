@@ -31,7 +31,8 @@ public final class Settings {
             if (accountId != null && !accountId.equals(prefs.getString("mappingsAccount", null))) e.remove("mappings");
         }
         if (apiBase != null) e.putString("apiBase", apiBase);
-        e.apply();
+        // Written synchronously: the process may be killed right after sign-in or setup, and capture depends on it.
+        e.commit();
     }
 
     public String token() { return Crypto.decrypt(prefs.getString("token", null)); }
@@ -52,7 +53,7 @@ public final class Settings {
                 arr.put(o);
             }
         } catch (Exception ignored) { }
-        prefs.edit().putString("mappings", arr.toString()).putString("mappingsAccount", accountId()).apply();
+        prefs.edit().putString("mappings", arr.toString()).putString("mappingsAccount", accountId()).commit();
     }
 
     public List<SimRouter.Mapping> mappings() {

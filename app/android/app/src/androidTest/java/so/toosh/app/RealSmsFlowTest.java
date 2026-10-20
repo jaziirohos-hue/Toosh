@@ -97,7 +97,8 @@ public class RealSmsFlowTest {
         } while (System.currentTimeMillis() < end);
         StringBuilder sb = new StringBuilder();
         for (SmsStore.Row r : rows) sb.append(r.state).append('/').append(r.lastError).append(' ');
-        throw new AssertionError("expected " + expected + " synced, got: " + sb + " lastError=" + settings.lastError());
+        throw new AssertionError("expected " + expected + " synced, got: [" + sb + "] lastError=" + settings.lastError()
+            + " signedIn=" + settings.signedIn() + " mappings=" + settings.mappings().size());
     }
 
     @Test public void verify() throws Exception {

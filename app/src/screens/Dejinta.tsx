@@ -25,6 +25,7 @@ export function Dejinta() {
   const source = me!.devices.find(d => d.role === 'SOURCE') ?? null;
   const thisIsSource = me!.evcNumbers.some(n => n.sourceDeviceId === me!.device.id);
   const viewers = me!.devices.filter(d => d.id !== source?.id);
+  const smsPerm = thisIsSource ? (native?.smsPermission === 'GRANTED' ? 'GRANTED' : native ? 'DENIED' : 'UNKNOWN') : source?.smsPermission === 'GRANTED' ? 'GRANTED' : source?.smsPermission === 'DENIED' ? 'DENIED' : 'UNKNOWN';
   const flash = (t: string) => { setToast(t); setTimeout(() => setToast(null), 3000); };
 
   async function syncNow() {
@@ -104,9 +105,9 @@ export function Dejinta() {
             <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-ui text-label-ui shrink-0">{source.current ? 'Taleefankan' : 'Taleefan kale'}</span></div>
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-1.5">
-              <Icon name={(thisIsSource ? native?.smsPermission === 'GRANTED' : source.smsPermission === 'GRANTED') ? 'check_circle' : 'error'} fill className={`text-[18px] ${(thisIsSource ? native?.smsPermission === 'GRANTED' : source.smsPermission === 'GRANTED') ? 'text-primary-container' : 'text-error'}`} />
+              <Icon name={smsPerm === 'GRANTED' ? 'check_circle' : smsPerm === 'UNKNOWN' ? 'help' : 'error'} fill className={`text-[18px] ${smsPerm === 'GRANTED' ? 'text-primary-container' : smsPerm === 'UNKNOWN' ? 'text-outline' : 'text-error'}`} />
               <span className="font-body-sm text-body-sm text-on-surface-variant">Ogolaanshaha SMS:</span></div>
-            <span className="font-body-sm text-body-sm text-primary-container font-medium">{(thisIsSource ? native?.smsPermission : source.smsPermission) === 'GRANTED' ? 'Waa furan yahay' : 'Waa xiran yahay'}</span>
+            <span className={`font-body-sm text-body-sm font-medium ${smsPerm === 'GRANTED' ? 'text-primary-container' : smsPerm === 'UNKNOWN' ? 'text-on-surface-variant' : 'text-error'}`}>{smsPerm === 'GRANTED' ? 'Waa furan yahay' : smsPerm === 'UNKNOWN' ? 'Weli lama soo sheegin' : 'Waa xiran yahay'}</span>
           </div>
           <div className="flex items-center justify-between"><div className="flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${source.lastSeenAt && Date.now() - Date.parse(source.lastSeenAt) < 2 * 3600e3 ? 'bg-primary-container animate-pulse' : 'bg-outline'}`} /><span className="font-body-sm text-body-sm text-on-surface">La xiriiray</span></div>
             <span className="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">{ago(source.lastSeenAt)}</span></div>

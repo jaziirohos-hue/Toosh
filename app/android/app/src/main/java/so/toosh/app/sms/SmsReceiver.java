@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class SmsReceiver extends BroadcastReceiver {
         final Integer subscriptionId = subscriptionFrom(intent.getExtras());
         new Thread(() -> {
             try {
-                if (parts == null || parts.length == 0) return;
+                if (parts == null || parts.length == 0) { Log.i("Toosh", "sms broadcast without parts"); return; }
                 List<SmsAssembler.Part> list = new ArrayList<>();
                 for (SmsMessage p : parts) {
                     if (p == null) continue;
@@ -41,12 +42,17 @@ public class SmsReceiver extends BroadcastReceiver {
                 SmsStore store = SmsStore.get(app);
                 boolean stored = false;
                 for (SmsAssembler.Message m : SmsAssembler.assemble(list)) {
-                    if (Capture.store(app, store, settings, m, receivedAt, "LIVE") == Capture.Result.STORED) stored = true;
+                    Capture.Result result = Capture.store(app, store, settings, m, receivedAt, "LIVE");
+                    // Diagnostic only: the outcome and part count, never the sender, text or amounts.
+                    Log.i("Toosh", "sms " + result + " parts=" + m.parts + " sub=" + (m.subscriptionId != null));
+                    if (result == Capture.Result.STORED) stored = true;
                 }
                 if (stored) {
                     Sync.uploadSoon(app);
                     if (settings.notifyNew()) Notifications.newMessage(app);
                 }
+            } catch (RuntimeException e) {
+                Log.e("Toosh", "sms capture failed: " + e.getClass().getSimpleName());
             } finally {
                 pending.finish();
             }

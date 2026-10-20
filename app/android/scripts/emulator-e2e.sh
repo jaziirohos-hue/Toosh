@@ -7,6 +7,8 @@ cd "$(dirname "$0")/.."
 PKG=so.toosh.app
 OUT=build/e2e
 mkdir -p "$OUT"
+# On failure keep the app's own diagnostic log (outcome codes only; no SMS text is ever logged).
+trap 'adb logcat -d -s Toosh TooshE2E AndroidRuntime WM-WorkerWrapper > "$OUT/logcat.txt" 2>&1 || true; tail -n 60 "$OUT/logcat.txt" || true' ERR
 
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
