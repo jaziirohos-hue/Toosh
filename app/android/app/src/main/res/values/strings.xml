@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Toosh</string>
+    <string name="title_activity_main">Toosh</string>
+    <string name="package_name">so.toosh.app</string>
+    <string name="custom_url_scheme">so.toosh.app</string>
+</resources>

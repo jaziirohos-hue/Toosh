@@ -1,0 +1,103 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server-and-web:
+    name: Parser, API, app and browser end-to-end
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TEST_ADMIN_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Unit and API tests (shared parser, server with Postgres row-level security, app outbox)
+        run: npm test
+      - name: Build the app
+        run: npm run build
+      - name: Start the API
+        run: bash scripts/ci-start-api.sh
+      - name: Browser end-to-end (simulated source phone, real browser viewing device)
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-e2e
+          path: |
+            test-results/
+            server.log
+          if-no-files-found: ignore
+
+  android:
+    name: Android build, native unit tests and real-SMS emulator test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TEST_ADMIN_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Build the app for the emulator (API on the host, 10.0.2.2)
+        run: |
+          VITE_API_BASE=http://10.0.2.2:8787 npm run build -w app
+          cd app && npx cap sync android
+      - name: Native unit tests and APKs
+        working-directory: app/android
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Start the API
+        run: bash scripts/ci-start-api.sh
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Real SMS on the emulator -> phone queue -> API -> classification
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: bash app/android/scripts/emulator-e2e.sh
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: |
+            app/android/app/build/outputs/apk/debug/app-debug.apk
+            app/android/app/build/reports/
+            app/android/build/e2e/
+            server.log
+          if-no-files-found: ignore
