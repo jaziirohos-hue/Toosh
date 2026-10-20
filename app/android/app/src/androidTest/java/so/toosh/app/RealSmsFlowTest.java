@@ -80,6 +80,7 @@ public class RealSmsFlowTest {
         settings.setMappings(Collections.singletonList(new SimRouter.Mapping(sim.getSubscriptionId(), sim.getSimSlotIndex(), numberId, accountId)));
         Files.write(stateFile().toPath(), new JSONObject().put("token", token).put("numberId", numberId).put("accountId", accountId).toString().getBytes(StandardCharsets.UTF_8));
         Log.i(TAG, "prepared account with SIM subscription " + sim.getSubscriptionId());
+        Log.i(TAG, "step-ok prepare");
     }
 
     private JSONObject state() throws Exception { return new JSONObject(new String(Files.readAllBytes(stateFile().toPath()), StandardCharsets.UTF_8)); }
@@ -134,6 +135,7 @@ public class RealSmsFlowTest {
         assertEquals(0, c.queued);
         assertEquals(expected, c.duplicates);
         assertEquals(expected, call("GET", "/api/v1/messages?limit=100", token, null).getJSONObject("counts").getInt("all"));
+        Log.i(TAG, "step-ok verify");
     }
 
     @Test public void offline() throws Exception {
@@ -147,6 +149,7 @@ public class RealSmsFlowTest {
         int unsynced = 0;
         for (SmsStore.Row r : rows) if (!"SYNCED".equals(r.state)) unsynced++;
         assertEquals("and waits in the queue", 1, unsynced);
+        Log.i(TAG, "step-ok offline");
     }
 
     @Test public void reconnected() throws Exception {
@@ -155,5 +158,6 @@ public class RealSmsFlowTest {
         waitForSynced(total, 180_000);
         JSONObject counts = call("GET", "/api/v1/messages?limit=100", state().getString("token"), null).getJSONObject("counts");
         assertEquals("uploaded once after reconnecting", total, counts.getInt("all"));
+        Log.i(TAG, "step-ok reconnected");
     }
 }

@@ -19,6 +19,8 @@ step() {
   local name=$1; shift
   adb shell am instrument -w -e step "$name" "$@" -e class so.toosh.app.RealSmsFlowTest "$PKG.test/androidx.test.runner.AndroidJUnitRunner" | tee "$OUT/$name.txt"
   grep -q "^OK (" "$OUT/$name.txt"
+  # A skipped step would also print OK; require the step's own confirmation line.
+  adb logcat -d -s TooshE2E | grep -q "step-ok $name" || { echo "step $name did not run"; return 1; }
 }
 evc_time() { TZ=Africa/Mogadishu date -d "$1" '+%d/%m/%y %H:%M:%S'; }
 send() { adb emu sms send "$1" "$2"; sleep 3; }
@@ -52,4 +54,6 @@ step reconnected -e expect 5
 adb shell am start -W -n "$PKG/.MainActivity" || true
 sleep 8
 adb exec-out screencap -p > "$OUT/app-launch.png" || true
+adb logcat -d -s Toosh TooshE2E > "$OUT/logcat.txt" 2>&1 || true
+grep -E "step-ok|long SMS|server counts|inbox import|sms STORED|sms NOT_RELEVANT" "$OUT/logcat.txt" || true
 echo "Emulator SMS end-to-end: OK"
