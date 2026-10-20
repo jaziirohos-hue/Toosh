@@ -88,6 +88,8 @@ fast Node server that shares the TypeScript parser with the app.
   show amounts, names, numbers or SMS text, and are private on the lock screen. Release builds allow HTTPS only.
 - **Sign-in protection:** per-IP rate limits, and an account lock after 10 wrong passwords (15 minutes).
 
+Hosting on the internet for free: [docs/HOSTING.md](docs/HOSTING.md).
+
 ## Local setup (verified)
 
 Verified on Ubuntu 24.04 with Node 22.22, npm 10.9, PostgreSQL 16.15, OpenJDK 21 and the Android SDK (platform 36,
@@ -187,9 +189,10 @@ Install a debug APK with `adb install -r app/android/app/build/outputs/apk/debug
 ## Tests
 
 ```bash
-npm test                                  # shared (19), API with Postgres + RLS (19), app offline queue (4)
+npm test                                  # shared (19), API with Postgres + RLS (20), app offline queue (4)
 npm run typecheck
 npx playwright test                       # needs the API running (scripts/local/start.sh); 3 browser tests
+node scripts/check-deployment.mjs <url>   # auth, isolation, persistence, two-client sync against a deployment
 cd app/android && ./gradlew testDebugUnitTest   # 5 native JVM tests
 ```
 
@@ -216,11 +219,9 @@ Playwright creates test accounts in the local `toosh` database through the publi
 
 ## Still needed before production (cannot be done from here)
 
-1. **Hosting:**
-   - A PostgreSQL database with a normal (non-superuser) role.
-   - A Node 22 host behind HTTPS for the API, with `NODE_ENV=production`, `COOKIE_SECURE=true` and
-     `TRUST_PROXY=true` behind a proxy.
-   - Set `CORS_ORIGINS` to include `https://localhost` (the Android WebView).
+1. **Hosting:** free hosting on Vercel + Neon is prepared. See [docs/HOSTING.md](docs/HOSTING.md) for the limits,
+   the secrets and the setup steps. Any other Node 22 host with HTTPS also works: run `npm run start -w server` with
+   `NODE_ENV=production`, `COOKIE_SECURE=true`, `TRUST_PROXY=true`, and a non-owning database role.
 2. **Android release signing:** create and safely keep an upload/signing key, then build a release with
    `VITE_API_BASE` set to the production API.
 3. **Google Play:** apps that use SMS permissions without being the default SMS app must submit Google Play's

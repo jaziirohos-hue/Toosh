@@ -25,13 +25,15 @@ try {
   const exists = (await db.query('SELECT 1 FROM pg_roles WHERE rolname = $1', [role])).rowCount;
   const esc = (v: string) => `'${v.replace(/'/g, "''")}'`;
   if (!exists) await db.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT PASSWORD ${esc(password)}`);
-  else await db.query(`ALTER ROLE ${role} LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT PASSWORD ${esc(password)}`);
+  // A non-superuser owner (as on Neon) may not name SUPERUSER/BYPASSRLS in ALTER ROLE, so only the password is
+  // updated here; the attributes are verified below instead.
+  else await db.query(`ALTER ROLE ${role} LOGIN PASSWORD ${esc(password)}`);
   const dbName = (await db.query('SELECT current_database() AS d')).rows[0].d;
   await db.query(`GRANT CONNECT ON DATABASE "${dbName.replace(/"/g, '""')}" TO ${role}`);
   await grantRuntimeRole(db, role);
-  const check = (await db.query(`SELECT rolsuper OR rolbypassrls AS bad,
+  const check = (await db.query(`SELECT rolsuper OR rolbypassrls OR rolcreaterole OR rolcreatedb AS bad,
       (SELECT count(*)::int FROM pg_tables WHERE schemaname = 'public' AND tableowner = $1) AS owns FROM pg_roles WHERE rolname = $1`, [role])).rows[0];
-  if (check.bad || check.owns) throw new Error(`runtime role ${role} must not bypass row-level security or own tables`);
+  if (check.bad || check.owns) throw new Error(`runtime role ${role} must not be superuser, bypass row-level security, create roles or databases, or own tables`);
   console.log(`bootstrap-db: runtime role ${role} ready (row access only)`);
 } catch (e) {
   console.error('bootstrap-db failed:', (e as Error).message);
