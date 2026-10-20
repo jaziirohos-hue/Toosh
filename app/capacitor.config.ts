@@ -5,8 +5,10 @@ const config: CapacitorConfig = {
   appName: 'Toosh',
   webDir: 'dist',
   android: {
-    // The API is HTTPS in production. Debug builds additionally allow the emulator host (see network_security_config).
-    allowMixedContent: false,
+    // The app page is https://localhost. A development API on plain http:// (emulator 10.0.2.2, adb reverse, LAN)
+    // needs mixed content; it is enabled only when VITE_API_BASE is http://. Release builds use an https:// API and
+    // their network security config forbids cleartext regardless.
+    allowMixedContent: (process.env.VITE_API_BASE ?? '').startsWith('http://'),
   },
 };
 export default config;

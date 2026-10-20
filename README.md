@@ -88,63 +88,112 @@ fast Node server that shares the TypeScript parser with the app.
   show amounts, names, numbers or SMS text, and are private on the lock screen. Release builds allow HTTPS only.
 - **Sign-in protection:** per-IP rate limits, and an account lock after 10 wrong passwords (15 minutes).
 
-## Run it
+## Local setup (verified)
 
-Requirements: Node 22, PostgreSQL 14+, and for Android: JDK 21 and the Android SDK (platform 36). Android Studio is
-the easiest way to get the SDK.
+Verified on Ubuntu 24.04 with Node 22.22, npm 10.9, PostgreSQL 16.15, OpenJDK 21 and the Android SDK (platform 36,
+build-tools 36.0.0) at `/opt/android-sdk`. Everything below was run and checked on that machine.
+
+### 1. Database: local PostgreSQL, three roles
+
+| Role | Used for | Rights |
+| --- | --- | --- |
+| `toosh_owner` | migrations only (`.env.migration`) | owns the `toosh` database, schema and tables; not superuser |
+| `toosh_app` | the running API (`DATABASE_URL` in `.env`) | SELECT/INSERT/UPDATE on rows only. Owns nothing, cannot DELETE messages, cannot change tables, not superuser, no BYPASSRLS. Row-level security applies |
+| `toosh_test_admin` + `toosh_test` | `npm test` only | creates and drops throwaway test databases; not superuser |
+
+Authentication is `scram-sha-256` on `127.0.0.1`/`::1` only; the `postgres` superuser is reachable only through its OS
+account (peer). Passwords are random and live only in `.env` / `.env.migration` (git-ignored, mode 600).
+
+One-time setup, run as the PostgreSQL admin (`sudo -u postgres psql`), with your own generated passwords:
+
+```sql
+CREATE ROLE toosh_owner LOGIN PASSWORD '...' NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+CREATE ROLE toosh_app   LOGIN PASSWORD '...' NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT;
+CREATE DATABASE toosh OWNER toosh_owner;
+\c toosh
+REVOKE ALL ON DATABASE toosh FROM PUBLIC;
+GRANT CONNECT ON DATABASE toosh TO toosh_app;
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+ALTER SCHEMA public OWNER TO toosh_owner;
+-- for npm test:
+CREATE ROLE toosh_test_admin LOGIN PASSWORD '...' NOSUPERUSER NOBYPASSRLS CREATEDB CREATEROLE;
+ALTER ROLE toosh_test_admin SET createrole_self_grant = 'set, inherit';
+CREATE ROLE toosh_test LOGIN PASSWORD '...' NOSUPERUSER NOBYPASSRLS;
+GRANT toosh_test TO toosh_test_admin WITH ADMIN TRUE, SET TRUE, INHERIT TRUE;
+```
+
+### 2. Configuration
 
 ```bash
 npm ci
-cp .env.example .env        # then edit DATABASE_URL etc.
+cp .env.example .env    # set DATABASE_URL (toosh_app), TEST_* values; keep MIGRATE_ON_START=false
+# create .env.migration with MIGRATION_DATABASE_URL (toosh_owner) and APP_DB_ROLE=toosh_app (see .env.example)
+chmod 600 .env .env.migration
+npm run db:migrate              # applies migrations as toosh_owner, then grants toosh_app row access
+npm run db:verify -w server     # 12 security checks as the runtime role
 ```
 
-### Database (once)
+`npm run db:verify -w server` confirms all of the following; its writes are rolled back.
 
-Use a normal role so row-level security applies:
+- The runtime role is not superuser and has no BYPASSRLS.
+- It owns no tables.
+- Row-level security is enabled and forced on all 6 tables, and each table has an ownership policy.
+- The runtime role cannot turn row-level security off, delete messages, read migration bookkeeping or create tables.
+- Two accounts cannot see, change or insert into each other's rows.
+- Without an account context, nothing is visible.
 
-```sql
-CREATE ROLE toosh LOGIN PASSWORD 'choose-a-password' NOSUPERUSER NOBYPASSRLS;
-CREATE DATABASE toosh OWNER toosh;
-```
-
-Migrations run automatically on server start (`MIGRATE_ON_START=true`), or explicitly with `npm run db:migrate`.
-
-### Backend + browser app
+### 3. Build and run
 
 ```bash
-npm run build                # builds app/dist
-npm run start -w server      # API + browser app on http://localhost:8787 (WEB_DIST=../app/dist in .env)
+npm run build                    # web app -> app/dist (served by the API)
+scripts/local/start.sh           # starts PostgreSQL if needed, then the API in the background
+scripts/local/status.sh          # database, API process, and GET / status code
+scripts/local/stop.sh            # stops the API;  scripts/local/stop.sh --with-db  also stops PostgreSQL
 ```
 
-For UI development with hot reload, run `npm run dev:server` and `npm run dev:app`, then open http://localhost:5173.
-Vite proxies `/api` to the server.
+The app and API are at **http://localhost:8787**. The server log is `.run/server.log` and the process id is in
+`.run/server.pid`. The scripts assume the cluster at `/var/lib/postgresql/toosh-data` (override with `TOOSH_PGDATA` /
+`TOOSH_PGBIN`); on a machine with a system PostgreSQL service, start that service instead.
 
-### Android app
+### 4. Android app
+
+The address is baked into the app at build time, so rebuild after changing it:
 
 ```bash
-VITE_API_BASE=https://your-toosh-api.example.com npm run android:sync -w app
-cd app/android && ./gradlew assembleDebug      # app/build/outputs/apk/debug/app-debug.apk
+VITE_API_BASE=http://10.0.2.2:8787 npm run android -w app   # checks the address, builds the web assets, cap sync
+cd app/android && ./gradlew testDebugUnitTest assembleDebug
+# -> app/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Or open `app/android` in Android Studio. For an emulator against a local API use
-`VITE_API_BASE=http://10.0.2.2:8787`; debug builds allow this cleartext address and release builds do not.
+Choose `VITE_API_BASE` for where the app will run. `localhost` on a phone means the phone itself, not your computer.
 
-**On the phone:**
+| Where the app runs | VITE_API_BASE |
+| --- | --- |
+| Android emulator on the same computer as the server | `http://10.0.2.2:8787` |
+| Phone on USB, after `adb reverse tcp:8787 tcp:8787` | `http://localhost:8787` |
+| Phone on the same Wi-Fi | `http://<computer's LAN IP>:8787`. The server listens on all interfaces (`HOST=0.0.0.0`); allow port 8787 in the firewall |
+| Production | `https://your-domain` |
 
-1. Install the APK.
-2. Create the account (or sign in).
-3. Grant the SMS permission. The app explains why before Android asks.
-4. On dual-SIM phones, choose which SIM holds the EVC number. Toosh will not guess.
-5. Optionally import existing EVC Plus messages (7, 30 or 90 days).
-6. Open Toosh once after installing or after a force-stop, and allow background activity if your phone's battery
-   settings restrict it.
+Plain HTTP is a debug-only exception:
+
+- `npm run android -w app` refuses `http://` addresses that are not local, emulator or LAN hosts.
+- For an allowed `http://` address it adds that host to the debug-only network security config
+  (`app/android/app/src/debug/res/xml`).
+- It enables WebView mixed content only when the address is `http://`.
+- Release builds keep the HTTPS-only config in `src/main`.
+
+Install a debug APK with `adb install -r app/android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Tests
 
 ```bash
-npm test                # shared parser/money (19), API with real Postgres + RLS (19), app offline queue (4)
+npm test                                  # shared (19), API with Postgres + RLS (19), app offline queue (4)
 npm run typecheck
+npx playwright test                       # needs the API running (scripts/local/start.sh); 3 browser tests
+cd app/android && ./gradlew testDebugUnitTest   # 5 native JVM tests
 ```
+
+Playwright creates test accounts in the local `toosh` database through the public API.
 
 - **API tests:** need a local Postgres where `TEST_ADMIN_DATABASE_URL` (default `postgres://postgres@127.0.0.1:5432/postgres`)
   can create databases. Each run creates a throwaway database owned by a non-superuser role.

@@ -41,9 +41,11 @@ export function withAccount<T>(db: Db, accountId: string, fn: (tx: Tx) => Promis
 }
 
 /** Refuses (in production) to run as a role that would ignore row-level security. */
-export async function checkRlsRole(db: Db): Promise<{ bypasses: boolean; role: string }> {
-  const { rows } = await db.query(`SELECT current_user AS role, (rolsuper OR rolbypassrls) AS bypasses FROM pg_roles WHERE rolname = current_user`);
-  return { role: rows[0].role, bypasses: Boolean(rows[0].bypasses) };
+export async function checkRlsRole(db: Db): Promise<{ bypasses: boolean; role: string; ownsTables: number }> {
+  const { rows } = await db.query(`SELECT current_user AS role, (rolsuper OR rolbypassrls) AS bypasses,
+      (SELECT count(*)::int FROM pg_tables WHERE schemaname = 'public' AND tableowner = current_user) AS owns
+    FROM pg_roles WHERE rolname = current_user`);
+  return { role: rows[0].role, bypasses: Boolean(rows[0].bypasses), ownsTables: rows[0].owns };
 }
 
 export const isUniqueViolation = (e: unknown, constraint?: string) =>

@@ -9,8 +9,9 @@
     "preview": "vite preview",
     "test": "node --import tsx --test test/*.test.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "android:sync": "vite build && cap sync android",
-    "android:open": "cap open android"
+    "android:sync": "npm run android",
+    "android:open": "cap open android",
+    "android": "node scripts-android-config.mjs && vite build && cap sync android"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

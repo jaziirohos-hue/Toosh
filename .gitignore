@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+.env.*
+!.env.example
 *.log
 coverage/
 test-results/
@@ -14,3 +16,4 @@ app/android/capacitor-cordova-android-plugins/
 *.keystore
 *.jks
 .idea/
+.run/

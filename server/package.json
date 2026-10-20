@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "node --env-file-if-exists=../.env --import tsx --watch src/index.ts",
     "start": "node --env-file-if-exists=../.env --import tsx src/index.ts",
-    "migrate": "node --env-file-if-exists=../.env --import tsx src/migrate.ts",
+    "migrate": "node --env-file-if-exists=../.env --env-file-if-exists=../.env.migration --import tsx src/migrate.ts",
     "reprocess": "node --env-file-if-exists=../.env --import tsx src/reprocess.ts",
-    "test": "node --import tsx --test --test-concurrency=1 test/*.test.ts",
-    "typecheck": "tsc -p tsconfig.json"
+    "test": "node --env-file-if-exists=../.env --import tsx --test --test-concurrency=1 test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "db:verify": "node --env-file-if-exists=../.env --import tsx src/verify-db.ts"
   },
   "devDependencies": {
     "@types/pg": "^8.23.1"
