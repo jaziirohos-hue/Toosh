@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="so"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Toosh - EVC Plus Tracker</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "background": "#f8f9ff", "on-error-container": "#93000a", "inverse-on-surface": "#eaf1ff", "tertiary": "#523200", "on-secondary-fixed": "#001d31", "surface": "#f8f9ff", "on-primary-fixed-variant": "#00522e", "on-primary": "#ffffff", "surface-tint": "#216b43", "surface-container-highest": "#d3e4fe", "tertiary-fixed": "#ffddb8", "secondary-container": "#5bb8fe", "error": "#ba1a1a", "primary-fixed": "#a8f3c1", "surface-container-low": "#eff4ff", "on-error": "#ffffff", "surface-bright": "#f8f9ff", "on-tertiary-fixed": "#2a1700", "on-primary-fixed": "#002110", "primary-fixed-dim": "#8dd6a6", "surface-container-high": "#dce9ff", "on-surface-variant": "#404941", "primary-container": "#0a5c36", "tertiary-container": "#714600", "surface-container": "#e5eeff", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bfc9bf", "secondary-fixed-dim": "#93ccff", "on-secondary-container": "#00476e", "secondary": "#006398", "on-primary-container": "#89d2a2", "primary": "#004225", "secondary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#004b73", "outline": "#707a71", "tertiary-fixed-dim": "#ffb95f", "surface-variant": "#d3e4fe", "surface-dim": "#cbdbf5", "on-surface": "#0b1c30", "on-tertiary-container": "#ffb34d", "inverse-surface": "#213145", "on-background": "#0b1c30", "on-secondary": "#ffffff", "inverse-primary": "#8dd6a6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter": "1rem", "space-sm": "0.5rem", "space-md": "1rem" }, "fontFamily": { "label-numeric-md": ["JetBrains Mono"], "label-ui": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "label-numeric-lg": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-numeric-sm": ["JetBrains Mono"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, "fontSize": { "label-numeric-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "label-ui": ["11px", { "lineHeight": "14px", "fontWeight": "600" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }], "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-numeric-lg": ["22px", { "lineHeight": "28px", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-numeric-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }] } } } }</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; background-color: #f8f9ff; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Toosh App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UgyT_5loRpZafTKoplvCr7yVeHz9MpD0GHeo7OkF5nDlgmUXuPriYv_XgBJiw-8odPmWE3IaNCmafFOcWhqJIJ7OtVlfMUISavuhCNEMUiCz3l8I5JEv5fC3n1JXWmRKhfsgVApM7Q18dxWs_mdNK_QJk2JQ3pEt6aLiPRtr-VSCkf8YZprkY2K214rS3LEAST8aHzc2KY_h_QXQ0jUTUevVZxtzncba_geFpaJMwVKTpbiChCnN8WlWM"/><div class="flex flex-col truncate"><span class="font-title-md text-title-md text-primary tracking-tight leading-none">Toosh</span><span class="font-label-ui text-label-ui text-on-surface-variant tracking-wider uppercase mt-0.5 truncate">Fariimaha</span></div></div><div class="flex items-center gap-space-xs shrink-0"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-ui text-label-ui text-on-surface">Isku xiran</span></div><div class="hidden sm:flex items-center px-2 py-1 rounded-full bg-surface-container-lowest shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">+252 61 ••• ••34</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full max-w-md mx-auto px-margin pt-16 pb-28 bg-surface"><div class="flex flex-col w-full space-y-4">
+<!-- Search & Filter Area -->
+<div class="flex flex-col gap-3">
+<!-- Search Bar with tactile container -->
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full h-12 pl-10 pr-10 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-0 shadow-sm transition-all" id="smsSearch" placeholder="Ka raadi fariimaha EVC, lambar, ama magac..." type="search"/>
+<button aria-label="Nadiifi baaritaanka" class="absolute right-3 w-6 h-6 flex items-center justify-center text-outline hover:text-on-surface rounded-full" type="button">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+</button>
+</div>
+<!-- Filter Tabs (Horizontal Scrollable) -->
+<div class="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+<!-- Dhammaan -->
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-low text-on-surface-variant font-label-ui text-label-ui whitespace-nowrap active:scale-95 transition-transform" type="button">
+<span>Dhammaan</span>
+<span class="font-label-numeric-sm text-label-numeric-sm bg-surface-container-high px-1.5 py-0.5 rounded-full text-on-surface">33</span>
+</button>
+<!-- Soo galay -->
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-low text-on-surface-variant font-label-ui text-label-ui whitespace-nowrap active:scale-95 transition-transform" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>Soo galay</span>
+<span class="font-label-numeric-sm text-label-numeric-sm bg-primary-fixed text-on-primary-fixed-variant px-1.5 py-0.5 rounded-full">12</span>
+</button>
+<!-- Baxay -->
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container-low text-on-surface-variant font-label-ui text-label-ui whitespace-nowrap active:scale-95 transition-transform" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span>Baxay</span>
+<span class="font-label-numeric-sm text-label-numeric-sm bg-error-container text-on-error-container px-1.5 py-0.5 rounded-full">18</span>
+</button>
+<!-- Sugaya (ACTIVE / HIGHLIGHTED) -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed font-title-md text-title-md whitespace-nowrap shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container animate-spin" style="animation-duration: 4s;">hourglass_top</span>
+<span class="font-semibold">Sugaya</span>
+<span class="font-label-numeric-sm text-label-numeric-sm bg-tertiary-container text-on-tertiary px-1.5 py-0.5 rounded-full font-bold">3</span>
+</button>
+</div>
+</div>
+<!-- Smart Sync Explanation Banner -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-2xl p-3.5 shadow-sm flex items-start gap-3">
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">sync_saved_locally</span>
+</div>
+<div class="flex flex-col min-w-0 pr-1">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface leading-snug">Toosh SMS Engine</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-highest text-on-secondary-fixed font-label-ui text-[10px]">Toos</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-relaxed">
+        Fariimaha waxaa laga soo waariday taleefankaaga Android. Toosh wuxuu aqoonsadaa <strong class="text-on-surface font-semibold">"ayaad uwareejisay"</strong> (Baxay) iyo <strong class="text-on-surface font-semibold">"waxaad ka heshay"</strong> (Soo galay).
+      </p>
+</div>
+</div>
+<!-- Attention Pill / Alert Ribbon -->
+<div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-tertiary-container/10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-ping"></span>
+<span class="font-title-md text-title-md text-tertiary font-semibold">3 Fariimood oo u baahan xaqiijin</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-tertiary">Fariin cusub</span>
+</div>
+<!-- List of Imported EVC Messages -->
+<div class="flex flex-col space-y-3">
+<!-- Card 1: Ambiguous / Sugaya Review -->
+<div class="relative rounded-2xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3 group transition-all">
+<!-- Amber Accent Line on Left Edge -->
+<div class="absolute left-0 top-3 bottom-3 w-1.5 rounded-r-full bg-tertiary-container"></div>
+<!-- Top Row: Badge & Timestamp -->
+<div class="flex items-center justify-between pl-1">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-ui text-label-ui flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary-container">pending</span>
+            Sugaya kala saarid
+          </span>
+<span class="font-label-ui text-[10px] text-on-surface-variant/80 uppercase tracking-wider">SMS #804</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">11:20 AM</span>
+</div>
+<!-- Raw SMS Block Quote -->
+<div class="pl-1">
+<div class="p-3 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-1.5 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[15px]">sms</span>
+<span class="font-label-ui text-[10px] uppercase font-semibold text-outline">Qoraalka SMS-ka Asalka ah</span>
+</div>
+<p class="font-label-numeric-sm text-label-numeric-sm text-on-surface leading-snug">
+            [-EVCPlus-] $15.00 waxaad u dirtay 615998822 Tariikh: 24/05/24 11:20:15. Ma cadda qaabka wareejinta...
+          </p>
+</div>
+</div>
+<!-- Extracted Entities Pills -->
+<div class="flex flex-wrap items-center gap-1.5 pl-1">
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-sm text-label-numeric-sm text-on-surface">
+<span class="text-on-surface-variant text-[11px] font-body-sm">Qaddar:</span>
+<span class="font-bold text-on-surface">$15.00</span>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-sm text-label-numeric-sm text-on-surface">
+<span class="text-on-surface-variant text-[11px] font-body-sm">Lambar:</span>
+<span>+252 61 599 8822</span>
+</div>
+</div>
+<!-- Warning Note & Action Button -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1 pl-1">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container shrink-0">info</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Laguma darin wadarta guud ilaa la kala saaro</span>
+</div>
+<button class="h-10 px-4 rounded-xl bg-tertiary-container hover:bg-tertiary text-on-tertiary font-title-md text-title-md flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">rule_settings</span>
+<span>Kala Saar Hadda</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Sample Outgoing Classified (Baxay) -->
+<div class="relative rounded-2xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3 transition-all">
+<!-- Top Row: Direction Pill, Automation Badge, Time -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">north_east</span>
+</div>
+<div class="flex flex-col">
+<span class="px-2 py-0.5 rounded-full bg-error-container/60 text-on-error-container font-label-ui text-label-ui w-fit">
+              Baxay (Toos u aqoonsaday)
+            </span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">10:38 AM</span>
+<button aria-label="Fursado dheeraad ah" class="text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Original SMS Text Bubble -->
+<div class="p-3 rounded-xl bg-surface-container-low">
+<p class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant leading-relaxed">
+          [-EVCPlus-] $3.90 ayaad uwareejisay Jaamac Cali Xasan (252615551288), Tariikh: 24/05/24 10:38:12, Haraagaagu waa $51.59.
+        </p>
+</div>
+<!-- Extracted Tags -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-md text-label-numeric-md text-error">
+          -$3.90
+        </span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-title-md text-title-md text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline">person</span>
+          Jaamac Cali Xasan
+        </span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">
+          Haraaga: $51.59
+        </span>
+</div>
+<!-- Bottom Status & Edit link -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Si toos ah ayaa loo aqoonsaday</span>
+</div>
+<button class="font-title-md text-title-md text-secondary hover:underline flex items-center gap-0.5" type="button">
+<span>Wax ka beddel</span>
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Sample Incoming Classified (Soo galay) -->
+<div class="relative rounded-2xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3 transition-all">
+<!-- Top Row: Incoming Badge & Time -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">south_west</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-ui text-label-ui">
+            Soo galay (Toos u aqoonsaday)
+          </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">09:15 AM</span>
+<button aria-label="Fursado dheeraad ah" class="text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Original SMS Text Bubble -->
+<div class="p-3 rounded-xl bg-surface-container-low">
+<p class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant leading-relaxed">
+          [-EVCPlus-] Waxaad $3.00 ka heshay Sahra Maxamed Cumar (252615443312), Tariikh: 24/05/24 09:15:02, Haraagaagu waa $54.585.
+        </p>
+</div>
+<!-- Extracted Tags with precise 3-decimal balance -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-md text-label-numeric-md text-primary-container font-bold">
+          +$3.00
+        </span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-title-md text-title-md text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline">person</span>
+          Sahra Maxamed
+        </span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">
+          Haraaga: $54.585
+        </span>
+</div>
+<!-- Verification Footer -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Si toos ah ayaa loo aqoonsaday</span>
+</div>
+<button class="font-title-md text-title-md text-secondary hover:underline flex items-center gap-0.5" type="button">
+<span>Faahfaahin</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Ambiguous Merchant / Bank Deposit (Sugaya) -->
+<div class="relative rounded-2xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3 group transition-all">
+<!-- Amber Indicator -->
+<div class="absolute left-0 top-3 bottom-3 w-1.5 rounded-r-full bg-tertiary-container"></div>
+<!-- Top Row: Badge & Timestamp -->
+<div class="flex items-center justify-between pl-1">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-ui text-label-ui flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary-container">help_outline</span>
+            Sugaya kala saarid
+          </span>
+<span class="font-label-ui text-[10px] text-on-surface-variant/80 uppercase">Ganacsi</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">Shalay 06:45 PM</span>
+</div>
+<!-- Raw SMS Snippet -->
+<div class="pl-1">
+<div class="p-3 rounded-xl bg-surface-container-low">
+<p class="font-label-numeric-sm text-label-numeric-sm text-on-surface leading-snug">
+            [-EVCPlus-] Waxaad bixisay $4.20 xisaabta ganacsiga 892211...
+          </p>
+</div>
+</div>
+<!-- Action Row -->
+<div class="flex items-center justify-between pl-1 pt-1">
+<div class="flex items-center gap-2">
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">$4.20</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">ID: 892211</span>
+</div>
+<button class="h-9 px-4 rounded-xl bg-tertiary-container text-on-tertiary font-title-md text-title-md flex items-center gap-1 shadow-sm active:scale-95 transition-all" type="button">
+<span>Kala Saar</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro Visual: Sync Health Indicator -->
+<div class="p-4 rounded-2xl bg-surface-container-low flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-fixed-variant text-[22px]">mark_email_read</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface">Toos u shaqeynaya</span>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+        Fariimaha dhowaan soo dhaca si toos ah ayaa loo soo gelinayaa. Looma baahna inaad gacanta ku qorto.
+      </p>
+</div>
+</div>
+<!-- Manual SMS Sync Refresh CTA -->
+<div class="flex items-center justify-center py-2">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-title-md text-title-md transition-colors active:scale-95" id="refreshBtn" type="button">
+<span class="material-symbols-outlined text-[18px]" id="refreshIcon">refresh</span>
+<span>Dib u eeg fariimaha cusub</span>
+</button>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for refresh feedback
+  const refreshBtn = document.getElementById('refreshBtn');
+  const refreshIcon = document.getElementById('refreshIcon');
+  if (refreshBtn && refreshIcon) {
+    refreshBtn.addEventListener('click', () => {
+      refreshIcon.classList.add('animate-spin');
+      setTimeout(() => {
+        refreshIcon.classList.remove('animate-spin');
+      }, 1000);
+    });
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)] pb-safe" data-active-classes="text-primary-container font-semibold"><div class="max-w-md mx-auto flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="guud" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-ui text-label-ui mt-0.5">Guud</span></a><a aria-current="page" class="relative flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-primary-container font-semibold" data-path="fariimaha" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">sms</span><span class="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-primary-container text-on-primary font-label-numeric-sm text-[10px] leading-none flex items-center justify-center">3</span></div><span class="font-label-ui text-label-ui mt-0.5">Fariimaha</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dhaqdhaqaaq" href="#"><span class="material-symbols-outlined text-[24px]">swap_horiz</span><span class="font-label-ui text-label-ui mt-0.5">Dhaqdhaqaaq</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dejinta" href="#"><span class="material-symbols-outlined text-[24px]">settings</span><span class="font-label-ui text-label-ui mt-0.5">Dejinta</span></a></div></nav></body></html>

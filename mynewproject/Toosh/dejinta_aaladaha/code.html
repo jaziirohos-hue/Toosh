@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html lang="so"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Toosh - EVC Plus Tracker</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "background": "#f8f9ff", "on-error-container": "#93000a", "inverse-on-surface": "#eaf1ff", "tertiary": "#523200", "on-secondary-fixed": "#001d31", "surface": "#f8f9ff", "on-primary-fixed-variant": "#00522e", "on-primary": "#ffffff", "surface-tint": "#216b43", "surface-container-highest": "#d3e4fe", "tertiary-fixed": "#ffddb8", "secondary-container": "#5bb8fe", "error": "#ba1a1a", "primary-fixed": "#a8f3c1", "surface-container-low": "#eff4ff", "on-error": "#ffffff", "surface-bright": "#f8f9ff", "on-tertiary-fixed": "#2a1700", "on-primary-fixed": "#002110", "primary-fixed-dim": "#8dd6a6", "surface-container-high": "#dce9ff", "on-surface-variant": "#404941", "primary-container": "#0a5c36", "tertiary-container": "#714600", "surface-container": "#e5eeff", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bfc9bf", "secondary-fixed-dim": "#93ccff", "on-secondary-container": "#00476e", "secondary": "#006398", "on-primary-container": "#89d2a2", "primary": "#004225", "secondary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#004b73", "outline": "#707a71", "tertiary-fixed-dim": "#ffb95f", "surface-variant": "#d3e4fe", "surface-dim": "#cbdbf5", "on-surface": "#0b1c30", "on-tertiary-container": "#ffb34d", "inverse-surface": "#213145", "on-background": "#0b1c30", "on-secondary": "#ffffff", "inverse-primary": "#8dd6a6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter": "1rem", "space-sm": "0.5rem", "space-md": "1rem" }, "fontFamily": { "label-numeric-md": ["JetBrains Mono"], "label-ui": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "label-numeric-lg": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-numeric-sm": ["JetBrains Mono"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, "fontSize": { "label-numeric-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "label-ui": ["11px", { "lineHeight": "14px", "fontWeight": "600" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }], "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-numeric-lg": ["22px", { "lineHeight": "28px", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-numeric-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }] } } } }</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; background-color: #f8f9ff; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Toosh App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UgyT_5loRpZafTKoplvCr7yVeHz9MpD0GHeo7OkF5nDlgmUXuPriYv_XgBJiw-8odPmWE3IaNCmafFOcWhqJIJ7OtVlfMUISavuhCNEMUiCz3l8I5JEv5fC3n1JXWmRKhfsgVApM7Q18dxWs_mdNK_QJk2JQ3pEt6aLiPRtr-VSCkf8YZprkY2K214rS3LEAST8aHzc2KY_h_QXQ0jUTUevVZxtzncba_geFpaJMwVKTpbiChCnN8WlWM"/><div class="flex flex-col truncate"><span class="font-title-md text-title-md text-primary tracking-tight leading-none">Toosh</span><span class="font-label-ui text-label-ui text-on-surface-variant tracking-wider uppercase mt-0.5 truncate">Dejinta</span></div></div><div class="flex items-center gap-space-xs shrink-0"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-ui text-label-ui text-on-surface">Isku xiran</span></div><div class="hidden sm:flex items-center px-2 py-1 rounded-full bg-surface-container-lowest shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">+252 61 ••• ••34</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full max-w-md mx-auto px-margin pt-16 pb-28 bg-surface"><div class="flex flex-col w-full gap-y-4">
+<!-- Status Feedback Banner for Micro-interactions -->
+<div class="hidden transition-all duration-300 transform -translate-y-2 opacity-0 p-3 rounded-xl bg-primary text-on-primary shadow-md flex items-center justify-between" id="syncToast">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary-fixed">verified</span>
+<span class="font-body-sm text-body-sm">Dhammaan fariimaha EVC Plus waa la cusbooneysiiyay!</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-primary-fixed-dim">10:43 AM</span>
+</div>
+<!-- 1. User & Account Profile Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-3 relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center gap-3">
+<div class="relative shrink-0">
+<div class="w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-md text-headline-md shadow-sm">
+          AN
+        </div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[14px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<h2 class="font-title-md text-title-md text-on-surface truncate">Axmed Nuur Cali</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-ui text-label-ui uppercase tracking-wider shrink-0">
+            Xaqiijiyay
+          </span>
+</div>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface-variant mt-0.5">
+          +252 61 512 3456
+        </span>
+<span class="font-body-sm text-body-sm text-primary-container font-medium">
+          Isha Rasmiga ah ee EVC
+        </span>
+</div>
+</div>
+</div>
+<!-- 2. Android Phone & Sync Status (Source Phone) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<span class="font-label-ui text-label-ui text-primary-container uppercase tracking-wider">SMS Source Phone</span>
+<h3 class="font-title-md text-title-md text-on-surface">Taleefanka Asalka ah</h3>
+</div>
+<span class="p-1.5 rounded-lg bg-surface-container-low text-primary-container">
+<span class="material-symbols-outlined text-[20px]">phone_android</span>
+</span>
+</div>
+<!-- Phone Info Pill -->
+<div class="p-3 rounded-lg bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-title-md text-body-md font-semibold text-on-surface">Samsung Galaxy A54 5G</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-ui text-label-ui">Taleefankan</span>
+</div>
+<!-- Permission Status -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ogolaanshaha SMS:</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary-container font-medium">Waa furan yahay</span>
+</div>
+<!-- Live Sync Line -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-body-sm text-body-sm text-on-surface">Khadka ku xiran</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">
+          Hadda (10:42 AM)
+        </span>
+</div>
+</div>
+<!-- Sync Action Button -->
+<button class="w-full h-12 px-4 rounded-lg bg-primary-container active:bg-primary text-on-primary flex items-center justify-center gap-2 shadow-sm transition-all" id="syncNowBtn" type="button">
+<span class="material-symbols-outlined text-[20px]" id="syncIcon">sync</span>
+<span class="font-title-md text-title-md" id="syncText">Isku-xir Hadda (Sync Now)</span>
+</button>
+<!-- Offline Mode Toggle -->
+<div class="pt-2 flex items-center justify-between gap-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-medium text-on-surface">Kaydi xogta offline</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Marka khadku go'an yahay SMS-ka si toos ah u kaydi</span>
+</div>
+<button aria-checked="true" class="w-12 h-6 rounded-full bg-primary-container relative p-0.5 transition-colors shrink-0" data-toggle="offline-mode" role="switch" type="button">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest translate-x-6 transition-transform shadow-sm"></div>
+</button>
+</div>
+</div>
+<!-- 3. Connected Viewing Devices (Remote Monitoring) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-3">
+<div class="flex flex-col">
+<div class="flex items-center justify-between">
+<h3 class="font-title-md text-title-md text-on-surface">Aaladaha Kale ee Kormeerka</h3>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-numeric-sm text-label-numeric-sm">2 Aaladood</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-snug">
+        Aaladahani waxay kaliya fiirsan karaan xogta la waafajiyay, ma heli karaan SMS-ka tooska ah.
+      </p>
+</div>
+<!-- Remote Device 1: iPhone -->
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary-container shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">phone_iphone</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-semibold text-on-surface truncate">iPhone 14 Pro</span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Muqdisho • Khadka ku jira</span>
+</div>
+</div>
+</div>
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-error active:bg-error-container/40 transition-colors" title="Ka saar aaladda" type="button">
+<span class="material-symbols-outlined text-[20px]">link_off</span>
+</button>
+</div>
+<!-- Remote Device 2: MacBook Air -->
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface-variant shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">laptop_mac</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-semibold text-on-surface truncate">MacBook Air (Web)</span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Khadka ka maqan (2 saac ka hor)</span>
+</div>
+</div>
+</div>
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-error active:bg-error-container/40 transition-colors" title="Ka saar aaladda" type="button">
+<span class="material-symbols-outlined text-[20px]">link_off</span>
+</button>
+</div>
+<!-- Add Viewer Action -->
+<button class="w-full h-11 rounded-lg bg-surface-container text-on-surface font-title-md text-body-md flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors" id="addDeviceBtn" type="button">
+<span class="material-symbols-outlined text-primary-container text-[20px]">add_circle</span>
+<span>Ku dar aalad kormeer cusub</span>
+</button>
+</div>
+<!-- 4. App Security & Preferences -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-3">
+<h3 class="font-title-md text-title-md text-on-surface">Amniga &amp; Dookhyada</h3>
+<!-- Biometric PIN Toggle -->
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<span class="material-symbols-outlined text-primary-container text-[22px] shrink-0">fingerprint</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-medium text-on-surface truncate">Qufulka PIN ama Faraha</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Biometric lock marka app-ka furmo</span>
+</div>
+</div>
+<button aria-checked="true" class="w-12 h-6 rounded-full bg-primary-container relative p-0.5 transition-colors shrink-0" data-toggle="security-bio" role="switch" type="button">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest translate-x-6 transition-transform shadow-sm"></div>
+</button>
+</div>
+<!-- Notification Toggle -->
+<div class="flex items-center justify-between gap-3 pt-2">
+<div class="flex items-center gap-3 min-w-0">
+<span class="material-symbols-outlined text-primary-container text-[22px] shrink-0">notifications_active</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-medium text-on-surface truncate">Ogeysiisyada Fariimaha Cusub</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Farriin kasta oo soo gasha ogeysii</span>
+</div>
+</div>
+<button aria-checked="true" class="w-12 h-6 rounded-full bg-primary-container relative p-0.5 transition-colors shrink-0" data-toggle="security-notif" role="switch" type="button">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest translate-x-6 transition-transform shadow-sm"></div>
+</button>
+</div>
+<!-- Uncategorized Alert Toggle -->
+<div class="flex items-center justify-between gap-3 pt-2">
+<div class="flex items-center gap-3 min-w-0">
+<span class="material-symbols-outlined text-tertiary-container text-[22px] shrink-0">label_off</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-medium text-on-surface truncate">Digniinta Fariimaha aan la kala saarin</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Xusuusi in qeyb la geliyo kharashka</span>
+</div>
+</div>
+<button aria-checked="true" class="w-12 h-6 rounded-full bg-primary-container relative p-0.5 transition-colors shrink-0" data-toggle="security-uncat" role="switch" type="button">
+<div class="w-5 h-5 rounded-full bg-surface-container-lowest translate-x-6 transition-transform shadow-sm"></div>
+</button>
+</div>
+</div>
+<!-- 5. Sign Out Section & Version -->
+<div class="flex flex-col gap-3 pt-2">
+<button class="w-full h-12 px-4 rounded-lg bg-error-container active:bg-error text-on-error-container active:text-on-error font-title-md text-title-md flex items-center justify-center gap-2 shadow-sm transition-colors" id="signOutBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Ka bax Akoonka (Sign Out)</span>
+</button>
+<div class="flex flex-col items-center justify-center text-center gap-1 py-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Toosh v1.2.0 (Dhisme Android ah)</span>
+<span class="font-label-ui text-label-ui text-outline uppercase tracking-wider">Xogtaada waxay ku kaydsan tahay taleefankaaga</span>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interaction for Toggles
+  document.querySelectorAll('button[role="switch"]').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const isChecked = toggle.getAttribute('aria-checked') === 'true';
+      const newState = !isChecked;
+      toggle.setAttribute('aria-checked', String(newState));
+      
+      const thumb = toggle.querySelector('div');
+      if (newState) {
+        toggle.classList.remove('bg-surface-container-highest');
+        toggle.classList.add('bg-primary-container');
+        thumb.classList.remove('translate-x-0');
+        thumb.classList.add('translate-x-6');
+      } else {
+        toggle.classList.remove('bg-primary-container');
+        toggle.classList.add('bg-surface-container-highest');
+        thumb.classList.remove('translate-x-6');
+        thumb.classList.add('translate-x-0');
+      }
+    });
+  });
+
+  // Micro-interaction: Sync Now Button
+  const syncBtn = document.getElementById('syncNowBtn');
+  const syncIcon = document.getElementById('syncIcon');
+  const syncText = document.getElementById('syncText');
+  const syncToast = document.getElementById('syncToast');
+
+  syncBtn?.addEventListener('click', () => {
+    syncIcon.classList.add('animate-spin');
+    syncText.innerText = 'Waa la waafajinayaa...';
+    syncBtn.disabled = true;
+
+    setTimeout(() => {
+      syncIcon.classList.remove('animate-spin');
+      syncText.innerText = 'Waa la isku-xiray!';
+      syncBtn.disabled = false;
+
+      // Show toast
+      syncToast.classList.remove('hidden');
+      setTimeout(() => {
+        syncToast.classList.remove('-translate-y-2', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        syncToast.classList.add('-translate-y-2', 'opacity-0');
+        setTimeout(() => syncToast.classList.add('hidden'), 300);
+        syncText.innerText = 'Isku-xir Hadda (Sync Now)';
+      }, 3000);
+    }, 1200);
+  });
+
+  // Micro-interaction: Sign out confirm toast mock
+  const signOutBtn = document.getElementById('signOutBtn');
+  signOutBtn?.addEventListener('click', () => {
+    if (confirm('Ma hubtaa inaad ka baxayso akoonka Toosh? Fariimaha cusub lama tirin doono inta aad dib uga soo galayso.')) {
+      alert('Waad ka baxday akoonkaaga si nabadgelyo leh.');
+    }
+  });
+
+  // Micro-interaction: Add device mock
+  const addDeviceBtn = document.getElementById('addDeviceBtn');
+  addDeviceBtn?.addEventListener('click', () => {
+    alert('Furi koodka QR ee taleefanka kale si aad ugu xirto qalabka kormeerka.');
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)] pb-safe" data-active-classes="text-primary-container font-semibold"><div class="max-w-md mx-auto flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="guud" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-ui text-label-ui mt-0.5">Guud</span></a><a class="relative flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="fariimaha" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">sms</span><span class="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-primary-container text-on-primary font-label-numeric-sm text-[10px] leading-none flex items-center justify-center">3</span></div><span class="font-label-ui text-label-ui mt-0.5">Fariimaha</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dhaqdhaqaaq" href="#"><span class="material-symbols-outlined text-[24px]">swap_horiz</span><span class="font-label-ui text-label-ui mt-0.5">Dhaqdhaqaaq</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-primary-container font-semibold" data-path="dejinta" href="#"><span class="material-symbols-outlined text-[24px]">settings</span><span class="font-label-ui text-label-ui mt-0.5">Dejinta</span></a></div></nav></body></html>

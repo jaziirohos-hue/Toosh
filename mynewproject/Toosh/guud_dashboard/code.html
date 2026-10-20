@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="so"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Toosh - EVC Plus Tracker</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "background": "#f8f9ff", "on-error-container": "#93000a", "inverse-on-surface": "#eaf1ff", "tertiary": "#523200", "on-secondary-fixed": "#001d31", "surface": "#f8f9ff", "on-primary-fixed-variant": "#00522e", "on-primary": "#ffffff", "surface-tint": "#216b43", "surface-container-highest": "#d3e4fe", "tertiary-fixed": "#ffddb8", "secondary-container": "#5bb8fe", "error": "#ba1a1a", "primary-fixed": "#a8f3c1", "surface-container-low": "#eff4ff", "on-error": "#ffffff", "surface-bright": "#f8f9ff", "on-tertiary-fixed": "#2a1700", "on-primary-fixed": "#002110", "primary-fixed-dim": "#8dd6a6", "surface-container-high": "#dce9ff", "on-surface-variant": "#404941", "primary-container": "#0a5c36", "tertiary-container": "#714600", "surface-container": "#e5eeff", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bfc9bf", "secondary-fixed-dim": "#93ccff", "on-secondary-container": "#00476e", "secondary": "#006398", "on-primary-container": "#89d2a2", "primary": "#004225", "secondary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#004b73", "outline": "#707a71", "tertiary-fixed-dim": "#ffb95f", "surface-variant": "#d3e4fe", "surface-dim": "#cbdbf5", "on-surface": "#0b1c30", "on-tertiary-container": "#ffb34d", "inverse-surface": "#213145", "on-background": "#0b1c30", "on-secondary": "#ffffff", "inverse-primary": "#8dd6a6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter": "1rem", "space-sm": "0.5rem", "space-md": "1rem" }, "fontFamily": { "label-numeric-md": ["JetBrains Mono"], "label-ui": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "label-numeric-lg": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-numeric-sm": ["JetBrains Mono"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, "fontSize": { "label-numeric-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "label-ui": ["11px", { "lineHeight": "14px", "fontWeight": "600" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }], "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-numeric-lg": ["22px", { "lineHeight": "28px", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-numeric-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }] } } } }</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; background-color: #f8f9ff; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Toosh App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UgyT_5loRpZafTKoplvCr7yVeHz9MpD0GHeo7OkF5nDlgmUXuPriYv_XgBJiw-8odPmWE3IaNCmafFOcWhqJIJ7OtVlfMUISavuhCNEMUiCz3l8I5JEv5fC3n1JXWmRKhfsgVApM7Q18dxWs_mdNK_QJk2JQ3pEt6aLiPRtr-VSCkf8YZprkY2K214rS3LEAST8aHzc2KY_h_QXQ0jUTUevVZxtzncba_geFpaJMwVKTpbiChCnN8WlWM"/><div class="flex flex-col truncate"><span class="font-title-md text-title-md text-primary tracking-tight leading-none">Toosh</span><span class="font-label-ui text-label-ui text-on-surface-variant tracking-wider uppercase mt-0.5 truncate">Guud</span></div></div><div class="flex items-center gap-space-xs shrink-0"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-ui text-label-ui text-on-surface">Isku xiran</span></div><div class="hidden sm:flex items-center px-2 py-1 rounded-full bg-surface-container-lowest shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">+252 61 ••• ••34</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full max-w-md mx-auto px-margin pt-16 pb-28 bg-surface"><div class="flex flex-col w-full gap-y-4">
+<!-- Account & Sync Status Header -->
+<div class="flex flex-col gap-2">
+<!-- Active Account Pill -->
+<div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-xl shadow-sm">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[18px]">sim_card</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface font-semibold truncate">+252 61 ••• ••34</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">(Axmed N.)</span>
+</div>
+<span class="font-label-ui text-[10px] text-primary-container font-bold tracking-wide uppercase">Hormuud EVC Plus</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-lowest px-2.5 py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-ui text-label-ui text-on-surface">Firfircoon</span>
+</div>
+</div>
+<!-- Live Sync Pill Banner -->
+<div class="flex items-center justify-between bg-surface-container-lowest px-3 py-2 rounded-xl shadow-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-primary-container text-[18px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Isku-xirka: Guuleystay</span>
+<span class="font-label-ui text-[10px] text-on-surface-variant">Hadda, 10:42 AM • SMS Listener shaqeynaya</span>
+</div>
+</div>
+<button aria-label="Dib u eeg fariimaha" class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-low text-primary-container active:scale-95 transition-transform" id="refreshSyncBtn" type="button">
+<span class="material-symbols-outlined text-[18px]" id="syncIcon">sync</span>
+</button>
+</div>
+<!-- Offline Graceful Alert Indicator (Collapsible/Dismissible) -->
+<div class="hidden flex items-center gap-2 bg-surface-variant text-on-surface-variant px-3 py-1.5 rounded-lg shadow-sm" id="offlineNotice">
+<span class="material-symbols-outlined text-outline text-[16px]">cloud_off</span>
+<span class="font-body-sm text-body-sm flex-1 truncate">Khadka wuu go'anyahay - xogtani waa fariintii ugu dambaysay</span>
+</div>
+</div>
+<!-- Hero Card: Haraagii Ugu Dambeeyay (Official SMS Truth) -->
+<div class="relative overflow-hidden rounded-2xl bg-primary-container text-on-primary p-4 shadow-md">
+<!-- Decorative Watermark Vector -->
+<div class="absolute -right-6 -bottom-8 w-36 h-36 rounded-full bg-on-primary/5 pointer-events-none blur-2xl"></div>
+<div class="absolute right-3 top-3 opacity-15">
+<span class="material-symbols-outlined text-7xl text-on-primary pointer-events-none select-none">account_balance_wallet</span>
+</div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-on-primary-container text-[16px]">verified</span>
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-primary-container font-semibold">HARAAGII UGU DAMBEEYAY (SMS)</span>
+</div>
+<span class="font-label-numeric-sm text-[11px] text-on-primary/80 bg-on-primary/10 px-2 py-0.5 rounded-full">10:38 AM</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-on-primary">$51.59</span>
+<span class="font-label-ui text-label-ui text-on-primary-container font-medium">USD</span>
+</div>
+<div class="flex items-start gap-1.5 bg-on-primary/10 rounded-xl p-2.5">
+<span class="material-symbols-outlined text-on-primary-container text-[16px] shrink-0 mt-0.5">info</span>
+<p class="font-body-sm text-[11px] leading-tight text-on-primary/90">
+          Haraagani wuxuu toos uga yimid fariintii u dambaysay ee EVC Plus, ma aha isku-darka xisaabta.
+        </p>
+</div>
+</div>
+</div>
+<!-- Today's Totals Grid (Kala-saarid Cad) -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Incoming Summary Card -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-3 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Soo galay</span>
+<div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed text-[14px]">south_west</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-numeric-lg text-label-numeric-lg font-bold text-primary-container">+$145.00</span>
+<div class="inline-flex items-center gap-1 mt-1 bg-surface-container-low px-2 py-0.5 rounded-md w-fit">
+<span class="font-label-ui text-[10px] text-primary-container font-semibold">5 jeer</span>
+</div>
+</div>
+</div>
+<!-- Outgoing Summary Card -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-3 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Baxay</span>
+<div class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-error-container text-[14px]">north_east</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-numeric-lg text-label-numeric-lg font-bold text-error">-$93.41</span>
+<div class="inline-flex items-center gap-1 mt-1 bg-surface-container-low px-2 py-0.5 rounded-md w-fit">
+<span class="font-label-ui text-[10px] text-error font-semibold">8 jeer</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Attention / Pending Categorization Banner -->
+<div class="flex flex-col gap-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl p-3.5 shadow-sm">
+<div class="flex items-start gap-2.5">
+<div class="w-7 h-7 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-on-tertiary text-[16px]">schedule</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-title-md text-body-md font-bold text-on-tertiary-fixed leading-snug">3 Fariimood waxay u baahan yihiin kala saarid</span>
+<p class="font-body-sm text-[11px] leading-normal text-on-tertiary-fixed-variant mt-0.5">
+          Fariimaha aan la xaqiijin laguma darin wadarta lacagaha baxay ama soo galay.
+        </p>
+</div>
+</div>
+<div class="flex justify-end pt-1">
+<button class="inline-flex items-center gap-1.5 bg-tertiary-container text-on-tertiary px-3.5 py-1.5 rounded-lg text-label-ui font-label-ui active:scale-95 transition-transform shadow-sm" type="button">
+<span>Kala saar hadda (3)</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Time Horizon Tabs (Horizontal Filter) -->
+<div class="flex items-center gap-2 overflow-x-auto py-1 -mx-margin px-margin no-scrollbar">
+<button class="date-filter-chip shrink-0 px-3.5 py-1.5 rounded-full font-label-ui text-label-ui bg-primary-container text-on-primary shadow-sm" data-active="true" type="button">
+      Maanta
+    </button>
+<button class="date-filter-chip shrink-0 px-3.5 py-1.5 rounded-full font-label-ui text-label-ui bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+      Toddobaadkan
+    </button>
+<button class="date-filter-chip shrink-0 px-3.5 py-1.5 rounded-full font-label-ui text-label-ui bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+      Bishan
+    </button>
+<button class="date-filter-chip shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full font-label-ui text-label-ui bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span>Taariikh dooro</span>
+</button>
+</div>
+<!-- Recent Transactions Section -->
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<h2 class="font-title-md text-title-md text-on-surface">Dhaqdhaqaaqyadii u dambeeyay</h2>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+<a class="font-label-ui text-label-ui text-secondary font-semibold hover:underline flex items-center gap-0.5" href="#">
+<span>Dhammaan eeg</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</a>
+</div>
+<!-- Transaction List Stack -->
+<div class="flex flex-col gap-2">
+<!-- Item 1: Outgoing to Individual -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">south_west</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-body-md text-on-surface font-semibold truncate">Jaamac Cali Xasan</span>
+<span class="bg-error-container/40 text-on-error-container text-[9px] font-label-ui px-1.5 py-0.2 rounded font-bold uppercase shrink-0">Baxay</span>
+</div>
+<span class="font-label-numeric-sm text-[11px] text-on-surface-variant truncate">+252 61 ••• ••88</span>
+<span class="font-body-sm text-[10px] text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span>10:38 AM</span>
+<span>•</span>
+<span class="text-secondary font-medium">SMS toos ah</span>
+</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-error">-$3.90</span>
+<span class="font-label-numeric-sm text-[10px] text-on-surface-variant mt-0.5">Haraa: $51.59</span>
+</div>
+</div>
+<!-- Item 2: Incoming Individual Payment with 3 decimal precision -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">north_east</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-body-md text-on-surface font-semibold truncate">Sahra Maxamed Cumar</span>
+<span class="bg-primary-fixed/50 text-on-primary-fixed-variant text-[9px] font-label-ui px-1.5 py-0.2 rounded font-bold uppercase shrink-0">Soo galay</span>
+</div>
+<span class="font-label-numeric-sm text-[11px] text-on-surface-variant truncate">+252 61 ••• ••12</span>
+<span class="font-body-sm text-[10px] text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span>09:15 AM</span>
+<span>•</span>
+<span class="text-secondary font-medium">SMS toos ah</span>
+</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-primary-container">+$3.00</span>
+<span class="font-label-numeric-sm text-[10px] text-on-surface-variant mt-0.5">Haraa: $54.585</span>
+</div>
+</div>
+<!-- Item 3: Merchant Outgoing Payment -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-body-md text-on-surface font-semibold truncate">Dukaanka Al-Baraka</span>
+<span class="bg-error-container/40 text-on-error-container text-[9px] font-label-ui px-1.5 py-0.2 rounded font-bold uppercase shrink-0">Baxay</span>
+</div>
+<span class="font-label-numeric-sm text-[11px] text-on-surface-variant truncate">+252 61 ••• ••00</span>
+<span class="font-body-sm text-[10px] text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span>Shalay, 08:30 PM</span>
+<span>•</span>
+<span>Ganacsi</span>
+</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-error">-$12.50</span>
+<span class="font-label-numeric-sm text-[10px] text-on-surface-variant mt-0.5">Haraa: $57.585</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Analytical Reassurance Footnote -->
+<div class="flex items-center justify-center gap-1.5 py-2 text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label-ui text-[10px] tracking-wide">Toosh ma diro lacag, kaliya waxa uu falanqeeyaa fariimaha EVC Plus.</span>
+</div>
+</div>
+<script>
+  (function() {
+    // Quick micro-interaction for sync refresh
+    const refreshBtn = document.getElementById('refreshSyncBtn');
+    const syncIcon = document.getElementById('syncIcon');
+    const offlineNotice = document.getElementById('offlineNotice');
+
+    if (refreshBtn && syncIcon) {
+      refreshBtn.addEventListener('click', function() {
+        syncIcon.classList.add('animate-spin');
+        setTimeout(function() {
+          syncIcon.classList.remove('animate-spin');
+        }, 900);
+      });
+    }
+
+    // Toggle offline banner state on window online/offline
+    window.addEventListener('offline', function() {
+      if (offlineNotice) offlineNotice.classList.remove('hidden');
+    });
+    window.addEventListener('online', function() {
+      if (offlineNotice) offlineNotice.classList.add('hidden');
+    });
+
+    // Filter Chips interactive toggle
+    const chips = document.querySelectorAll('.date-filter-chip');
+    chips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        chips.forEach(c => {
+          c.classList.remove('bg-primary-container', 'text-on-primary', 'shadow-sm');
+          c.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        this.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        this.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
+      });
+    });
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)] pb-safe" data-active-classes="text-primary-container font-semibold"><div class="max-w-md mx-auto flex items-center justify-around h-16 px-space-xs"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-primary-container font-semibold" data-path="guud" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-ui text-label-ui mt-0.5">Guud</span></a><a class="relative flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="fariimaha" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">sms</span><span class="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-primary-container text-on-primary font-label-numeric-sm text-[10px] leading-none flex items-center justify-center">3</span></div><span class="font-label-ui text-label-ui mt-0.5">Fariimaha</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dhaqdhaqaaq" href="#"><span class="material-symbols-outlined text-[24px]">swap_horiz</span><span class="font-label-ui text-label-ui mt-0.5">Dhaqdhaqaaq</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dejinta" href="#"><span class="material-symbols-outlined text-[24px]">settings</span><span class="font-label-ui text-label-ui mt-0.5">Dejinta</span></a></div></nav></body></html>

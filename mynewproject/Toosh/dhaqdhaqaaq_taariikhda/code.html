@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="so"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Toosh - EVC Plus Tracker</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "background": "#f8f9ff", "on-error-container": "#93000a", "inverse-on-surface": "#eaf1ff", "tertiary": "#523200", "on-secondary-fixed": "#001d31", "surface": "#f8f9ff", "on-primary-fixed-variant": "#00522e", "on-primary": "#ffffff", "surface-tint": "#216b43", "surface-container-highest": "#d3e4fe", "tertiary-fixed": "#ffddb8", "secondary-container": "#5bb8fe", "error": "#ba1a1a", "primary-fixed": "#a8f3c1", "surface-container-low": "#eff4ff", "on-error": "#ffffff", "surface-bright": "#f8f9ff", "on-tertiary-fixed": "#2a1700", "on-primary-fixed": "#002110", "primary-fixed-dim": "#8dd6a6", "surface-container-high": "#dce9ff", "on-surface-variant": "#404941", "primary-container": "#0a5c36", "tertiary-container": "#714600", "surface-container": "#e5eeff", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "outline-variant": "#bfc9bf", "secondary-fixed-dim": "#93ccff", "on-secondary-container": "#00476e", "secondary": "#006398", "on-primary-container": "#89d2a2", "primary": "#004225", "secondary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#004b73", "outline": "#707a71", "tertiary-fixed-dim": "#ffb95f", "surface-variant": "#d3e4fe", "surface-dim": "#cbdbf5", "on-surface": "#0b1c30", "on-tertiary-container": "#ffb34d", "inverse-surface": "#213145", "on-background": "#0b1c30", "on-secondary": "#ffffff", "inverse-primary": "#8dd6a6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter": "1rem", "space-sm": "0.5rem", "space-md": "1rem" }, "fontFamily": { "label-numeric-md": ["JetBrains Mono"], "label-ui": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "label-numeric-lg": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-numeric-sm": ["JetBrains Mono"], "body-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, "fontSize": { "label-numeric-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "label-ui": ["11px", { "lineHeight": "14px", "fontWeight": "600" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }], "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-numeric-lg": ["22px", { "lineHeight": "28px", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-numeric-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }] } } } }</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; background-color: #f8f9ff; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Toosh App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UgyT_5loRpZafTKoplvCr7yVeHz9MpD0GHeo7OkF5nDlgmUXuPriYv_XgBJiw-8odPmWE3IaNCmafFOcWhqJIJ7OtVlfMUISavuhCNEMUiCz3l8I5JEv5fC3n1JXWmRKhfsgVApM7Q18dxWs_mdNK_QJk2JQ3pEt6aLiPRtr-VSCkf8YZprkY2K214rS3LEAST8aHzc2KY_h_QXQ0jUTUevVZxtzncba_geFpaJMwVKTpbiChCnN8WlWM"/><div class="flex flex-col truncate"><span class="font-title-md text-title-md text-primary tracking-tight leading-none">Toosh</span><span class="font-label-ui text-label-ui text-on-surface-variant tracking-wider uppercase mt-0.5 truncate">Dhaqdhaqaaq</span></div></div><div class="flex items-center gap-space-xs shrink-0"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-ui text-label-ui text-on-surface">Isku xiran</span></div><div class="hidden sm:flex items-center px-2 py-1 rounded-full bg-surface-container-lowest shadow-[0_1px_3px_rgba(15,23,42,0.04)]"><span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">+252 61 ••• ••34</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full max-w-md mx-auto px-margin pt-16 pb-28 bg-surface"><div class="flex flex-col w-full space-y-4">
+<!-- Search & Search Utilities -->
+<div class="flex flex-col space-y-2.5">
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-xl shadow-sm placeholder:text-on-surface-variant focus:outline-none focus:ring-0" id="txSearchInput" placeholder="Raadi magac, lambar, ama tixraac (Ref)..." type="search"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+<button aria-label="Shaandhee" class="p-1 rounded-lg text-on-surface-variant hover:text-on-surface active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Direction Filter Pills & Calendar Toggle -->
+<div class="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5">
+<div class="flex items-center gap-1.5 shrink-0" id="filterPillGroup">
+<button class="filter-pill h-8 px-3 rounded-full bg-primary-container text-on-primary font-label-ui text-label-ui flex items-center gap-1.5 shadow-sm transition-all" data-filter="all">
+<span>Dhammaan</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-lowest/20 text-on-primary font-label-numeric-sm text-[10px]">5</span>
+</button>
+<button class="filter-pill h-8 px-3 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-ui text-label-ui flex items-center gap-1.5 shadow-sm transition-all" data-filter="in">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Soo galay (+)</span>
+</button>
+<button class="filter-pill h-8 px-3 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-ui text-label-ui flex items-center gap-1.5 shadow-sm transition-all" data-filter="out">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>Baxay (-)</span>
+</button>
+</div>
+<!-- Date Range Dropdown Trigger -->
+<button class="shrink-0 h-8 px-2.5 rounded-full bg-surface-container-low text-on-surface flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-secondary text-[16px]">calendar_today</span>
+<span class="font-label-ui text-label-ui truncate max-w-[90px]">Bishan May 2024</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
+</button>
+</div>
+</div>
+<!-- Summary Mini-Bar Card -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between">
+<!-- Income indicator -->
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">south_west</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-ui text-label-ui text-on-surface-variant truncate">Wadarta Soo gashay</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary-container leading-tight">+$420.50</span>
+</div>
+</div>
+<!-- Micro divider -->
+<div class="h-8 w-px bg-surface-container"></div>
+<!-- Outgoing indicator -->
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-7 h-7 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error-container text-[16px]">north_east</span>
+</div>
+<div class="flex flex-col min-w-0 text-right">
+<span class="font-label-ui text-label-ui text-on-surface-variant truncate">Wadarta Baxday</span>
+<span class="font-label-numeric-md text-label-numeric-md text-error leading-tight">-$310.20</span>
+</div>
+</div>
+</div>
+<!-- Transactions List Stream -->
+<div class="flex flex-col space-y-4" id="transactionStream">
+<!-- Group 1: Maanta -->
+<div class="flex flex-col space-y-2 date-section" data-group="today">
+<!-- Date sticky header pill -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-title-md text-title-md text-on-surface">Maanta</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">— 24 May 2024</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">3 dhaqdhaqaaq</span>
+</div>
+<!-- Items Container -->
+<div class="flex flex-col space-y-2">
+<!-- Item 1: Jaamac Cali Xasan (Baxay) -->
+<div class="tx-card relative w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-all cursor-pointer" data-direction="out" data-search="jaamac cali xasan 2526188 3.90 evc sms">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container/80 text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">arrow_upward</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface truncate">Jaamac Cali Xasan</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant truncate">+252 61 ••• ••88</span>
+<span class="text-on-surface-variant text-[10px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant shrink-0">10:38 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-label-ui text-[10px] leading-none">
+<span class="material-symbols-outlined text-[10px] text-primary">sms</span>
+                  Toos (SMS)
+                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-error leading-tight">-$3.90</span>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant mt-1">Haraaga: $51.59</span>
+</div>
+</div>
+<!-- Item 2: Sahra Maxamed Cumar (Soo galay) -->
+<div class="tx-card relative w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-all cursor-pointer" data-direction="in" data-search="sahra maxamed cumar 2526112 3.00 evc sms">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">arrow_downward</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface truncate">Sahra Maxamed Cumar</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant truncate">+252 61 ••• ••12</span>
+<span class="text-on-surface-variant text-[10px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant shrink-0">09:15 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-label-ui text-[10px] leading-none">
+<span class="material-symbols-outlined text-[10px] text-primary">sms</span>
+                  Toos (SMS)
+                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary-container leading-tight">+$3.00</span>
+<!-- Preserving 3 decimal precision for local EVC fraction calculation -->
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant mt-1">Haraaga: $54.585</span>
+</div>
+</div>
+<!-- Item 3: Faarax Axmed Geedi (Manual fix) -->
+<div class="tx-card relative w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-all cursor-pointer" data-direction="out" data-search="faarax axmed geedi 2526122 15.00 gacanta manual">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container/80 text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">arrow_upward</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface truncate">Faarax Axmed Geedi</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant truncate">+252 61 ••• ••22</span>
+<span class="text-on-surface-variant text-[10px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant shrink-0">11:20 AM</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-ui text-[10px] leading-none">
+<span class="material-symbols-outlined text-[10px]">edit_note</span>
+                  Gacanta lagu saxay (Manual)
+                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-error leading-tight">-$15.00</span>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant mt-1">Haraaga: $36.59</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Group 2: Shalay -->
+<div class="flex flex-col space-y-2 date-section" data-group="yesterday">
+<!-- Date header -->
+<div class="flex items-center justify-between px-1 pt-2">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant/40"></span>
+<span class="font-title-md text-title-md text-on-surface">Shalay</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">— 23 May 2024</span>
+</div>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">2 dhaqdhaqaaq</span>
+</div>
+<!-- Items Container -->
+<div class="flex flex-col space-y-2">
+<!-- Item 4: Dukaanka Al-Huda -->
+<div class="tx-card relative w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-all cursor-pointer" data-direction="out" data-search="dukaanka al-huda alhuda 2526199 24.00">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container/80 text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface truncate">Dukaanka Al-Huda</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant truncate">+252 61 ••• ••99</span>
+<span class="text-on-surface-variant text-[10px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant shrink-0">07:45 PM</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-label-ui text-[10px] leading-none">
+                  Badeecad &amp; Adeeg
+                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-error leading-tight">-$24.00</span>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant mt-1">Haraaga: $51.59</span>
+</div>
+</div>
+<!-- Item 5: Xasan Cabdi -->
+<div class="tx-card relative w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-all cursor-pointer" data-direction="in" data-search="xasan cabdi 2526133 50.00 wareejin">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">arrow_downward</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface truncate">Xasan Cabdi</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant truncate">+252 61 ••• ••33</span>
+<span class="text-on-surface-variant text-[10px]">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant shrink-0">02:10 PM</span>
+</div>
+<div class="mt-1 flex items-center gap-1">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-label-ui text-[10px] leading-none">
+                  Lacag Soo gashay
+                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary-container leading-tight">+$50.00</span>
+<span class="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant mt-1">Haraaga: $75.59</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty state placeholder (hidden initially) -->
+<div class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-surface-container-lowest rounded-2xl shadow-sm" id="noResultsState">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mb-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[28px]">search_off</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface">Wax dhaqdhaqaaq ah lama helin</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mt-1">
+      Isku day inaad raadiso magac kale, lambar taleefan, ama hubi shaandhaynta aad dooratay.
+    </p>
+</div>
+<!-- Offline & Local Sync Reassurance Banner -->
+<div class="w-full bg-surface-container-low rounded-xl p-3 shadow-sm flex items-start gap-2.5">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-on-secondary-fixed text-[15px]">cloud_sync</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui text-on-surface font-semibold">Isku xirnaanta Xogta</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mt-0.5">
+        Dhammaan dhaqdhaqaaqyada si toos ah ayaa loogu kaydiyay aaladda, dib ayaana loo waafajinayaa marka khadku soo noqdo.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  (function initTransactionsBehavior() {
+    const searchInput = document.getElementById('txSearchInput');
+    const filterButtons = document.querySelectorAll('.filter-pill');
+    const cards = document.querySelectorAll('.tx-card');
+    const sections = document.querySelectorAll('.date-section');
+    const noResults = document.getElementById('noResultsState');
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function filterTransactions() {
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const direction = card.getAttribute('data-direction');
+        const textData = (card.getAttribute('data-search') || '').toLowerCase();
+        
+        const matchesFilter = (currentFilter === 'all') || (direction === currentFilter);
+        const matchesQuery = !searchQuery || textData.includes(searchQuery);
+
+        if (matchesFilter && matchesQuery) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // Update date header visibility
+      sections.forEach(sec => {
+        const remainingInGroup = sec.querySelectorAll('.tx-card:not(.hidden)').length;
+        if (remainingInGroup === 0) {
+          sec.classList.add('hidden');
+        } else {
+          sec.classList.remove('hidden');
+        }
+      });
+
+      // Toggle Empty State
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+        noResults.classList.add('flex');
+      } else {
+        noResults.classList.add('hidden');
+        noResults.classList.remove('flex');
+      }
+    }
+
+    // Pill Filter Listeners
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-on-primary');
+          b.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+        });
+
+        btn.classList.add('bg-primary-container', 'text-on-primary');
+        btn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+
+        currentFilter = btn.getAttribute('data-filter');
+        filterTransactions();
+      });
+    });
+
+    // Search Input Listener
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        filterTransactions();
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)] pb-safe" data-active-classes="text-primary-container font-semibold"><div class="max-w-md mx-auto flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="guud" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-ui text-label-ui mt-0.5">Guud</span></a><a class="relative flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="fariimaha" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">sms</span><span class="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-primary-container text-on-primary font-label-numeric-sm text-[10px] leading-none flex items-center justify-center">3</span></div><span class="font-label-ui text-label-ui mt-0.5">Fariimaha</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-primary-container font-semibold" data-path="dhaqdhaqaaq" href="#"><span class="material-symbols-outlined text-[24px]">swap_horiz</span><span class="font-label-ui text-label-ui mt-0.5">Dhaqdhaqaaq</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors hover:text-primary-container" data-path="dejinta" href="#"><span class="material-symbols-outlined text-[24px]">settings</span><span class="font-label-ui text-label-ui mt-0.5">Dejinta</span></a></div></nav></body></html>
