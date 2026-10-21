@@ -80,24 +80,24 @@
   --font-body-md: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-body-lg: "Plus Jakarta Sans", system-ui, sans-serif;
 
-  --text-label-numeric-md: 16px; --text-label-numeric-md--line-height: 22px; --text-label-numeric-md--font-weight: 700;
-  --text-label-ui: 12px; --text-label-ui--line-height: 16px; --text-label-ui--font-weight: 600;
-  --text-headline-lg-mobile: 36px; --text-headline-lg-mobile--line-height: 42px; --text-headline-lg-mobile--font-weight: 800;
-  --text-headline-lg: 32px; --text-headline-lg--line-height: 40px; --text-headline-lg--font-weight: 700;
-  --text-headline-md: 22px; --text-headline-md--line-height: 28px; --text-headline-md--font-weight: 700;
-  --text-title-lg: 18px; --text-title-lg--line-height: 24px; --text-title-lg--font-weight: 700;
-  --text-label-numeric-lg: 24px; --text-label-numeric-lg--line-height: 30px; --text-label-numeric-lg--font-weight: 800;
-  --text-body-sm: 13px; --text-body-sm--line-height: 18px; --text-body-sm--font-weight: 400;
-  --text-label-numeric-sm: 13px; --text-label-numeric-sm--line-height: 18px; --text-label-numeric-sm--font-weight: 600;
-  --text-body-lg: 16px; --text-body-lg--line-height: 24px; --text-body-lg--font-weight: 400;
-  --text-title-md: 16px; --text-title-md--line-height: 22px; --text-title-md--font-weight: 600;
-  --text-body-md: 15px; --text-body-md--line-height: 21px; --text-body-md--font-weight: 400;
+  --text-label-numeric-md: 16px; --text-label-numeric-md--line-height: 1.375; --text-label-numeric-md--font-weight: 700;
+  --text-label-ui: 12px; --text-label-ui--line-height: 1.333; --text-label-ui--font-weight: 600;
+  --text-headline-lg-mobile: 36px; --text-headline-lg-mobile--line-height: 1.167; --text-headline-lg-mobile--font-weight: 800;
+  --text-headline-lg: 32px; --text-headline-lg--line-height: 1.25; --text-headline-lg--font-weight: 700;
+  --text-headline-md: 22px; --text-headline-md--line-height: 1.273; --text-headline-md--font-weight: 700;
+  --text-title-lg: 18px; --text-title-lg--line-height: 1.333; --text-title-lg--font-weight: 700;
+  --text-label-numeric-lg: 24px; --text-label-numeric-lg--line-height: 1.25; --text-label-numeric-lg--font-weight: 800;
+  --text-body-sm: 13px; --text-body-sm--line-height: 1.385; --text-body-sm--font-weight: 400;
+  --text-label-numeric-sm: 13px; --text-label-numeric-sm--line-height: 1.385; --text-label-numeric-sm--font-weight: 600;
+  --text-body-lg: 16px; --text-body-lg--line-height: 1.5; --text-body-lg--font-weight: 400;
+  --text-title-md: 16px; --text-title-md--line-height: 1.375; --text-title-md--font-weight: 600;
+  --text-body-md: 15px; --text-body-md--line-height: 1.4; --text-body-md--font-weight: 400;
 }
 
 @layer base {
   html, body { width: 100%; margin: 0; padding: 0; background-color: var(--color-surface); }
   html { -webkit-text-size-adjust: 100%; }
-  body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none;
+  body { min-height: calc(100dvh / var(--app-zoom, 1)); -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none;
     font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   button { cursor: pointer; -webkit-user-select: none; user-select: none; }
   button:disabled { cursor: not-allowed; }
@@ -113,9 +113,9 @@
   box-shadow: 0 1px 2px rgba(14, 26, 19, 0.04), 0 4px 16px -4px rgba(14, 26, 19, 0.06); }
 @utility pressable { transition: transform 120ms ease, background-color 150ms ease, opacity 150ms ease;
   &:active:not(:disabled) { transform: scale(0.98); } }
-@utility sms-text { font-family: var(--font-mono); font-size: 12.5px; line-height: 19px; font-weight: 500; letter-spacing: -0.01em; }
+@utility sms-text { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
 
-.material-symbols-outlined { font-size: 24px; line-height: 1; user-select: none; }
+.material-symbols-outlined { font-size: 24px; line-height: 1; user-select: none; flex-shrink: 0; overflow: hidden; }
 .icon-fill { font-variation-settings: 'FILL' 1; }
 
 @keyframes screen-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }

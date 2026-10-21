@@ -158,6 +158,7 @@ public class TooshNativePlugin extends Plugin {
         s.put("appVersion", BuildConfig.VERSION_NAME); s.put("mappings", mappings);
         s.put("strictFilter", settings.strictFilter()); s.put("notifyNew", settings.notifyNew()); s.put("notifyPending", settings.notifyPending());
         s.put("importDoneAt", iso(settings.importDoneAt()));
+        s.put("fontScale", (double) getContext().getResources().getConfiguration().fontScale);
         return s;
     }
     @PluginMethod public void getStatus(PluginCall call) { call.resolve(status()); }

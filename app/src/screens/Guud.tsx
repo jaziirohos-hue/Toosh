@@ -62,23 +62,23 @@ export function Guud() {
       <section className="hero-gradient relative overflow-hidden rounded-[28px] text-on-primary p-5 shadow-[0_18px_40px_-18px_rgba(5,71,42,0.75)]">
         <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full border-[28px] border-white/[0.04] pointer-events-none" />
         <button type="button" onClick={() => setPickNumber(true)} disabled={me!.evcNumbers.length < 2}
-          className="relative flex items-center gap-2.5 w-full text-left disabled:cursor-default">
+          className="relative flex flex-wrap items-center gap-x-2.5 gap-y-2 w-full text-left disabled:cursor-default">
           <div className="w-9 h-9 rounded-full bg-white/12 flex items-center justify-center shrink-0"><Icon name="sim_card" className="text-[19px] text-on-primary-container" /></div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-bold leading-[20px] truncate">{number ? masked(number.msisdn) : '—'}</div>
-            <div className="text-[12px] leading-[16px] text-white/70 truncate">{number?.displayName ? `${number.displayName} · ` : ''}Hormuud EVC Plus</div>
+          <div className="flex-1 min-w-[150px]">
+            <div className="text-[15px] font-bold leading-tight whitespace-nowrap">{number ? masked(number.msisdn) : '—'}</div>
+            <div className="text-[12px] leading-[1.33] text-white/70 line-clamp-1 break-all">{number?.displayName ? `${number.displayName} · ` : ''}Hormuud EVC Plus</div>
           </div>
-          <span className="flex items-center gap-1.5 h-7 px-2.5 rounded-full bg-white/12 text-[12px] font-semibold shrink-0">
+          <span className="flex items-center gap-1.5 min-h-7 py-0.5 px-2.5 rounded-full bg-white/12 text-[12px] font-semibold shrink-0 ml-auto leading-tight">
             <span className={`w-2 h-2 rounded-full ${source ? (sourceActive ? 'bg-primary-fixed-dim' : 'bg-tertiary-fixed-dim') : 'bg-white/50'}`} />{sourceLabel}
             {me!.evcNumbers.length > 1 && <Icon name="expand_more" className="text-[16px] -mr-1" />}</span>
         </button>
 
         <div className="relative mt-6 text-[13px] font-medium text-white/75 flex items-center gap-1.5"><Icon name="account_balance_wallet" className="text-[16px]" />Haraaga EVC Plus</div>
         <div className="relative mt-1 flex items-baseline gap-2">
-          <span data-testid="balance" className="text-[40px] leading-[46px] font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
+          <span data-testid="balance" className="text-[clamp(30px,10.5cqw,40px)] leading-[1.25] break-all font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
           <span className="text-[14px] font-semibold text-white/70">USD</span>
         </div>
-        <p className="relative mt-1 text-[12.5px] leading-[17px] text-white/70">
+        <p className="relative mt-1 text-[12.5px] leading-[1.36] text-white/70">
           {balance ? <>SMS-kii u dambeeyay · {shortDateTime(balance.effectiveAt, tz)}{stale && <span className="text-tertiary-fixed-dim font-semibold"> · Xog hore — sug fariin cusub</span>}</>
             : 'Weli haraag lama helin. Wuxuu ka imaanayaa fariimaha EVC Plus.'}
         </p>
@@ -87,12 +87,12 @@ export function Guud() {
       <div className="card flex items-center gap-3 pl-4 pr-2 py-2.5">
         <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${syncOk ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}><Icon name={syncIcon} fill className={`${syncTone} text-[20px]`} /></div>
         <div className="flex-1 min-w-0">
-          <div className="text-[14.5px] leading-[20px] font-semibold text-on-surface truncate">{syncTitle}</div>
-          {syncDetail && <div className="text-[12.5px] leading-[17px] text-on-surface-variant">{syncDetail}</div>}
+          <div className="text-[14.5px] leading-[1.38] font-semibold text-on-surface break-words">{syncTitle}</div>
+          {syncDetail && <div className="text-[12.5px] leading-[1.36] text-on-surface-variant">{syncDetail}</div>}
         </div>
         {source ? <button aria-label="Dib u eeg fariimaha" onClick={refresh} className="w-11 h-11 rounded-full flex items-center justify-center text-primary-container active:bg-surface-container-low shrink-0">
           <Icon name="refresh" className={`text-[22px] ${refreshing ? 'animate-spin' : ''}`} /></button>
-          : <button onClick={() => navigate('taleefanka-asalka')} className="h-9 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-bold shrink-0 pressable">Dejin</button>}
+          : <button onClick={() => navigate('taleefanka-asalka')} className="min-h-9 py-1 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-bold shrink-0 pressable leading-tight">Dejin</button>}
       </div>
       {(connection === 'offline' || summary.stale) && <Banner tone="info" icon="cloud_off">Khadka wuu go'anyahay — xogtani waa tii ugu dambaysay{summary.savedAt ? ` (${shortDateTime(summary.savedAt, tz)})` : ''}.</Banner>}
 
@@ -100,17 +100,17 @@ export function Guud() {
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center shrink-0"><Icon name="pending_actions" className="text-on-tertiary text-[21px]" /></div>
           <div className="flex-1 min-w-0 pt-0.5">
-            <span className="block text-[15px] leading-[20px] font-bold text-on-tertiary-fixed">{s.pendingCount} Fariimood waxay u baahan yihiin kala saarid</span>
-            <span className="block text-[13px] leading-[18px] text-on-tertiary-fixed-variant mt-0.5">Laguma darin wadarta ilaa la kala saaro.</span>
+            <span className="block text-[15px] leading-[1.33] font-bold text-on-tertiary-fixed">{s.pendingCount} Fariimood waxay u baahan yihiin kala saarid</span>
+            <span className="block text-[13px] leading-[1.38] text-on-tertiary-fixed-variant mt-0.5">Laguma darin wadarta ilaa la kala saaro.</span>
           </div>
         </div>
-        <button onClick={() => navigate('fariimaha/pending')} aria-label={`Kala saar hadda (${s.pendingCount})`} className="h-11 rounded-full bg-tertiary-container text-on-tertiary text-[14.5px] font-bold flex items-center justify-center gap-1.5 pressable">
+        <button onClick={() => navigate('fariimaha/pending')} aria-label={`Kala saar hadda (${s.pendingCount})`} className="min-h-11 py-1.5 rounded-full bg-tertiary-container text-on-tertiary text-[14.5px] font-bold flex items-center justify-center gap-1.5 pressable leading-tight">
           Kala saar hadda<Icon name="arrow_forward" className="text-[18px]" /></button>
       </div>}
 
       <PeriodChips value={period} onChange={setPeriod} tz={tz} />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 @min-[330px]:grid-cols-2 gap-3">
         {(['IN', 'OUT'] as const).map(dir => {
           const t = dir === 'IN' ? s?.incoming : s?.outgoing;
           const inn = dir === 'IN';
@@ -121,14 +121,14 @@ export function Guud() {
               <span className="text-[13.5px] font-semibold text-on-surface-variant">{inn ? 'Soo galay' : 'Baxay'}</span>
             </div>
             <div>
-              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[22px] leading-[28px] font-extrabold tracking-tight ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? money(t.total, inn ? '+' : '-') : '—'}</span>
+              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[clamp(18px,5.6cqw,22px)] leading-[1.25] font-extrabold tracking-tight break-all ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? money(t.total, inn ? '+' : '-') : '—'}</span>
               <span className="text-[12.5px] text-on-surface-variant">{t ? `${t.count} jeer` : '—'}</span>
             </div>
           </div>;
         })}
       </div>
 
-      <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">Dhammaan<Icon name="chevron_right" className="text-[20px] -mr-1.5" /></a>}>
+      <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">Dhammaan<Icon name="chevron_right" className="text-[20px]" /></a>}>
         Dhaqdhaqaaqyada</SectionTitle>
       {summary.error && !s && <Banner tone="error" icon="error">{summary.error.message}</Banner>}
       {!s && summary.loading && <Spinner label="Xogta waa la soo qaadayaa…" />}
@@ -141,7 +141,7 @@ export function Guud() {
     </Main>
     <Sheet open={pickNumber} onClose={() => setPickNumber(false)} title="Dooro lambarka EVC">
       {me!.evcNumbers.map(n => <button key={n.id} onClick={() => { setSelectedNumberId(n.id); setPickNumber(false); }}
-        className={`flex items-center justify-between h-14 px-4 rounded-2xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}>
+        className={`flex items-center justify-between min-h-14 py-2 px-4 rounded-2xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'} leading-tight`}>
         <span className="text-[16px] font-bold">{masked(n.msisdn)}</span><span className="text-[14px] text-on-surface-variant">{n.displayName}</span></button>)}
     </Sheet>
   </>;

@@ -39,11 +39,11 @@ function LockGate({ children }: { children: React.ReactNode }) {
     return () => document.removeEventListener('visibilitychange', onVis);
   }, [enabled]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!locked) return <>{children}</>;
-  return <main className="min-h-dvh flex flex-col items-center justify-center gap-5 px-6 text-center bg-surface screen-in">
+  return <main className="min-h-[calc(100dvh/var(--app-zoom,1))] flex flex-col items-center justify-center gap-5 px-6 text-center bg-surface screen-in">
     <div className="w-[88px] h-[88px] rounded-[28px] bg-surface-container-lowest shadow-[0_12px_32px_-12px_rgba(5,71,42,0.35)] flex items-center justify-center"><Logo className="w-16 h-16" /></div>
     <div><h1 className="text-[24px] font-extrabold tracking-tight">Toosh waa xiran yahay</h1><p className="text-[14.5px] text-on-surface-variant mt-1">Isticmaal faraha ama PIN-ka taleefanka</p></div>
     {error && <Banner tone="error" icon="lock">{error}</Banner>}
-    <button onClick={unlock} className="h-14 px-8 rounded-2xl bg-primary-container text-on-primary text-[16px] font-bold flex items-center gap-2 pressable shadow-[0_10px_24px_-10px_rgba(10,107,63,0.7)]"><Icon name="fingerprint" className="text-[24px]" />Fur Toosh</button>
+    <button onClick={unlock} className="min-h-14 py-2 px-8 rounded-2xl bg-primary-container text-on-primary text-[16px] font-bold flex items-center gap-2 pressable shadow-[0_10px_24px_-10px_rgba(10,107,63,0.7)] leading-tight"><Icon name="fingerprint" className="text-[24px]" />Fur Toosh</button>
   </main>;
 }
 
@@ -61,7 +61,7 @@ function Shell() {
   else if (page === 'taleefanka-asalka') { screen = <SourceSetup />; nav = false; }
   else screen = <Guud />;
   return <div className="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
-    {meIsCached && <div className="fixed top-[calc(env(safe-area-inset-top,0px)+64px)] inset-x-0 z-40 flex justify-center pointer-events-none"><span className="px-3 h-7 flex items-center rounded-full bg-inverse-surface text-inverse-on-surface text-[12px] font-semibold shadow-lg">Offline · xog kaydsan</span></div>}
+    {meIsCached && <div className="fixed top-[calc(env(safe-area-inset-top,0px)+64px)] inset-x-0 z-40 flex justify-center pointer-events-none"><span className="px-3 min-h-7 py-0.5 flex items-center rounded-full bg-inverse-surface text-inverse-on-surface text-[12px] font-semibold shadow-lg leading-tight">Offline · xog kaydsan</span></div>}
     {me && screen}
     {nav && <BottomNav active={page === 'fariin' ? 'fariimaha' : page ?? 'guud'} pending={pending.data?.pendingCount ?? 0} />}
   </div>;
@@ -69,7 +69,7 @@ function Shell() {
 
 function Root() {
   const { status } = useSession();
-  if (status === 'loading') return <div className="min-h-dvh flex flex-col items-center justify-center gap-2 bg-surface"><Logo className="w-16 h-16" /><Spinner label="Toosh waa la furayaa…" /></div>;
+  if (status === 'loading') return <div className="min-h-[calc(100dvh/var(--app-zoom,1))] flex flex-col items-center justify-center gap-2 bg-surface"><Logo className="w-16 h-16" /><Spinner label="Toosh waa la furayaa…" /></div>;
   if (status === 'signedOut') return <div className="bg-surface text-on-surface font-body-md min-h-screen flex flex-col"><Auth /></div>;
   return <LockGate><Shell /></LockGate>;
 }

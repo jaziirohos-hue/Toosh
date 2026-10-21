@@ -36,6 +36,8 @@ export interface NativeStatus {
   notifyNew: boolean;
   notifyPending: boolean;
   importDoneAt: string | null;
+  /** Android system font size (1 = default). */
+  fontScale?: number;
 }
 
 export interface LocalMessage {

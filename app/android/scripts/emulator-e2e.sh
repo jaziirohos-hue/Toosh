@@ -63,6 +63,8 @@ size=$(adb shell wm size | grep -oE '[0-9]+x[0-9]+' | tail -1); w=${size%x*}; h=
 adb shell input swipe $((w / 2)) $((h * 85 / 100)) $((w / 2)) $((h * 20 / 100)) 300 || true
 sleep 2
 adb exec-out screencap -p > "$OUT/launcher-drawer.png" || true
+# Large phone font size (130%): every screen checked inside the real WebView for text spilling out of its box.
+(cd ../.. && npx tsx app/android/scripts/webview-layout.ts "app/android/$OUT")
 adb logcat -d -s Toosh TooshE2E > "$OUT/logcat.txt" 2>&1 || true
 grep -E "step-ok|long SMS|server counts|inbox import|sms STORED|sms NOT_RELEVANT" "$OUT/logcat.txt" || true
 echo "Emulator SMS end-to-end: OK"

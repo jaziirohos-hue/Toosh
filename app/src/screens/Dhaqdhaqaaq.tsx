@@ -33,7 +33,7 @@ export function Dhaqdhaqaaq() {
   }
   const totals = page.data?.totals;
   const seg = (f: typeof filter, label: string) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}
-    className={`h-9 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${filter === f ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'}`}>{label}</button>;
+    className={`min-h-9 py-1 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${filter === f ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'} leading-tight`}>{label}</button>;
 
   return <>
     <Header subtitle="Dhaqdhaqaaq" msisdn={me!.evcNumbers.find(n => n.id === selectedNumberId)?.msisdn} />
@@ -41,7 +41,7 @@ export function Dhaqdhaqaaq() {
       <div className="flex flex-col gap-3">
         <div className="relative flex items-center w-full">
           <Icon name="search" className="absolute left-4 text-on-surface-variant text-[22px] pointer-events-none" />
-          <input value={q} onChange={e => setQ(e.target.value)} aria-label="Raadi dhaqdhaqaaq" className="w-full h-12 pl-12 pr-12 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-[15px] placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary-container" placeholder="Raadi magac ama lambar" type="search" />
+          <input value={q} onChange={e => setQ(e.target.value)} aria-label="Raadi dhaqdhaqaaq" className="w-full min-h-12 py-2 pl-12 pr-12 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-[15px] placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary-container leading-tight" placeholder="Raadi" type="search" />
           <button aria-label="Shaandhee taariikhda" onClick={() => setPeriodMenu(true)} className="absolute right-1.5 w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant active:bg-surface-container"><Icon name="tune" className="text-[20px]" /></button>
         </div>
         <div className="grid grid-cols-3 gap-1 p-1 rounded-full bg-surface-container">{seg('all', 'Dhammaan')}{seg('in', 'Soo galay')}{seg('out', 'Baxay')}</div>
@@ -49,17 +49,17 @@ export function Dhaqdhaqaaq() {
 
       <div className="card overflow-hidden">
         <button onClick={() => setPeriodMenu(true)} className="w-full flex items-center gap-2 px-4 h-12 border-b border-outline-variant/40 text-left active:bg-surface-container-low">
-          <Icon name="calendar_month" className="text-primary-container text-[20px]" /><span className="flex-1 text-[14.5px] font-bold text-on-surface truncate">{periodLabel(period)}</span>
+          <Icon name="calendar_month" className="text-primary-container text-[20px]" /><span className="flex-1 text-[14.5px] leading-snug font-bold text-on-surface">{periodLabel(period)}</span>
           <span className="text-[13px] font-semibold text-primary-container">Beddel</span><Icon name="expand_more" className="text-[20px] text-primary-container" /></button>
-      <div className="grid grid-cols-2 divide-x divide-outline-variant/40">
+      <div className="grid grid-cols-1 @min-[330px]:grid-cols-2 divide-y @min-[330px]:divide-y-0 @min-[330px]:divide-x divide-outline-variant/40">
         <div className="p-4 flex flex-col gap-1">
           <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><span className="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center"><Icon name="south_west" className="text-[15px]" /></span>Soo galay</span>
-          <span data-testid="history-in" className="text-[20px] leading-[26px] font-extrabold tracking-tight text-primary-container">{totals ? money(totals.incoming, '+') : '—'}</span>
+          <span data-testid="history-in" className="text-[clamp(17px,5.2cqw,20px)] leading-[1.3] font-extrabold tracking-tight break-all text-primary-container">{totals ? money(totals.incoming, '+') : '—'}</span>
           <span className="text-[12px] text-on-surface-variant">{totals ? `${totals.incomingCount} jeer` : ''}</span>
         </div>
         <div className="p-4 flex flex-col gap-1">
           <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><span className="w-6 h-6 rounded-full bg-error-container text-on-error-container flex items-center justify-center"><Icon name="north_east" className="text-[15px]" /></span>Baxay</span>
-          <span data-testid="history-out" className="text-[20px] leading-[26px] font-extrabold tracking-tight text-on-surface">{totals ? money(totals.outgoing, '-') : '—'}</span>
+          <span data-testid="history-out" className="text-[clamp(17px,5.2cqw,20px)] leading-[1.3] font-extrabold tracking-tight break-all text-on-surface">{totals ? money(totals.outgoing, '-') : '—'}</span>
           <span className="text-[12px] text-on-surface-variant">{totals ? `${totals.outgoingCount} jeer` : ''}</span>
         </div>
       </div>
@@ -77,12 +77,12 @@ export function Dhaqdhaqaaq() {
       {page.data && !items.length && <EmptyState icon="search_off" title="Wax dhaqdhaqaaq ah lama helin" text="Isku day inaad raadiso magac kale, lambar taleefan, ama hubi shaandhaynta aad dooratay." />}
       {cursor && <Button kind="tonal" disabled={loadingMore} onClick={loadMore} className="self-center h-11 text-[14.5px]">{loadingMore ? 'Waa la soo qaadayaa…' : 'Soo qaad kuwo hore'}</Button>}
 
-      <p className="text-[12px] leading-[17px] text-on-surface-variant/90 text-center px-4 pb-2">Kaliya dhaqdhaqaaqyada la xaqiijiyay ayaa halkan ku jira. Fariimaha sugaya iyo kuwa aan transaction ahayn laguma darin wadarta. Waqtiga: {tz}.</p>
+      <p className="text-[12px] leading-[1.42] text-on-surface-variant/90 text-center px-4 pb-2">Kaliya dhaqdhaqaaqyada la xaqiijiyay ayaa halkan ku jira. Fariimaha sugaya iyo kuwa aan transaction ahayn laguma darin wadarta. Waqtiga: {tz}.</p>
     </Main>
     <Sheet open={periodMenu} onClose={() => setPeriodMenu(false)} title="Muddada">
       {(['today', 'week', 'month', 'all'] as const).map(p => <button key={p} onClick={() => { setPeriod({ period: p }); setPeriodMenu(false); }}
-        className={`flex items-center justify-between h-14 px-4 rounded-2xl pressable ${period.period === p ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-surface-container-low'}`}><span className="text-[16px] font-semibold">{periodLabel({ period: p })}</span>{period.period === p && <Icon name="check_circle" fill />}</button>)}
-      <button onClick={() => { setPeriodMenu(false); setCustomOpen(true); }} className="flex items-center gap-2.5 h-14 px-4 rounded-2xl bg-surface-container-low pressable"><Icon name="date_range" className="text-primary-container" /><span className="text-[16px] font-semibold">Taariikh dooro…</span></button>
+        className={`flex items-center justify-between min-h-14 py-2 px-4 rounded-2xl pressable ${period.period === p ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-surface-container-low'} leading-tight`}><span className="text-[16px] font-semibold">{periodLabel({ period: p })}</span>{period.period === p && <Icon name="check_circle" fill />}</button>)}
+      <button onClick={() => { setPeriodMenu(false); setCustomOpen(true); }} className="flex items-center gap-2.5 min-h-14 py-2 px-4 rounded-2xl bg-surface-container-low pressable leading-tight"><Icon name="date_range" className="text-primary-container" /><span className="text-[16px] font-semibold">Taariikh dooro…</span></button>
     </Sheet>
     {customOpen && <DateRangeSheet open={customOpen} onClose={() => setCustomOpen(false)} value={period} onPick={setPeriod} tz={tz} />}
   </>;

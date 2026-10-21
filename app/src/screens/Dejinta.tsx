@@ -86,11 +86,11 @@ export function Dejinta() {
           <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm"><Icon name="verified_user" fill className="text-primary-container text-[16px]" /></div>
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-[19px] leading-[24px] font-extrabold tracking-tight text-on-surface break-words">{account.displayName}</h2>
+          <h2 className="text-[19px] leading-[1.26] font-extrabold tracking-tight text-on-surface break-words">{account.displayName}</h2>
           <div className="text-[15px] font-semibold text-on-surface-variant mt-0.5">{formatMsisdn(account.loginPhone)}</div>
           <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
             {/* Registration is not verification: the badge says "registered", never "verified". */}
-            <span className="h-6 px-2.5 rounded-full bg-surface-container text-on-surface-variant text-[11.5px] font-bold uppercase tracking-wide flex items-center">Diiwaangashan</span>
+            <span className="min-h-6 py-0.5 px-2.5 rounded-full bg-surface-container text-on-surface-variant text-[11.5px] font-bold uppercase tracking-wide flex items-center leading-tight">Diiwaangashan</span>
             <span className="text-[12.5px] text-on-surface-variant">{tz}</span>
           </div>
         </div>
@@ -102,7 +102,7 @@ export function Dejinta() {
           <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${source ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-surface-container text-on-surface-variant'}`}><Icon name={source ? 'mobile_friendly' : 'mobile_off'} className="text-[22px]" /></div>
           <div className="flex-1 min-w-0">
             <div className="text-[16px] font-bold text-on-surface break-words">{source ? (source.model ?? source.name) : 'Weli lama xirin'}</div>
-            <div className="text-[13px] leading-[18px] text-on-surface-variant mt-0.5">{source ? (source.current ? 'Taleefankan ayaa SMS-ka soo diraya' : 'Taleefan kale ayaa SMS-ka soo diraya')
+            <div className="text-[13px] leading-[1.38] text-on-surface-variant mt-0.5">{source ? (source.current ? 'Taleefankan ayaa SMS-ka soo diraya' : 'Taleefan kale ayaa SMS-ka soo diraya')
               : 'Fur Toosh taleefanka Android ee SIM-ka EVC Plus leh, kadibna ka dhig taleefanka asalka.'}</div>
           </div>
           {source && <span className={`mt-1 w-2.5 h-2.5 rounded-full shrink-0 ${sourceSeen ? 'bg-primary-container' : 'bg-outline'}`} />}
@@ -131,12 +131,12 @@ export function Dejinta() {
               <div className="text-[15.5px] font-bold text-on-surface">{formatMsisdn(n.msisdn)}</div>
               <div className="text-[13px] text-on-surface-variant break-words">{[n.displayName, src ? `${src.model ?? src.name}${n.simLabel ? ` · ${n.simLabel}` : ''}` : 'Taleefan asal ah ma leh'].filter(Boolean).join(' · ')}</div>
             </div>
-            <span className="h-6 px-2 rounded-full bg-surface-container text-on-surface-variant text-[11.5px] font-semibold flex items-center shrink-0">Lama xaqiijin</span>
+            <span className="min-h-6 py-0.5 px-2 rounded-full bg-surface-container text-on-surface-variant text-[11.5px] font-semibold flex items-center shrink-0 leading-tight">Lama xaqiijin</span>
           </div>;
         })}
         <ActionRow icon="add" onClick={() => setAddOpen(true)}>Ku dar lambar EVC</ActionRow>
       </Group>
-      <p className="px-1 -mt-2 text-[12.5px] leading-[17px] text-on-surface-variant">Diiwaangelinta lambarku ma keenayso dhaqdhaqaaq — taleefanka asalka ah ee SIM-ka haysta ayaa fariimaha soo dira. Lambarada lama xaqiijin.</p>
+      <p className="px-1 -mt-2 text-[12.5px] leading-[1.36] text-on-surface-variant">Diiwaangelinta lambarku ma keenayso dhaqdhaqaaq — taleefanka asalka ah ee SIM-ka haysta ayaa fariimaha soo dira. Lambarada lama xaqiijin.</p>
 
       <GroupLabel>Aaladaha kormeerka</GroupLabel>
       <Group>
@@ -154,7 +154,7 @@ export function Dejinta() {
         })}
         <ActionRow id="addDeviceBtn" icon="qr_code_2" onClick={makePairingCode}>Ku dar aalad kormeer cusub</ActionRow>
       </Group>
-      <p className="px-1 -mt-2 text-[12.5px] leading-[17px] text-on-surface-variant">Aaladaha kormeerka waxay arki karaan xogta la waafajiyay oo keliya, ma helaan SMS-ka tooska ah.</p>
+      <p className="px-1 -mt-2 text-[12.5px] leading-[1.36] text-on-surface-variant">Aaladaha kormeerka waxay arki karaan xogta la waafajiyay oo keliya, ma helaan SMS-ka tooska ah.</p>
 
       <GroupLabel>Amniga &amp; dookhyada</GroupLabel>
       <Group>
@@ -176,24 +176,24 @@ export function Dejinta() {
     </Main>
 
     <Sheet open={Boolean(pairing)} onClose={() => setPairing(null)} title="Ku dar aalad kormeer">
-      <p className="text-[14px] leading-[20px] text-on-surface-variant">Aaladda cusub ka fur Toosh, dooro <strong>Gal Akoonka</strong> → <strong>Kood isku-xir</strong>, kadib geli koodkan. Wuxuu shaqeynayaa hal mar, 10 daqiiqo gudahood.</p>
-      <div className="text-center text-[34px] leading-[40px] font-extrabold tracking-[0.18em] text-primary py-5 bg-primary-fixed/60 rounded-2xl select-all" data-testid="pairing-code">{pairing?.code}</div>
-      <p className="text-[14px] leading-[20px] text-on-surface-variant">Ama ku gal lambarka {masked(account.loginPhone)} iyo furahaaga sirta ah.</p>
+      <p className="text-[14px] leading-[1.43] text-on-surface-variant">Aaladda cusub ka fur Toosh, dooro <strong>Gal Akoonka</strong> → <strong>Kood isku-xir</strong>, kadib geli koodkan. Wuxuu shaqeynayaa hal mar, 10 daqiiqo gudahood.</p>
+      <div className="text-center text-[34px] leading-[1.18] font-extrabold tracking-[0.18em] text-primary py-5 bg-primary-fixed/60 rounded-2xl select-all" data-testid="pairing-code">{pairing?.code}</div>
+      <p className="text-[14px] leading-[1.43] text-on-surface-variant">Ama ku gal lambarka {masked(account.loginPhone)} iyo furahaaga sirta ah.</p>
     </Sheet>
     <Sheet open={Boolean(revoke)} onClose={() => setRevoke(null)} title="Ka saar aaladda?">
-      <p className="text-[14px] leading-[20px] text-on-surface-variant"><strong className="text-on-surface">{revoke?.name}</strong> waa laga saari doonaa akoonka, wuuna ka bixi doonaa isla markiiba.{revoke?.role === 'SOURCE' ? ' Taleefankani wuxuu ahaa taleefanka asalka ah: fariimo cusub lama soo diri doono ilaa taleefan kale la xiro.' : ''}</p>
+      <p className="text-[14px] leading-[1.43] text-on-surface-variant"><strong className="text-on-surface">{revoke?.name}</strong> waa laga saari doonaa akoonka, wuuna ka bixi doonaa isla markiiba.{revoke?.role === 'SOURCE' ? ' Taleefankani wuxuu ahaa taleefanka asalka ah: fariimo cusub lama soo diri doono ilaa taleefan kale la xiro.' : ''}</p>
       <div className="grid grid-cols-2 gap-2"><Button kind="tonal" onClick={() => setRevoke(null)}>Jooji</Button>
         <Button kind="danger" onClick={() => revoke && doRevoke(revoke)} className="!bg-error !text-on-error">Ka saar</Button></div>
     </Sheet>
     <Sheet open={confirmOut} onClose={() => setConfirmOut(false)} title="Ka bax akoonka?">
-      <p className="text-[14px] leading-[20px] text-on-surface-variant">Ma hubtaa inaad ka baxayso akoonka Toosh? {thisIsSource ? 'Taleefankan waa taleefanka asalka ah: fariimaha cusub lama diri doono inta aad dib uga soo galayso.' : 'Xogta aaladdan ku kaydsan waa la tirtiri doonaa.'}</p>
+      <p className="text-[14px] leading-[1.43] text-on-surface-variant">Ma hubtaa inaad ka baxayso akoonka Toosh? {thisIsSource ? 'Taleefankan waa taleefanka asalka ah: fariimaha cusub lama diri doono inta aad dib uga soo galayso.' : 'Xogta aaladdan ku kaydsan waa la tirtiri doonaa.'}</p>
       <div className="grid grid-cols-2 gap-2"><Button kind="tonal" onClick={() => setConfirmOut(false)}>Jooji</Button>
         <Button kind="danger" onClick={() => { setConfirmOut(false); signOut(); }} className="!bg-error !text-on-error">Ka bax</Button></div>
     </Sheet>
     <Sheet open={addOpen} onClose={() => setAddOpen(false)} title="Ku dar lambar EVC Plus">
       <form onSubmit={addNumber} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-on-surface-variant">Lambarka<input type="tel" value={newNumber} onChange={e => setNewNumber(e.target.value)} placeholder="+252 61 XXX XXXX" className="h-[52px] bg-surface-container-low rounded-2xl px-4 text-[16px] font-semibold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container" /></label>
-        <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-on-surface-variant">Magac (ikhtiyaari)<input value={newName} onChange={e => setNewName(e.target.value)} maxLength={80} placeholder="Dukaanka" className="h-[52px] bg-surface-container-low rounded-2xl px-4 text-[16px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container" /></label>
+        <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-on-surface-variant">Lambarka<input type="tel" value={newNumber} onChange={e => setNewNumber(e.target.value)} placeholder="+252 61 XXX XXXX" className="min-h-[52px] py-2 bg-surface-container-low rounded-2xl px-4 text-[16px] font-semibold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container leading-tight" /></label>
+        <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-on-surface-variant">Magac (ikhtiyaari)<input value={newName} onChange={e => setNewName(e.target.value)} maxLength={80} placeholder="Dukaanka" className="min-h-[52px] py-2 bg-surface-container-low rounded-2xl px-4 text-[16px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container leading-tight" /></label>
         {numberError && <p role="alert" className="text-[13px] text-error">{numberError}</p>}
         <Button>Kaydi</Button>
       </form>

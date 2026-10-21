@@ -56,7 +56,7 @@ test('SMS -> stored -> classified or queued -> synced -> shown -> corrected -> t
   await page.getByRole('tab', { name: 'Gal Akoonka' }).click();
   await page.locator('#phone-number').fill(src.phone);
   await page.locator('#password').fill(PASSWORD);
-  await page.getByRole('button', { name: /Gal Akoonka \/ Fur Toosh/ }).click();
+  await page.getByRole('button', { name: /^Fur Toosh/ }).click();
 
   await expect(page.getByTestId('total-in')).toHaveText('+$3.00');
   await expect(page.getByTestId('total-out')).toHaveText('-$3.90');
@@ -131,7 +131,7 @@ test('two devices editing the same message get a visible conflict, not a silent 
     await p.getByRole('tab', { name: 'Gal Akoonka' }).click();
     await p.locator('#phone-number').fill(src.phone);
     await p.locator('#password').fill(PASSWORD);
-    await p.getByRole('button', { name: /Gal Akoonka \/ Fur Toosh/ }).click();
+    await p.getByRole('button', { name: /^Fur Toosh/ }).click();
     await expect(p.getByTestId('total-in')).toBeVisible();
     await p.goto(`/#/fariin/${r.messageId}`);
     await expect(p.getByTestId('original-sms')).toBeVisible();
@@ -161,7 +161,7 @@ test('a viewing device can be revoked and is signed out', async ({ browser, requ
   await p.getByRole('tab', { name: 'Gal Akoonka' }).click();
   await p.locator('#phone-number').fill(src.phone);
   await p.locator('#password').fill(PASSWORD);
-  await p.getByRole('button', { name: /Gal Akoonka \/ Fur Toosh/ }).click();
+  await p.getByRole('button', { name: /^Fur Toosh/ }).click();
   await expect(p.getByTestId('total-in')).toBeVisible();
   // The owner revokes this browser from another device (here: via the source phone's session).
   const owner = await request.post('/api/v1/auth/login', { data: { phone: src.phone, password: PASSWORD, device: { platform: 'android', name: 'Owner' } } });

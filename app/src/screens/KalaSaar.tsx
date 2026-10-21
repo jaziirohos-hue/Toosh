@@ -70,7 +70,7 @@ export function KalaSaar({ id }: { id: string }) {
   }, [form, baseVersion, tz]);
 
   if (!m || !form) {
-    return <><Header title="Faahfaahinta Dhaqdhaqaaqa" back={() => goBack('fariimaha')} />
+    return <><Header title="Faahfaahin" back={() => goBack('fariimaha')} />
       <main className="max-w-md mx-auto px-4 pt-header">{detail.error ? <Banner tone="error" icon="error">{detail.error.message}</Banner> : <Spinner label="Fariinta waa la soo qaadayaa…" />}</main></>;
   }
 
@@ -98,7 +98,7 @@ export function KalaSaar({ id }: { id: string }) {
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${iconCls}`}><Icon name={icon} className="text-[22px]" /></div>
       <div className="flex-1 min-w-0">
         <div className="text-[16px] font-bold text-on-surface flex items-center gap-1.5"><span>{title}</span>{en && <span className="text-[13px] font-medium text-on-surface-variant">{en}</span>}</div>
-        <p className="text-[13px] leading-[18px] text-on-surface-variant">{sub}</p>
+        <p className="text-[13px] leading-[1.38] text-on-surface-variant">{sub}</p>
       </div>
       <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${active ? 'bg-primary-container' : 'border-2 border-outline-variant'}`}>{active && <Icon name="check" className="text-[16px] text-on-primary" />}</div>
     </button>;
@@ -109,23 +109,23 @@ export function KalaSaar({ id }: { id: string }) {
   const fallbackTime = !m.parsed.occurredAt && !form.occurredAt;
 
   return <>
-    <Header title="Faahfaahinta Dhaqdhaqaaqa" back={() => goBack('fariimaha')} />
+    <Header title="Faahfaahin" back={() => goBack('fariimaha')} />
     <main className="flex-1 w-full max-w-md mx-auto px-4 pt-header pb-[calc(max(env(safe-area-inset-bottom,0px),12px)+96px)] bg-surface"><div className="screen-in flex flex-col w-full gap-4 pt-1">
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="flex items-center gap-2">
           {m.classification === 'PENDING' && <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-container opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary" /></span>}
           <span className="text-[15px] font-bold text-on-surface">{m.classification === 'PENDING' ? 'Fariin Cusub' : 'Fariin'}</span><OutboxBadge entry={entry} />
         </div>
-        <span className={`h-7 px-3 rounded-full text-[12px] font-bold flex items-center ${m.classification === 'PENDING' ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant' : m.classification === 'TRANSACTION' ? (m.transaction!.direction === 'IN' ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-error-container text-on-error-container') : 'bg-surface-container text-on-surface-variant'}`}>
+        <span className={`min-h-7 py-0.5 px-3 rounded-full text-[12px] font-bold flex items-center ${m.classification === 'PENDING' ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant' : m.classification === 'TRANSACTION' ? (m.transaction!.direction === 'IN' ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-error-container text-on-error-container') : 'bg-surface-container text-on-surface-variant'} leading-tight`}>
           {m.classification === 'PENDING' ? 'Ma cadda (Sugaya)' : m.classification === 'TRANSACTION' ? (m.transaction!.direction === 'IN' ? 'Soo galay' : 'Baxay') : 'Ma aha transaction'}</span>
       </div>
 
       {entry?.state === 'conflict' && entry.current && <section className="rounded-[20px] bg-tertiary-fixed p-4 flex flex-col gap-3" aria-label="Isku dhac">
         <div className="flex items-center gap-2 text-on-tertiary-fixed"><Icon name="sync_problem" /><h2 className="text-[16px] font-bold">Aalad kale ayaa beddeshay fariintan</h2></div>
-        <p className="text-[14px] leading-[20px] text-on-tertiary-fixed-variant">Kaydka hadda jira: <strong>{CLASS_TEXT[entry.current.classification]}{entry.current.transaction ? ` · ${entry.current.transaction.direction === 'IN' ? 'Soo galay' : 'Baxay'} ${money(entry.current.transaction.amount)}` : ''}</strong>. Isbeddelkaaga: <strong>{entry.request.classification === 'NOT_TRANSACTION' ? 'Ma aha transaction' : `${entry.request.direction === 'IN' ? 'Soo galay' : 'Baxay'} ${money(String(entry.request.amount))}`}</strong>.</p>
+        <p className="text-[14px] leading-[1.43] text-on-tertiary-fixed-variant">Kaydka hadda jira: <strong>{CLASS_TEXT[entry.current.classification]}{entry.current.transaction ? ` · ${entry.current.transaction.direction === 'IN' ? 'Soo galay' : 'Baxay'} ${money(entry.current.transaction.amount)}` : ''}</strong>. Isbeddelkaaga: <strong>{entry.request.classification === 'NOT_TRANSACTION' ? 'Ma aha transaction' : `${entry.request.direction === 'IN' ? 'Soo galay' : 'Baxay'} ${money(String(entry.request.amount))}`}</strong>.</p>
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={keepTheirs} className="h-12 rounded-2xl bg-surface-container-lowest text-on-surface text-[15px] font-bold pressable">Hayso kooda</button>
-          <button onClick={() => overwriteWithMine(id, () => { setDirty(false); detail.reload(); if (onThisScreen()) goBack('fariimaha'); })} className="h-12 rounded-2xl bg-tertiary-container text-on-tertiary text-[15px] font-bold pressable">Kaydi kayga</button>
+          <button onClick={keepTheirs} className="min-h-12 py-2 rounded-2xl bg-surface-container-lowest text-on-surface text-[15px] font-bold pressable leading-tight">Hayso kooda</button>
+          <button onClick={() => overwriteWithMine(id, () => { setDirty(false); detail.reload(); if (onThisScreen()) goBack('fariimaha'); })} className="min-h-12 py-2 rounded-2xl bg-tertiary-container text-on-tertiary text-[15px] font-bold pressable leading-tight">Kaydi kayga</button>
         </div>
       </section>}
       {changedElsewhere && <div><Banner tone="warn" icon="sync_problem">Fariintan waa la beddelay inta aad furnayd. <button className="underline font-semibold" onClick={reloadLatest}>Soo qaad tan cusub</button> ama kaydi si aad u aragto isku dhaca.</Banner></div>}
@@ -135,13 +135,13 @@ export function KalaSaar({ id }: { id: string }) {
       <section className="card p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center"><Icon name="sms" className="text-[17px]" /></div><h2 className="text-[14px] font-bold text-on-surface">Fariinta asalka ah</h2></div>
-          {m.simSlot !== null && <span className="h-6 px-2.5 rounded-full bg-surface-container text-on-surface-variant text-[12px] font-bold flex items-center">SIM {m.simSlot + 1}</span>}
+          {m.simSlot !== null && <span className="min-h-6 py-0.5 px-2.5 rounded-full bg-surface-container text-on-surface-variant text-[12px] font-bold flex items-center leading-tight">SIM {m.simSlot + 1}</span>}
         </div>
         <div data-testid="original-sms" className="sms-text bg-surface-container-low rounded-2xl px-3.5 py-3 text-on-surface select-all whitespace-pre-wrap break-words">{m.body}</div>
-        <p className="mt-2.5 text-[12.5px] leading-[17px] text-on-surface-variant">Diraha: {m.sender} · La helay: {fullDateTime(m.receivedAt, tz)}{m.partsCount > 1 ? ` · ${m.partsCount} qaybood` : ''}</p>
+        <p className="mt-2.5 text-[12.5px] leading-[1.36] text-on-surface-variant">Diraha: {m.sender} · La helay: {fullDateTime(m.receivedAt, tz)}{m.partsCount > 1 ? ` · ${m.partsCount} qaybood` : ''}</p>
         {issues.length > 0 && <div className="mt-3 flex items-start gap-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-2xl px-3.5 py-3">
           <Icon name="warning" className="text-[19px] shrink-0 text-tertiary-container" />
-          <ul className="text-[13.5px] leading-[19px] text-on-tertiary-fixed-variant list-none space-y-1">{issues.map(i => <li key={i}>{ISSUE_TEXT[i]}</li>)}</ul>
+          <ul className="text-[13.5px] leading-[1.41] text-on-tertiary-fixed-variant list-none space-y-1">{issues.map(i => <li key={i}>{ISSUE_TEXT[i]}</li>)}</ul>
         </div>}
       </section>
 
@@ -195,29 +195,29 @@ export function KalaSaar({ id }: { id: string }) {
               </div>{err('balance')}
             </div>
           </div>
-          {fallbackTime && <p className="text-[13px] leading-[18px] text-on-surface-variant">Fariintu waqti ma lahan. Haddii aad bannaan ka tagto, waqtiga taleefanku helay ({fullDateTime(m.receivedAt, tz)}) ayaa la isticmaali doonaa, waana la calaamadeyn doonaa.</p>}
+          {fallbackTime && <p className="text-[13px] leading-[1.38] text-on-surface-variant">Fariintu waqti ma lahan. Haddii aad bannaan ka tagto, waqtiga taleefanku helay ({fullDateTime(m.receivedAt, tz)}) ayaa la isticmaali doonaa, waana la calaamadeyn doonaa.</p>}
         </form>
       </section>
 
       <section className="card overflow-hidden divide-y divide-outline-variant/40">
         <div className="px-4 py-3 flex items-center gap-3 text-on-surface-variant">
           <Icon name="cloud_sync" className="text-[18px] text-secondary shrink-0" />
-          <p className="text-[13px] leading-[18px]"><span className="font-semibold text-on-surface">{m.classificationSource === 'MANUAL' ? 'Gacanta ayaa lagu kala saaray' : m.classification === 'PENDING' ? 'Weli lama kala saarin' : 'Si toos ah ayaa loo kala saaray'}</span> • Waxaa toos loogu dirayaa aaladahaaga kale.</p>
+          <p className="text-[13px] leading-[1.38]"><span className="font-semibold text-on-surface">{m.classificationSource === 'MANUAL' ? 'Gacanta ayaa lagu kala saaray' : m.classification === 'PENDING' ? 'Weli lama kala saarin' : 'Si toos ah ayaa loo kala saaray'}</span> • Waxaa toos loogu dirayaa aaladahaaga kale.</p>
         </div>
         <div className="px-4 py-3 flex items-center gap-3 text-on-surface-variant">
           <Icon name="verified_user" className="text-[18px] text-primary shrink-0" />
-          <p className="text-[13px] leading-[18px]"><span className="font-semibold text-on-surface">SMS ID #{m.id.slice(0, 8).toUpperCase()}</span> • Waxaa laga hortagay in mar labaad la diiwaangeliyo.</p>
+          <p className="text-[13px] leading-[1.38]"><span className="font-semibold text-on-surface">SMS ID #{m.id.slice(0, 8).toUpperCase()}</span> • Waxaa laga hortagay in mar labaad la diiwaangeliyo.</p>
         </div>
         <div className="px-4 py-3 flex items-center gap-3 text-on-surface-variant">
           <Icon name="cloud_done" className="text-[18px] text-primary shrink-0" />
-          <p className="text-[13px] leading-[18px]"><span className="font-semibold text-on-surface">La waafajiyay</span> • Server-ka: {fullDateTime(m.uploadedAt, tz)} · {m.importMethod === 'INITIAL_IMPORT' ? 'Laga soo dejiyay fariimihii hore' : 'Fariin toos ah'}</p>
+          <p className="text-[13px] leading-[1.38]"><span className="font-semibold text-on-surface">La waafajiyay</span> • Server-ka: {fullDateTime(m.uploadedAt, tz)} · {m.importMethod === 'INITIAL_IMPORT' ? 'Laga soo dejiyay fariimihii hore' : 'Fariin toos ah'}</p>
         </div>
       </section>
 
       <section className="card overflow-hidden">
         <button type="button" aria-expanded={showHistory} onClick={() => setShowHistory(v => !v)} className="w-full h-14 px-4 flex items-center justify-between text-[15.5px] font-bold text-on-surface active:bg-surface-container-low">
           <span>Taariikhda isbeddelka ({detail.data!.history.length})</span><Icon name={showHistory ? 'expand_less' : 'expand_more'} /></button>
-        {showHistory && <ol className="divide-y divide-outline-variant/40 border-t border-outline-variant/40">{detail.data!.history.map((h, i) => <li key={i} className="px-4 py-3 text-[13px] leading-[18px]">
+        {showHistory && <ol className="divide-y divide-outline-variant/40 border-t border-outline-variant/40">{detail.data!.history.map((h, i) => <li key={i} className="px-4 py-3 text-[13px] leading-[1.38]">
           <div className="flex justify-between gap-2"><span className="font-semibold text-on-surface">{ACTION_TEXT[h.action]} · v{h.toVersion}</span><span className="text-on-surface-variant">{fullDateTime(h.changedAt, tz)}</span></div>
           <p className="text-on-surface-variant mt-1">{h.actorDeviceName ?? 'Server'}{h.previous ? ` · Kahor: ${CLASS_TEXT[h.previous.classification]}${h.previous.amount ? ` ${money(h.previous.amount)}` : ''}${h.previous.counterpartyPhone ? ` ${masked(h.previous.counterpartyPhone)}` : ''}` : ''} → {CLASS_TEXT[h.next.classification]}{h.next.amount ? ` ${money(h.next.amount)}` : ''}</p>
         </li>)}</ol>}
@@ -226,7 +226,7 @@ export function KalaSaar({ id }: { id: string }) {
     <div className="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant/40 pb-safe">
       <div className="max-w-md mx-auto px-4 pt-3 flex gap-2">
         <button onClick={() => goBack('fariimaha')} aria-label="Jooji" className="h-[52px] w-[52px] shrink-0 rounded-2xl bg-surface-container text-on-surface flex items-center justify-center pressable"><Icon name="close" className="text-[22px]" /></button>
-        <button disabled={saving || entry?.state === 'conflict'} onClick={save} className="flex-1 h-[52px] bg-primary-container text-on-primary rounded-2xl text-[16px] font-bold shadow-[0_6px_16px_-6px_rgba(10,107,63,0.55)] flex items-center justify-center gap-2 pressable disabled:opacity-55">
+        <button disabled={saving || entry?.state === 'conflict'} onClick={save} className="flex-1 min-h-[52px] py-2 bg-primary-container text-on-primary rounded-2xl text-[16px] font-bold shadow-[0_6px_16px_-6px_rgba(10,107,63,0.55)] flex items-center justify-center gap-2 pressable disabled:opacity-55 leading-tight">
           <Icon name={saving ? 'progress_activity' : 'check'} className={`text-[20px] ${saving ? 'animate-spin' : ''}`} /><span>{saving ? 'Waa la keydinayaa…' : 'Kaydi Dhaqdhaqaaqa'}</span></button>
       </div>
     </div>
