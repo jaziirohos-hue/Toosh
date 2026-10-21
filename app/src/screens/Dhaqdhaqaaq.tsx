@@ -33,7 +33,7 @@ export function Dhaqdhaqaaq() {
   }
   const totals = page.data?.totals;
   const seg = (f: typeof filter, label: string) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}
-    className={`min-h-9 py-1 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${filter === f ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'} leading-tight`}>{label}</button>;
+    className={`grow min-h-9 py-1 px-3 rounded-full text-[13.5px] font-semibold whitespace-nowrap transition-all duration-200 ${filter === f ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'} leading-tight`}>{label}</button>;
 
   return <>
     <Header subtitle="Dhaqdhaqaaq" msisdn={me!.evcNumbers.find(n => n.id === selectedNumberId)?.msisdn} />
@@ -44,7 +44,7 @@ export function Dhaqdhaqaaq() {
           <input value={q} onChange={e => setQ(e.target.value)} aria-label="Raadi dhaqdhaqaaq" className="w-full min-h-12 py-2 pl-12 pr-12 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-[15px] placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary-container leading-tight" placeholder="Raadi" type="search" />
           <button aria-label="Shaandhee taariikhda" onClick={() => setPeriodMenu(true)} className="absolute right-1.5 w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant active:bg-surface-container"><Icon name="tune" className="text-[20px]" /></button>
         </div>
-        <div className="grid grid-cols-3 gap-1 p-1 rounded-full bg-surface-container">{seg('all', 'Dhammaan')}{seg('in', 'Soo galay')}{seg('out', 'Baxay')}</div>
+        <div className="flex flex-wrap gap-1 p-1 rounded-[22px] bg-surface-container">{seg('all', 'Dhammaan')}{seg('in', 'Soo galay')}{seg('out', 'Baxay')}</div>
       </div>
 
       <div className="card overflow-hidden">
@@ -68,9 +68,9 @@ export function Dhaqdhaqaaq() {
       {page.error && !page.data && <Banner tone="error" icon="cloud_off">{page.error.message}</Banner>}
       {!page.data && page.loading && <Spinner label="Dhaqdhaqaaqa waa la soo qaadayaa…" />}
       {groups.map(g => <section key={g.key} className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between px-1">
-          <h2 className="text-[15px] font-bold text-on-surface">{g.label}{g.label !== g.full && <span className="ml-1.5 text-[13px] font-medium text-on-surface-variant">{g.full}</span>}</h2>
-          <span className="text-[12.5px] text-on-surface-variant">{g.items.length} dhaqdhaqaaq</span>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-2 px-1">
+          <h2 className="text-[15px] font-bold text-on-surface">{g.label}{g.label !== g.full && <span className="ml-1.5 text-[13px] font-medium text-on-surface-variant whitespace-nowrap">{g.full}</span>}</h2>
+          <span className="text-[12.5px] text-on-surface-variant whitespace-nowrap">{g.items.length} dhaqdhaqaaq</span>
         </div>
         <Group>{g.items.map(m => <TxRow key={m.id} m={m} tz={tz} variant="list" />)}</Group>
       </section>)}

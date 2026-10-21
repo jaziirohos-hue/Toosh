@@ -33,8 +33,10 @@ async function audit(page: Page, zoom: number, name: string) {
   expect(issues, `${name} at ${Math.round(zoom * 100)}%`).toEqual([]);
 }
 
-for (const zoom of [1, 1.3]) {
-  test(`no text spills or is cut off at ${Math.round(zoom * 100)}% font size`, async ({ page, request }) => {
+// Phone widths: 412 (Playwright's Pixel 7), and a narrow 320-wide phone, each at normal and the largest font size.
+for (const [width, zoom] of [[412, 1], [412, 1.3], [320, 1], [320, 1.3]] as const) {
+  test(`no text spills or is cut off on a ${width}px phone at ${Math.round(zoom * 100)}% font size`, async ({ page, request }) => {
+    await page.setViewportSize({ width, height: 800 });
     const phone = await seed(request);
     await page.goto('/');
     await audit(page, zoom, 'register');

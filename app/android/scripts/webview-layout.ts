@@ -44,6 +44,8 @@ const webview = await device.webView({ pkg: PKG });
 const page = await webview.page();
 await page.locator('#phone-number').waitFor({ timeout: 60000 });
 
+// Clicks are sent as DOM events: this WebView reports element positions without the page zoom, so pointer clicks
+// at computed coordinates can land on a neighbouring element (real taps are hit-tested by the WebView itself).
 const failures: string[] = [];
 const zoom = await page.evaluate(() => document.documentElement.style.zoom);
 console.log(`font_scale 1.3 -> app zoom ${zoom || '(none)'}`);
@@ -62,11 +64,11 @@ async function check(name: string) {
 }
 
 await check('register');
-await page.getByRole('tab', { name: 'Gal Akoonka' }).click();
+await page.getByRole('tab', { name: 'Gal Akoonka' }).dispatchEvent('click');
 await check('login');
 await page.locator('#phone-number').fill(phone);
 await page.locator('#password').fill(PASSWORD);
-await page.getByRole('button', { name: /^Fur Toosh/ }).click();
+await page.getByRole('button', { name: /^Fur Toosh/ }).dispatchEvent('click');
 try {
   // A first sign-in on a phone may open the source-phone setup; the layout check only needs to be signed in.
   await page.waitForFunction(() => /#\/(guud|taleefanka-asalka)/.test(location.hash) || document.querySelector('[data-testid="total-in"]'), null, { timeout: 30000 });
@@ -83,7 +85,7 @@ for (const route of ['guud', 'fariimaha', 'dhaqdhaqaaq', 'dejinta']) {
   await check(route);
 }
 await page.evaluate(() => { window.location.hash = '#/fariimaha/pending'; });
-await page.getByRole('button', { name: 'Kala Saar Hadda' }).first().click();
+await page.getByRole('button', { name: 'Kala Saar Hadda' }).first().dispatchEvent('click');
 await page.getByTestId('original-sms').waitFor();
 await check('message-detail');
 

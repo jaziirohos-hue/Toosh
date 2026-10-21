@@ -25,7 +25,7 @@ export function Header({ subtitle, back, title }: { subtitle?: string; msisdn?: 
   return <header className="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe">
     <div className="@container h-16 px-4 flex items-center gap-2.5 max-w-md mx-auto">
       {back && <button aria-label="Dib u noqo" onClick={back} className="w-10 h-10 -ml-1.5 rounded-full flex items-center justify-center text-on-surface active:bg-surface-container-high transition-colors"><Icon name="arrow_back" /></button>}
-      <h1 className={`flex-1 min-w-0 truncate text-on-surface tracking-tight ${back ? 'text-[18px] font-bold' : 'text-[clamp(20px,6.8cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
+      <h1 className={`flex-1 min-w-0 truncate text-on-surface tracking-tight ${back ? 'text-[18px] font-bold' : 'text-[clamp(17px,7.2cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
       {!back && <>
         <ConnectionPill />
         <button aria-label="Akoonka iyo dejinta" onClick={() => navigate('dejinta')} className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shrink-0 pressable"><Icon name="person" fill className="text-on-primary text-[20px]" /></button>
@@ -38,16 +38,16 @@ export function Header({ subtitle, back, title }: { subtitle?: string; msisdn?: 
 export function BottomNav({ active, pending }: { active: string; pending: number }) {
   const item = (path: string, icon: string, label: string, badge?: number) => {
     const on = active === path;
-    return <a href={`#/${path}`} aria-current={on ? 'page' : undefined} className="flex-1 flex flex-col items-center justify-center gap-1 h-full select-none">
-      <div className={`relative w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 ${on ? 'bg-primary-fixed' : ''}`}>
+    return <a href={`#/${path}`} aria-current={on ? 'page' : undefined} className={`${on ? 'flex-[1.4]' : 'flex-1'} min-w-0 flex flex-col items-center justify-center gap-1 h-full select-none`}>
+      <div className={`relative w-full max-w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-200 ${on ? 'bg-primary-fixed' : ''}`}>
         <Icon name={icon} fill={on} className={`text-[24px] ${on ? 'text-on-primary-fixed-variant' : 'text-on-surface-variant'}`} />
         {badge ? <span className="absolute top-0 right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10.5px] font-bold leading-none flex items-center justify-center ring-2 ring-surface-container-lowest">{badge > 99 ? '99+' : badge}</span> : null}
       </div>
-      <span className={`text-[12px] leading-none ${on ? 'font-bold text-on-surface' : 'font-medium text-on-surface-variant'}`}>{label}</span>
+      <span className={`text-[clamp(10px,3.2cqw,12px)] tracking-[-0.01em] leading-[1.25] whitespace-nowrap ${on ? 'font-bold text-on-surface' : 'font-medium text-on-surface-variant @max-[300px]:sr-only'}`}>{label}</span>
     </a>;
   };
   return <nav className="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant/40 pb-safe">
-    <div className="max-w-md mx-auto flex items-stretch h-[68px] px-1">
+    <div className="@container max-w-md mx-auto flex items-stretch h-[68px] px-1">
       {item('guud', 'space_dashboard', 'Guud')}{item('fariimaha', 'sms', 'Fariimaha', pending)}{item('dhaqdhaqaaq', 'swap_vert', 'Dhaqdhaqaaq')}{item('dejinta', 'settings', 'Dejinta')}
     </div>
   </nav>;

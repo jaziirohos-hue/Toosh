@@ -80,14 +80,14 @@ export function Dejinta() {
         <span className="text-[12px] text-inverse-on-surface/70">{timeOfDay(new Date().toISOString(), tz)}</span></div>}
       {error && <Banner tone="error" icon="error">{error}</Banner>}
 
-      <section className="card p-4 flex items-center gap-4">
+      <section className="card p-4 flex flex-wrap items-center gap-4">
         <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-full hero-gradient text-on-primary flex items-center justify-center text-[24px] font-extrabold">{initials(account.displayName)}</div>
           <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm"><Icon name="verified_user" fill className="text-primary-container text-[16px]" /></div>
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-[170px]">
           <h2 className="text-[19px] leading-[1.26] font-extrabold tracking-tight text-on-surface break-words">{account.displayName}</h2>
-          <div className="text-[15px] font-semibold text-on-surface-variant mt-0.5">{formatMsisdn(account.loginPhone)}</div>
+          <div className="text-[15px] font-semibold text-on-surface-variant mt-0.5 whitespace-nowrap">{formatMsisdn(account.loginPhone)}</div>
           <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
             {/* Registration is not verification: the badge says "registered", never "verified". */}
             <span className="min-h-6 py-0.5 px-2.5 rounded-full bg-surface-container text-on-surface-variant text-[11.5px] font-bold uppercase tracking-wide flex items-center leading-tight">Diiwaangashan</span>
@@ -125,9 +125,9 @@ export function Dejinta() {
       <Group>
         {me!.evcNumbers.map(n => {
           const src = me!.devices.find(d => d.id === n.sourceDeviceId);
-          return <div key={n.id} className="px-4 py-3.5 flex items-center gap-3">
+          return <div key={n.id} className="px-4 py-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <div className="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shrink-0"><Icon name="sim_card" className="text-[20px]" /></div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-[150px]">
               <div className="text-[15.5px] font-bold text-on-surface">{formatMsisdn(n.msisdn)}</div>
               <div className="text-[13px] text-on-surface-variant break-words">{[n.displayName, src ? `${src.model ?? src.name}${n.simLabel ? ` · ${n.simLabel}` : ''}` : 'Taleefan asal ah ma leh'].filter(Boolean).join(' · ')}</div>
             </div>
@@ -210,10 +210,10 @@ function PrefRow({ icon, iconCls = 'bg-primary-fixed text-on-primary-fixed-varia
 }
 
 function InfoRow({ icon, label, value }: { icon: string; label: string; value: React.ReactNode }) {
-  return <div className="px-4 py-3 flex items-center gap-3">
+  return <div className="px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-0.5">
     <Icon name={icon} className="text-[20px] text-on-surface-variant shrink-0" />
     <span className="flex-1 text-[14.5px] text-on-surface whitespace-nowrap">{label}</span>
-    <span className="text-[14px] text-on-surface-variant text-right">{value}</span>
+    <span className="ml-auto text-[14px] text-on-surface-variant text-right">{value}</span>
   </div>;
 }
 

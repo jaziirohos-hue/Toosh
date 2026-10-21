@@ -75,7 +75,7 @@ export function Guud() {
 
         <div className="relative mt-6 text-[13px] font-medium text-white/75 flex items-center gap-1.5"><Icon name="account_balance_wallet" className="text-[16px]" />Haraaga EVC Plus</div>
         <div className="relative mt-1 flex items-baseline gap-2">
-          <span data-testid="balance" className="text-[clamp(30px,10.5cqw,40px)] leading-[1.25] break-all font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
+          <span data-testid="balance" className="text-[clamp(24px,12.5cqw,40px)] leading-[1.25] whitespace-nowrap font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
           <span className="text-[14px] font-semibold text-white/70">USD</span>
         </div>
         <p className="relative mt-1 text-[12.5px] leading-[1.36] text-white/70">
