@@ -2,7 +2,7 @@
 # Real-SMS end-to-end test on an Android emulator (run by CI; see .github/workflows/ci.yml).
 # Requires: a running emulator, the Toosh API on the host at :8787 (reached from the emulator as 10.0.2.2),
 # and the debug + androidTest APKs built from app/android.
-set -euo pipefail
+set -Eeuo pipefail  # -E: the ERR trap below also fires inside functions (step), so failures keep the log
 cd "$(dirname "$0")/.."
 PKG=so.toosh.app
 OUT=build/e2e

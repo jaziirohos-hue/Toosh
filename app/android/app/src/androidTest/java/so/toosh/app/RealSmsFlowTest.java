@@ -97,7 +97,9 @@ public class RealSmsFlowTest {
             Thread.sleep(1000);
         } while (System.currentTimeMillis() < end);
         StringBuilder sb = new StringBuilder();
-        for (SmsStore.Row r : rows) sb.append(r.state).append('/').append(r.lastError).append(' ');
+        // Test messages only (synthetic text sent by emulator-e2e.sh): say which ones arrived.
+        for (SmsStore.Row r : rows) sb.append(r.state).append('/').append(r.lastError).append(" parts=").append(r.parts)
+            .append(" \"").append(r.body == null ? "" : r.body.substring(0, Math.min(48, r.body.length()))).append("\"; ");
         throw new AssertionError("expected " + expected + " synced, got: [" + sb + "] lastError=" + settings.lastError()
             + " signedIn=" + settings.signedIn() + " mappings=" + settings.mappings().size());
     }
