@@ -82,7 +82,7 @@ export function startLiveUpdates() {
   window.addEventListener('offline', onOffline);
 }
 // Polling: one small request every POLL_MS while the app is on screen, none while it is hidden.
-const POLL_MS = 15000;
+const POLL_MS = 8000;
 async function pollChanges(signal: AbortSignal) {
   let first = true;
   while (!signal.aborted) {

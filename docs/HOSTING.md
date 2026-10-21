@@ -25,13 +25,13 @@ Both have free plans that need no credit card. Nothing here buys anything.
   month. Uploads then fail, and the phone keeps the SMS queued until the database is back. Toosh is built to stay well
   under the limit:
   - When idle, the source phone reports in about once an hour, not every 15 minutes.
-  - Viewers check for changes every 15 s, but only while the app is on screen.
+  - Viewers check for changes every 8 s, but only while the app is on screen.
   - One hour of viewing keeps the database awake for that hour (about 0.25 CU-h at the smallest size). The phone's
     hourly check-ins come to about 15 CU-h a month.
 - **Storage:** each EVC Plus SMS row is about 1–2 KB, so 0.5 GB holds hundreds of thousands of messages. When storage
   is full, Neon blocks writes but does not delete data.
 - **Live updates:** Vercel functions cannot hold a connection open, so the hosted API has no live stream. Clients poll
-  `/api/v1/changes` (a tiny request) instead. A change shows on other devices within about 15 s.
+  `/api/v1/changes` (a tiny request) instead. A change shows on other devices within about 8 s.
 - **Logs:** Vercel Hobby keeps runtime logs for 1 hour.
 - **Commercial use:** Vercel Hobby is for personal, non-commercial projects. A business would need a paid plan.
 

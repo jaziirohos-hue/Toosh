@@ -84,10 +84,11 @@ test('SMS -> stored -> classified or queued -> synced -> shown -> corrected -> t
   await expect(page.getByTestId('balance')).toHaveText('$39.585');
   await expect(page.getByText(/Fariimood waxay u baahan yihiin kala saarid/)).toHaveCount(0);
 
-  // Live sync: a new SMS on the source phone appears without reloading.
+  // Live sync: a new SMS on the source phone appears without reloading (instantly with the live stream, within
+  // about 8 s on serverless hosting where the app checks for changes on a timer).
   const t4 = new Date();
   await src.upload(`[-EVCPLUS-] waxaad $10 ka heshay Sahra Maxamed (615443312), Tar: ${evcTime(t4)} haraagagu waa $49.585.`, t4);
-  await expect(page.getByTestId('total-in')).toHaveText('+$13.00', { timeout: 10000 });
+  await expect(page.getByTestId('total-in')).toHaveText('+$13.00', { timeout: 20000 });
   await expect(page.getByTestId('balance')).toHaveText('$49.585');
 
   // History: search and the manual badge.
