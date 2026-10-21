@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { PeriodChips, periodQuery } from '../components/PeriodPicker.tsx';
-import { Banner, Header, Icon, Main, Sheet, Spinner, TxRow } from '../components/ui.tsx';
+import { Banner, EmptyState, Group, Header, Icon, Main, SectionTitle, Sheet, Spinner, TxRow } from '../components/ui.tsx';
 import { api, qs } from '../lib/api.ts';
-import { ago, masked, money, timeOfDay, shortDateTime } from '../lib/format.ts';
+import { ago, masked, money, shortDateTime } from '../lib/format.ts';
 import { isNativeAndroid, TooshNative } from '../lib/native.ts';
 import { navigate } from '../lib/router.ts';
 import { useSession } from '../lib/session.tsx';
@@ -49,122 +49,100 @@ export function Guud() {
     else if (failed > 0) { syncTitle = `${failed} fariimood way fashilmeen`; syncIcon = 'error'; syncTone = 'text-error'; }
     else if (pending > 0) { syncTitle = `${pending} fariimood ayaa sugaya dirid`; syncIcon = 'schedule'; syncTone = 'text-secondary'; }
     else if (!sourceActive) { syncTitle = 'Taleefanka asalka muddo ma soo xirmin'; syncIcon = 'cloud_off'; syncTone = 'text-tertiary-container'; }
-    syncDetail = `Xog la waafajiyay: ${uploadAt ? shortDateTime(uploadAt, tz) : 'weli'} • La xiriiray: ${ago(source.lastSeenAt)}`;
+    syncDetail = `La waafajiyay ${uploadAt ? shortDateTime(uploadAt, tz) : 'weli'} · La xiriiray ${ago(source.lastSeenAt)}`;
   }
+
+  const stale = balance ? Date.now() - Date.parse(balance.effectiveAt) > STALE_BALANCE_MS : false;
+  const sourceLabel = source ? (sourceActive ? 'Firfircoon' : 'Aamusan') : 'Ma xirna';
+  const syncOk = syncIcon === 'check_circle';
 
   return <>
     <Header subtitle="Guud" msisdn={number?.msisdn} />
     <Main>
-      <div className="flex flex-col gap-2">
+      <section className="hero-gradient relative overflow-hidden rounded-[28px] text-on-primary p-5 shadow-[0_18px_40px_-18px_rgba(5,71,42,0.75)]">
+        <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full border-[28px] border-white/[0.04] pointer-events-none" />
         <button type="button" onClick={() => setPickNumber(true)} disabled={me!.evcNumbers.length < 2}
-          className="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-xl shadow-sm text-left disabled:cursor-default">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0"><Icon name="sim_card" className="text-primary-container text-[18px]" /></div>
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5"><span className="font-label-numeric-sm text-label-numeric-sm text-on-surface font-semibold truncate">{number ? masked(number.msisdn) : '—'}</span>
-                {number?.displayName && <span className="font-body-sm text-body-sm text-on-surface-variant truncate">({number.displayName})</span>}</div>
-              <span className="font-label-ui text-[10px] text-primary-container font-bold tracking-wide uppercase">Hormuud EVC Plus</span>
-            </div>
+          className="relative flex items-center gap-2.5 w-full text-left disabled:cursor-default">
+          <div className="w-9 h-9 rounded-full bg-white/12 flex items-center justify-center shrink-0"><Icon name="sim_card" className="text-[19px] text-on-primary-container" /></div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[15px] font-bold leading-[20px] truncate">{number ? masked(number.msisdn) : '—'}</div>
+            <div className="text-[12px] leading-[16px] text-white/70 truncate">{number?.displayName ? `${number.displayName} · ` : ''}Hormuud EVC Plus</div>
           </div>
-          <div className="flex items-center gap-1 bg-surface-container-lowest px-2.5 py-1 rounded-full shadow-sm">
-            <span className={`w-2 h-2 rounded-full ${source ? (sourceActive ? 'bg-primary-container' : 'bg-tertiary-container') : 'bg-outline'}`} />
-            <span className="font-label-ui text-label-ui text-on-surface">{source ? (sourceActive ? 'Firfircoon' : 'Aamusan') : 'Ma xirna'}</span>
-          </div>
+          <span className="flex items-center gap-1.5 h-7 px-2.5 rounded-full bg-white/12 text-[12px] font-semibold shrink-0">
+            <span className={`w-2 h-2 rounded-full ${source ? (sourceActive ? 'bg-primary-fixed-dim' : 'bg-tertiary-fixed-dim') : 'bg-white/50'}`} />{sourceLabel}
+            {me!.evcNumbers.length > 1 && <Icon name="expand_more" className="text-[16px] -mr-1" />}</span>
         </button>
-        <div className="flex items-center justify-between bg-surface-container-lowest px-3 py-2 rounded-xl shadow-sm">
-          <div className="flex items-center gap-2 min-w-0">
-            <Icon name={syncIcon} fill className={`${syncTone} text-[18px] shrink-0`} />
-            <div className="flex flex-col min-w-0">
-              <span className="font-body-sm text-body-sm text-on-surface font-medium truncate">{syncTitle}</span>
-              <span className="font-label-ui text-[10px] text-on-surface-variant">{syncDetail}</span>
-            </div>
-          </div>
-          {source ? <button aria-label="Dib u eeg fariimaha" onClick={refresh} className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-low text-primary-container active:scale-95 transition-transform shrink-0">
-            <Icon name="sync" className={`text-[18px] ${refreshing ? 'animate-spin' : ''}`} /></button>
-            : <button onClick={() => navigate('taleefanka-asalka')} className="font-label-ui text-label-ui text-secondary font-semibold shrink-0 px-2">Dejin</button>}
-        </div>
-        {(connection === 'offline' || summary.stale) && <div className="flex items-center gap-2 bg-surface-variant text-on-surface-variant px-3 py-1.5 rounded-lg shadow-sm">
-          <Icon name="cloud_off" className="text-outline text-[16px]" />
-          <span className="font-body-sm text-body-sm flex-1 truncate">Khadka wuu go'anyahay - xogtani waa tii ugu dambaysay{summary.savedAt ? ` (${shortDateTime(summary.savedAt, tz)})` : ''}</span>
-        </div>}
-      </div>
 
-      <div className="relative overflow-hidden rounded-2xl bg-primary-container text-on-primary p-4 shadow-md">
-        <div className="absolute -right-6 -bottom-8 w-36 h-36 rounded-full bg-on-primary/5 pointer-events-none blur-2xl" />
-        <div className="absolute right-3 top-3 opacity-15"><Icon name="account_balance_wallet" className="text-7xl text-on-primary pointer-events-none" style={{ fontSize: 72 }} /></div>
-        <div className="relative z-10 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5"><Icon name="verified" className="text-on-primary-container text-[16px]" />
-              <span className="font-label-ui text-label-ui uppercase tracking-wider text-on-primary-container font-semibold">Haraagii ugu dambeeyay (SMS)</span></div>
-            {balance && <span className="font-label-numeric-sm text-[11px] text-on-primary/80 bg-on-primary/10 px-2 py-0.5 rounded-full">{shortDateTime(balance.effectiveAt, tz)}</span>}
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span data-testid="balance" className="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-on-primary">{balance ? money(balance.amount) : '—'}</span>
-            <span className="font-label-ui text-label-ui text-on-primary-container font-medium">USD</span>
-          </div>
-          <div className="flex items-start gap-1.5 bg-on-primary/10 rounded-xl p-2.5">
-            <Icon name="info" className="text-on-primary-container text-[16px] shrink-0 mt-0.5" />
-            <p className="font-body-sm text-[11px] leading-tight text-on-primary/90">
-              {balance ? <>Haraagani wuxuu toos uga yimid fariintii u dambaysay ee EVC Plus ({timeOfDay(balance.effectiveAt, tz)}), ma aha isku-darka xisaabta.
-                {Date.now() - Date.parse(balance.effectiveAt) > STALE_BALANCE_MS && ' Xog hore ayay tahay — sug fariin cusub.'}</>
-                : 'Weli haraag lama helin. Haraagu wuxuu ka yimaadaa fariimaha EVC Plus ee xaqiijiyay; looma xisaabiyo soo galay iyo baxay.'}
-            </p>
+        <div className="relative mt-6 text-[13px] font-medium text-white/75 flex items-center gap-1.5"><Icon name="account_balance_wallet" className="text-[16px]" />Haraaga EVC Plus</div>
+        <div className="relative mt-1 flex items-baseline gap-2">
+          <span data-testid="balance" className="text-[40px] leading-[46px] font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
+          <span className="text-[14px] font-semibold text-white/70">USD</span>
+        </div>
+        <p className="relative mt-1 text-[12.5px] leading-[17px] text-white/70">
+          {balance ? <>SMS-kii u dambeeyay · {shortDateTime(balance.effectiveAt, tz)}{stale && <span className="text-tertiary-fixed-dim font-semibold"> · Xog hore — sug fariin cusub</span>}</>
+            : 'Weli haraag lama helin. Wuxuu ka imaanayaa fariimaha EVC Plus.'}
+        </p>
+      </section>
+
+      <div className="card flex items-center gap-3 pl-4 pr-2 py-2.5">
+        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${syncOk ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}><Icon name={syncIcon} fill className={`${syncTone} text-[20px]`} /></div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[14.5px] leading-[20px] font-semibold text-on-surface truncate">{syncTitle}</div>
+          {syncDetail && <div className="text-[12.5px] leading-[17px] text-on-surface-variant">{syncDetail}</div>}
+        </div>
+        {source ? <button aria-label="Dib u eeg fariimaha" onClick={refresh} className="w-11 h-11 rounded-full flex items-center justify-center text-primary-container active:bg-surface-container-low shrink-0">
+          <Icon name="refresh" className={`text-[22px] ${refreshing ? 'animate-spin' : ''}`} /></button>
+          : <button onClick={() => navigate('taleefanka-asalka')} className="h-9 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-bold shrink-0 pressable">Dejin</button>}
+      </div>
+      {(connection === 'offline' || summary.stale) && <Banner tone="info" icon="cloud_off">Khadka wuu go'anyahay — xogtani waa tii ugu dambaysay{summary.savedAt ? ` (${shortDateTime(summary.savedAt, tz)})` : ''}.</Banner>}
+
+      {s && s.pendingCount > 0 && <div className="rounded-[20px] bg-tertiary-fixed p-4 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center shrink-0"><Icon name="pending_actions" className="text-on-tertiary text-[21px]" /></div>
+          <div className="flex-1 min-w-0 pt-0.5">
+            <span className="block text-[15px] leading-[20px] font-bold text-on-tertiary-fixed">{s.pendingCount} Fariimood waxay u baahan yihiin kala saarid</span>
+            <span className="block text-[13px] leading-[18px] text-on-tertiary-fixed-variant mt-0.5">Laguma darin wadarta ilaa la kala saaro.</span>
           </div>
         </div>
-      </div>
+        <button onClick={() => navigate('fariimaha/pending')} aria-label={`Kala saar hadda (${s.pendingCount})`} className="h-11 rounded-full bg-tertiary-container text-on-tertiary text-[14.5px] font-bold flex items-center justify-center gap-1.5 pressable">
+          Kala saar hadda<Icon name="arrow_forward" className="text-[18px]" /></button>
+      </div>}
+
+      <PeriodChips value={period} onChange={setPeriod} tz={tz} />
 
       <div className="grid grid-cols-2 gap-3">
         {(['IN', 'OUT'] as const).map(dir => {
           const t = dir === 'IN' ? s?.incoming : s?.outgoing;
-          return <div key={dir} className="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-3 shadow-sm">
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">{dir === 'IN' ? 'Soo galay' : 'Baxay'}</span>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${dir === 'IN' ? 'bg-primary-fixed' : 'bg-error-container'}`}>
-                <Icon name={dir === 'IN' ? 'south_west' : 'north_east'} className={`text-[14px] ${dir === 'IN' ? 'text-on-primary-fixed' : 'text-on-error-container'}`} /></div>
+          const inn = dir === 'IN';
+          return <div key={dir} className="card p-4 flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${inn ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-error-container text-on-error-container'}`}>
+                <Icon name={inn ? 'south_west' : 'north_east'} className="text-[18px]" /></div>
+              <span className="text-[13.5px] font-semibold text-on-surface-variant">{inn ? 'Soo galay' : 'Baxay'}</span>
             </div>
-            <div className="flex flex-col">
-              <span data-testid={dir === 'IN' ? 'total-in' : 'total-out'} className={`font-label-numeric-lg text-label-numeric-lg font-bold ${dir === 'IN' ? 'text-primary-container' : 'text-error'}`}>{t ? money(t.total, dir === 'IN' ? '+' : '-') : '—'}</span>
-              <div className="inline-flex items-center gap-1 mt-1 bg-surface-container-low px-2 py-0.5 rounded-md w-fit">
-                <span className={`font-label-ui text-[10px] font-semibold ${dir === 'IN' ? 'text-primary-container' : 'text-error'}`}>{t ? `${t.count} jeer` : '—'}</span></div>
+            <div>
+              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[22px] leading-[28px] font-extrabold tracking-tight ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? money(t.total, inn ? '+' : '-') : '—'}</span>
+              <span className="text-[12.5px] text-on-surface-variant">{t ? `${t.count} jeer` : '—'}</span>
             </div>
           </div>;
         })}
       </div>
 
-      {s && s.pendingCount > 0 && <div className="flex flex-col gap-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl p-3.5 shadow-sm">
-        <div className="flex items-start gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 mt-0.5"><Icon name="schedule" className="text-on-tertiary text-[16px]" /></div>
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="font-title-md text-body-md font-bold text-on-tertiary-fixed leading-snug">{s.pendingCount} Fariimood waxay u baahan yihiin kala saarid</span>
-            <p className="font-body-sm text-[11px] leading-normal text-on-tertiary-fixed-variant mt-0.5">Fariimaha aan la xaqiijin laguma darin wadarta lacagaha baxay ama soo galay.</p>
-          </div>
-        </div>
-        <div className="flex justify-end pt-1">
-          <button onClick={() => navigate('fariimaha/pending')} className="inline-flex items-center gap-1.5 bg-tertiary-container text-on-tertiary px-3.5 py-1.5 rounded-lg text-label-ui font-label-ui active:scale-95 transition-transform shadow-sm">
-            <span>Kala saar hadda ({s.pendingCount})</span><Icon name="arrow_forward" className="text-[14px]" /></button>
-        </div>
-      </div>}
+      <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">Dhammaan<Icon name="chevron_right" className="text-[20px] -mr-1.5" /></a>}>
+        Dhaqdhaqaaqyada</SectionTitle>
+      {summary.error && !s && <Banner tone="error" icon="error">{summary.error.message}</Banner>}
+      {!s && summary.loading && <Spinner label="Xogta waa la soo qaadayaa…" />}
+      {s && !s.recent.length && <EmptyState icon="receipt_long" title="Weli wax dhaqdhaqaaq ah ma jiraan" text="Muddadan wax dhaqdhaqaaq ah oo la xaqiijiyay ma jiraan." />}
+      {s && s.recent.length > 0 && <Group>{s.recent.map(m => <TxRow key={m.id} m={m} tz={tz} />)}</Group>}
 
-      <PeriodChips value={period} onChange={setPeriod} tz={tz} />
-
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5"><h2 className="font-title-md text-title-md text-on-surface">Dhaqdhaqaaqyadii u dambeeyay</h2><span className="w-1.5 h-1.5 rounded-full bg-primary-container" /></div>
-          <a className="font-label-ui text-label-ui text-secondary font-semibold hover:underline flex items-center gap-0.5 shrink-0" href="#/dhaqdhaqaaq"><span>Dhammaan eeg</span><Icon name="chevron_right" className="text-[14px]" /></a>
-        </div>
-        {summary.error && !s && <Banner tone="error" icon="error">{summary.error.message}</Banner>}
-        {!s && summary.loading && <Spinner label="Xogta waa la soo qaadayaa…" />}
-        {s && !s.recent.length && <p className="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-lowest rounded-xl p-4 shadow-sm">Muddadan wax dhaqdhaqaaq ah oo la xaqiijiyay ma jiraan.</p>}
-        <div className="flex flex-col gap-2">{s?.recent.map(m => <TxRow key={m.id} m={m} tz={tz} />)}</div>
-      </div>
-      <div className="flex items-center justify-center gap-1.5 py-2 text-on-surface-variant/70">
-        <Icon name="lock" className="text-[14px]" /><span className="font-label-ui text-[10px] tracking-wide text-center">Toosh ma diro lacag, kaliya waxa uu falanqeeyaa fariimaha EVC Plus.</span>
+      <div className="flex items-center justify-center gap-1.5 pt-1 pb-2 text-on-surface-variant/80">
+        <Icon name="lock" className="text-[14px]" /><span className="text-[12px] text-center">Toosh ma diro lacag — kaliya wuxuu akhriyaa fariimaha EVC Plus.</span>
       </div>
     </Main>
     <Sheet open={pickNumber} onClose={() => setPickNumber(false)} title="Dooro lambarka EVC">
       {me!.evcNumbers.map(n => <button key={n.id} onClick={() => { setSelectedNumberId(n.id); setPickNumber(false); }}
-        className={`flex items-center justify-between p-3 rounded-xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}>
-        <span className="font-label-numeric-md text-label-numeric-md">{masked(n.msisdn)}</span><span className="font-body-sm text-body-sm">{n.displayName}</span></button>)}
+        className={`flex items-center justify-between h-14 px-4 rounded-2xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}>
+        <span className="text-[16px] font-bold">{masked(n.msisdn)}</span><span className="text-[14px] text-on-surface-variant">{n.displayName}</span></button>)}
     </Sheet>
   </>;
 }

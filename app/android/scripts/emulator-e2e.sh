@@ -50,10 +50,19 @@ adb shell svc wifi enable
 adb shell svc data enable
 step reconnected -e expect 5
 
-# Launch the app once for a screenshot of the native build (sign-in screen of the real WebView UI).
-adb shell am start -W -n "$PKG/.MainActivity" || true
+# Screenshots of the native build: the launch splash, the signed-in app, and the launcher icon in the app drawer.
+adb shell am force-stop "$PKG" || true
+adb shell am start -n "$PKG/.MainActivity" || true
+sleep 0.6
+adb exec-out screencap -p > "$OUT/app-splash.png" || true
 sleep 8
 adb exec-out screencap -p > "$OUT/app-launch.png" || true
+adb shell input keyevent KEYCODE_HOME || true
+sleep 2
+size=$(adb shell wm size | grep -oE '[0-9]+x[0-9]+' | tail -1); w=${size%x*}; h=${size#*x}
+adb shell input swipe $((w / 2)) $((h * 85 / 100)) $((w / 2)) $((h * 20 / 100)) 300 || true
+sleep 2
+adb exec-out screencap -p > "$OUT/launcher-drawer.png" || true
 adb logcat -d -s Toosh TooshE2E > "$OUT/logcat.txt" 2>&1 || true
 grep -E "step-ok|long SMS|server counts|inbox import|sms STORED|sms NOT_RELEVANT" "$OUT/logcat.txt" || true
 echo "Emulator SMS end-to-end: OK"

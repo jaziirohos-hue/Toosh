@@ -81,48 +81,50 @@ export function SourceSetup() {
   }
 
   const bound = numbers.filter(n => n.sourceDeviceId === me!.device.id);
-  const step = (n: number, done: boolean, title: string, body: React.ReactNode) => <section className="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col gap-3">
-    <div className="flex items-center gap-3"><div className={`w-8 h-8 rounded-full flex items-center justify-center font-label-numeric-md ${done ? 'bg-primary-container text-on-primary' : 'bg-surface-container text-on-surface'}`}>{done ? <Icon name="check" className="text-[18px]" /> : n}</div>
-      <h2 className="font-title-md text-title-md">{title}</h2></div>{body}</section>;
+  const step = (n: number, done: boolean, title: string, body: React.ReactNode) => <section className="card p-4 flex flex-col gap-3.5">
+    <div className="flex items-center gap-3"><div className={`w-9 h-9 rounded-full flex items-center justify-center text-[15px] font-extrabold shrink-0 ${done ? 'bg-primary-container text-on-primary' : 'bg-surface-container text-on-surface'}`}>{done ? <Icon name="check" className="text-[20px]" /> : n}</div>
+      <h2 className="text-[16.5px] font-bold text-on-surface">{title}</h2>{done && <span className="ml-auto h-6 px-2.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11.5px] font-bold flex items-center">Diyaar</span>}</div>{body}</section>;
 
   return <>
     <Header title="Taleefanka Asalka ah" back={() => goBack('dejinta')} />
     <Main nav={false}>
       {error && <Banner tone="error" icon="error">{error}</Banner>}
       {step(1, smsOk, 'Ogolaanshaha helitaanka SMS', <>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">Toosh wuxuu u baahan yahay inuu helo fariimaha cusub si uu u kaydiyo kuwa EVC Plus. Fariimaha kale lama kaydiyo, lamana diro. Toosh weligii ma weydiiyo PIN-ka EVC.</p>
-        {!smsOk && <button onClick={async () => { native?.smsPermission === 'PERMANENTLY_DENIED' ? await TooshNative.openAppSettings() : await TooshNative.requestSmsPermission(); await refreshNative(); }} className="h-12 rounded-lg bg-primary-container text-on-primary font-title-md text-title-md">{native?.smsPermission === 'PERMANENTLY_DENIED' ? 'Ka fur Settings-ka' : 'Bixi Ogolaanshaha SMS'}</button>}
+        <p className="text-[14px] leading-[20px] text-on-surface-variant">Toosh wuxuu u baahan yahay inuu helo fariimaha cusub si uu u kaydiyo kuwa EVC Plus. Fariimaha kale lama kaydiyo, lamana diro. Toosh weligii ma weydiiyo PIN-ka EVC.</p>
+        {!smsOk && <button onClick={async () => { native?.smsPermission === 'PERMANENTLY_DENIED' ? await TooshNative.openAppSettings() : await TooshNative.requestSmsPermission(); await refreshNative(); }} className="h-[52px] rounded-2xl bg-primary-container text-on-primary text-[16px] font-bold pressable shadow-[0_6px_16px_-6px_rgba(10,107,63,0.55)]">{native?.smsPermission === 'PERMANENTLY_DENIED' ? 'Ka fur Settings-ka' : 'Bixi Ogolaanshaha SMS'}</button>}
       </>)}
       {step(2, phoneOk && sims !== null, 'Aqoonsiga SIM-ka', <>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">Taleefannada laba SIM leh, Toosh wuxuu u baahan yahay inuu ogaado SIM-ka fariin kasta timid si fariimaha lambarada kala duwan aysan isugu darsamin.</p>
-        {!phoneOk && <button onClick={async () => { native?.phoneStatePermission === 'PERMANENTLY_DENIED' ? await TooshNative.openAppSettings() : await TooshNative.requestPhoneStatePermission(); await refreshNative(); }} className="h-12 rounded-lg bg-primary-container text-on-primary font-title-md text-title-md">Oggolow aqoonsiga SIM-ka</button>}
+        <p className="text-[14px] leading-[20px] text-on-surface-variant">Taleefannada laba SIM leh, Toosh wuxuu u baahan yahay inuu ogaado SIM-ka fariin kasta timid si fariimaha lambarada kala duwan aysan isugu darsamin.</p>
+        {!phoneOk && <button onClick={async () => { native?.phoneStatePermission === 'PERMANENTLY_DENIED' ? await TooshNative.openAppSettings() : await TooshNative.requestPhoneStatePermission(); await refreshNative(); }} className="h-[52px] rounded-2xl bg-primary-container text-on-primary text-[16px] font-bold pressable shadow-[0_6px_16px_-6px_rgba(10,107,63,0.55)]">Oggolow aqoonsiga SIM-ka</button>}
         {phoneOk && sims?.length === 0 && <Banner tone="warn" icon="sim_card_alert">SIM firfircoon lama helin. Geli SIM-ka EVC Plus, kadib <button className="underline" onClick={loadSims}>dib u eeg</button>.</Banner>}
       </>)}
       {step(3, bound.length > 0, 'Dooro SIM-ka lambar kasta', <>
         {numbers.map(n => <div key={n.id} className="flex flex-col gap-2">
-          <span className="font-label-numeric-md text-label-numeric-md">{formatMsisdn(n.msisdn)} <span className="font-body-sm text-body-sm text-on-surface-variant">{n.displayName}</span></span>
+          <span className="text-[15.5px] font-bold text-on-surface px-1">{formatMsisdn(n.msisdn)} <span className="text-[13px] font-medium text-on-surface-variant">{n.displayName}</span></span>
           <div className="grid gap-2">{(sims ?? []).map(s => {
             const on = choice[n.id] === s.subscriptionId;
             return <button key={s.subscriptionId} type="button" role="radio" aria-checked={on} onClick={() => setChoice(c => ({ ...c, [n.id]: s.subscriptionId }))}
-              className={`flex items-center justify-between p-3 rounded-xl ${on ? 'bg-primary-container text-on-primary' : 'bg-surface-container-low'}`}>
-              <span className="flex items-center gap-2"><Icon name="sim_card" />SIM {s.simSlot + 1} · {s.carrierName ?? s.displayName ?? 'SIM'}</span>
-              {s.number && <span className="font-label-numeric-sm">{s.number}</span>}</button>;
+              className={`flex items-center gap-3 h-14 px-4 rounded-2xl border-2 transition-colors pressable ${on ? 'border-primary-container bg-primary-fixed/60' : 'border-transparent bg-surface-container-low'}`}>
+              <Icon name="sim_card" fill={on} className={on ? 'text-primary-container' : 'text-on-surface-variant'} />
+              <span className="flex-1 text-left text-[15px] font-semibold text-on-surface">SIM {s.simSlot + 1} · {s.carrierName ?? s.displayName ?? 'SIM'}</span>
+              {s.number && <span className="text-[13px] text-on-surface-variant">{s.number}</span>}
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${on ? 'bg-primary-container' : 'border-2 border-outline-variant'}`}>{on && <Icon name="check" className="text-[16px] text-on-primary" />}</span></button>;
           })}
-            {numbers.length > 1 && <button type="button" onClick={() => setChoice(c => ({ ...c, [n.id]: 'none' }))} className={`p-2 rounded-xl font-body-sm ${choice[n.id] === 'none' ? 'bg-surface-container-high' : 'bg-surface-container-low'}`}>Lambarkan taleefankan kuma jiro</button>}
+            {numbers.length > 1 && <button type="button" onClick={() => setChoice(c => ({ ...c, [n.id]: 'none' }))} className={`h-11 rounded-2xl text-[14px] font-medium ${choice[n.id] === 'none' ? 'bg-surface-container-high' : 'bg-surface-container-low'}`}>Lambarkan taleefankan kuma jiro</button>}
           </div>
         </div>)}
-        {duplicateSim && <p role="alert" className="font-body-sm text-body-sm text-error">Hal SIM laba lambar looma dooran karo.</p>}
-        <button disabled={!ready || busy} onClick={() => bind()} className="h-12 rounded-lg bg-primary-container text-on-primary font-title-md text-title-md disabled:opacity-50">{busy ? 'Waa la xirayaa…' : 'Ka dhig taleefankan kan asalka ah'}</button>
+        {duplicateSim && <p role="alert" className="text-[13px] text-error">Hal SIM laba lambar looma dooran karo.</p>}
+        <button disabled={!ready || busy} onClick={() => bind()} className="h-[52px] rounded-2xl bg-primary-container text-on-primary text-[16px] font-bold pressable shadow-[0_6px_16px_-6px_rgba(10,107,63,0.55)] disabled:opacity-50">{busy ? 'Waa la xirayaa…' : 'Ka dhig taleefankan kan asalka ah'}</button>
         {replace && <Banner tone="warn" icon="swap_horiz">{formatMsisdn(replace.msisdn)} taleefan kale ayaa horay ugu xirnaa. Haddii aad halkan ku xirto, taleefankii hore fariimo cusub uma diri doono lambarkan.
-          <div className="flex gap-2 mt-2"><button className="px-3 py-1.5 rounded-lg bg-tertiary-container text-on-tertiary" onClick={() => { const r = replace; setReplace(null); bind(r); }}>Haa, beddel</button><button className="px-3 py-1.5 rounded-lg bg-surface-container-lowest" onClick={() => setReplace(null)}>Maya</button></div></Banner>}
+          <div className="flex gap-2 mt-2"><button className="h-10 px-4 rounded-full bg-tertiary-container text-on-tertiary font-bold" onClick={() => { const r = replace; setReplace(null); bind(r); }}>Haa, beddel</button><button className="h-10 px-4 rounded-full bg-surface-container-lowest font-bold" onClick={() => setReplace(null)}>Maya</button></div></Banner>}
       </>)}
       {step(4, Boolean(native?.importDoneAt), 'Soo deji fariimihii hore (ikhtiyaari)', <>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">Toosh wuxuu akhrin karaa fariimaha EVC Plus ee horay taleefanka ugu jiray. Tani waxay u baahan tahay ogolaansho akhrinta SMS. Fariimaha labanlaabka ah mar keliya ayaa la kaydiyaa.</p>
-        <div className="flex gap-2">{[7, 30, 90].map(d => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)} className={`px-3 py-1.5 rounded-full font-label-ui text-label-ui ${days === d ? 'bg-primary-container text-on-primary' : 'bg-surface-container'}`}>{d} maalmood</button>)}</div>
-        <button disabled={!bound.length || busy} onClick={runImport} className="h-12 rounded-lg bg-surface-container-high text-on-surface font-title-md text-title-md disabled:opacity-50">Soo deji fariimaha EVC Plus</button>
+        <p className="text-[14px] leading-[20px] text-on-surface-variant">Toosh wuxuu akhrin karaa fariimaha EVC Plus ee horay taleefanka ugu jiray. Tani waxay u baahan tahay ogolaansho akhrinta SMS. Fariimaha labanlaabka ah mar keliya ayaa la kaydiyaa.</p>
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-full bg-surface-container">{[7, 30, 90].map(d => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)} className={`h-9 rounded-full text-[13.5px] font-semibold transition-all ${days === d ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'}`}>{d} maalmood</button>)}</div>
+        <button disabled={!bound.length || busy} onClick={runImport} className="h-[52px] rounded-2xl bg-surface-container text-on-surface text-[16px] font-bold pressable disabled:opacity-50">Soo deji fariimaha EVC Plus</button>
         {importResult && <Banner tone="ok" icon="task_alt">{importResult}</Banner>}
       </>)}
-      <button onClick={() => navigate('guud')} className="h-12 rounded-lg bg-primary text-on-primary font-title-md text-title-md">{bound.length ? 'Dhammaystiran — u gudub Guud' : 'Hadda ka bood'}</button>
+      <button onClick={() => navigate('guud')} className="h-[52px] rounded-2xl bg-inverse-surface text-inverse-on-surface text-[16px] font-bold pressable mb-2">{bound.length ? 'Dhammaystiran — u gudub Guud' : 'Hadda ka bood'}</button>
     </Main>
   </>;
 }

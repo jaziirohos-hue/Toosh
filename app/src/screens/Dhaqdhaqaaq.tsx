@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DateRangeSheet, periodLabel, periodQuery } from '../components/PeriodPicker.tsx';
-import { Banner, EmptyState, Header, Icon, Main, Sheet, Spinner, TxRow } from '../components/ui.tsx';
+import { Banner, Button, EmptyState, Group, Header, Icon, Main, Sheet, Spinner, TxRow } from '../components/ui.tsx';
 import { api, qs } from '../lib/api.ts';
 import { dayLabel, money } from '../lib/format.ts';
 import { useSession } from '../lib/session.tsx';
@@ -32,68 +32,57 @@ export function Dhaqdhaqaaq() {
     if (g?.key === d.key) g.items.push(m); else groups.push({ key: d.key, label: d.label, full: d.full, items: [m] });
   }
   const totals = page.data?.totals;
-  const pill = (f: typeof filter, label: string, dot?: string) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}
-    className={`h-8 px-3 rounded-full font-label-ui text-label-ui flex items-center gap-1.5 shadow-sm transition-all ${filter === f ? 'bg-primary-container text-on-primary' : 'bg-surface-container-lowest text-on-surface-variant'}`}>
-    {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}<span>{label}</span>
-    {f === 'all' && totals && <span className="px-1.5 rounded-full bg-surface-container-lowest/20 font-label-numeric-sm text-[10px]">{totals.incomingCount + totals.outgoingCount}</span>}
-  </button>;
+  const seg = (f: typeof filter, label: string) => <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}
+    className={`h-9 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${filter === f ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'}`}>{label}</button>;
 
   return <>
     <Header subtitle="Dhaqdhaqaaq" msisdn={me!.evcNumbers.find(n => n.id === selectedNumberId)?.msisdn} />
     <Main>
-      <div className="flex flex-col space-y-2.5">
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant"><Icon name="search" className="text-[20px]" /></div>
-          <input value={q} onChange={e => setQ(e.target.value)} aria-label="Raadi dhaqdhaqaaq" className="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-xl shadow-sm placeholder:text-on-surface-variant focus:outline-none" placeholder="Raadi magac, lambar, ama tixraac (Ref)..." type="search" />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <button aria-label="Shaandhee taariikhda" onClick={() => setPeriodMenu(true)} className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface active:scale-95 transition-transform"><Icon name="tune" className="text-[18px]" /></button></div>
+      <div className="flex flex-col gap-3">
+        <div className="relative flex items-center w-full">
+          <Icon name="search" className="absolute left-4 text-on-surface-variant text-[22px] pointer-events-none" />
+          <input value={q} onChange={e => setQ(e.target.value)} aria-label="Raadi dhaqdhaqaaq" className="w-full h-12 pl-12 pr-12 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-[15px] placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary-container" placeholder="Raadi magac ama lambar" type="search" />
+          <button aria-label="Shaandhee taariikhda" onClick={() => setPeriodMenu(true)} className="absolute right-1.5 w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant active:bg-surface-container"><Icon name="tune" className="text-[20px]" /></button>
         </div>
-        <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5">
-          <div className="flex items-center gap-1.5 shrink-0">{pill('all', 'Dhammaan')}{pill('in', 'Soo galay (+)', 'bg-primary-container')}{pill('out', 'Baxay (-)', 'bg-error')}</div>
-          <button onClick={() => setPeriodMenu(true)} className="shrink-0 h-8 px-2.5 rounded-full bg-surface-container-low text-on-surface flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
-            <Icon name="calendar_today" className="text-secondary text-[16px]" /><span className="font-label-ui text-label-ui truncate max-w-[110px]">{periodLabel(period)}</span><Icon name="arrow_drop_down" className="text-[16px] text-on-surface-variant" /></button>
-        </div>
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-full bg-surface-container">{seg('all', 'Dhammaan')}{seg('in', 'Soo galay')}{seg('out', 'Baxay')}</div>
       </div>
 
-      <div className="w-full bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center shrink-0"><Icon name="south_west" className="text-primary text-[16px]" /></div>
-          <div className="flex flex-col min-w-0"><span className="font-label-ui text-label-ui text-on-surface-variant truncate">Wadarta Soo gashay</span>
-            <span data-testid="history-in" className="font-label-numeric-md text-label-numeric-md text-primary-container leading-tight">{totals ? money(totals.incoming, '+') : '—'}</span></div>
+      <div className="card overflow-hidden">
+        <button onClick={() => setPeriodMenu(true)} className="w-full flex items-center gap-2 px-4 h-12 border-b border-outline-variant/40 text-left active:bg-surface-container-low">
+          <Icon name="calendar_month" className="text-primary-container text-[20px]" /><span className="flex-1 text-[14.5px] font-bold text-on-surface truncate">{periodLabel(period)}</span>
+          <span className="text-[13px] font-semibold text-primary-container">Beddel</span><Icon name="expand_more" className="text-[20px] text-primary-container" /></button>
+      <div className="grid grid-cols-2 divide-x divide-outline-variant/40">
+        <div className="p-4 flex flex-col gap-1">
+          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><span className="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center"><Icon name="south_west" className="text-[15px]" /></span>Soo galay</span>
+          <span data-testid="history-in" className="text-[20px] leading-[26px] font-extrabold tracking-tight text-primary-container">{totals ? money(totals.incoming, '+') : '—'}</span>
+          <span className="text-[12px] text-on-surface-variant">{totals ? `${totals.incomingCount} jeer` : ''}</span>
         </div>
-        <div className="h-8 w-px bg-surface-container" />
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-full bg-error-container flex items-center justify-center shrink-0"><Icon name="north_east" className="text-on-error-container text-[16px]" /></div>
-          <div className="flex flex-col min-w-0 text-right"><span className="font-label-ui text-label-ui text-on-surface-variant truncate">Wadarta Baxday</span>
-            <span data-testid="history-out" className="font-label-numeric-md text-label-numeric-md text-error leading-tight">{totals ? money(totals.outgoing, '-') : '—'}</span></div>
+        <div className="p-4 flex flex-col gap-1">
+          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><span className="w-6 h-6 rounded-full bg-error-container text-on-error-container flex items-center justify-center"><Icon name="north_east" className="text-[15px]" /></span>Baxay</span>
+          <span data-testid="history-out" className="text-[20px] leading-[26px] font-extrabold tracking-tight text-on-surface">{totals ? money(totals.outgoing, '-') : '—'}</span>
+          <span className="text-[12px] text-on-surface-variant">{totals ? `${totals.outgoingCount} jeer` : ''}</span>
         </div>
+      </div>
       </div>
 
       {page.error && !page.data && <Banner tone="error" icon="cloud_off">{page.error.message}</Banner>}
       {!page.data && page.loading && <Spinner label="Dhaqdhaqaaqa waa la soo qaadayaa…" />}
-      <div className="flex flex-col space-y-4">
-        {groups.map((g, i) => <div key={g.key} className="flex flex-col space-y-2">
-          <div className={`flex items-center justify-between px-1 ${i ? 'pt-2' : ''}`}>
-            <div className="flex items-center gap-1.5"><span className={`w-1.5 h-1.5 rounded-full ${g.label === 'Maanta' ? 'bg-primary' : 'bg-on-surface-variant/40'}`} />
-              <span className="font-title-md text-title-md text-on-surface">{g.label}</span>{g.label !== g.full && <span className="font-body-sm text-body-sm text-on-surface-variant">— {g.full}</span>}</div>
-            <span className="font-label-numeric-sm text-label-numeric-sm text-on-surface-variant">{g.items.length} dhaqdhaqaaq</span>
-          </div>
-          <div className="flex flex-col space-y-2">{g.items.map(m => <TxRow key={m.id} m={m} tz={tz} variant="list" />)}</div>
-        </div>)}
-      </div>
+      {groups.map(g => <section key={g.key} className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between px-1">
+          <h2 className="text-[15px] font-bold text-on-surface">{g.label}{g.label !== g.full && <span className="ml-1.5 text-[13px] font-medium text-on-surface-variant">{g.full}</span>}</h2>
+          <span className="text-[12.5px] text-on-surface-variant">{g.items.length} dhaqdhaqaaq</span>
+        </div>
+        <Group>{g.items.map(m => <TxRow key={m.id} m={m} tz={tz} variant="list" />)}</Group>
+      </section>)}
       {page.data && !items.length && <EmptyState icon="search_off" title="Wax dhaqdhaqaaq ah lama helin" text="Isku day inaad raadiso magac kale, lambar taleefan, ama hubi shaandhaynta aad dooratay." />}
-      {cursor && <button disabled={loadingMore} onClick={loadMore} className="self-center px-4 py-2.5 rounded-full bg-surface-container text-on-surface-variant font-title-md text-title-md disabled:opacity-50">{loadingMore ? 'Waa la soo qaadayaa…' : 'Soo qaad kuwo hore'}</button>}
+      {cursor && <Button kind="tonal" disabled={loadingMore} onClick={loadMore} className="self-center h-11 text-[14.5px]">{loadingMore ? 'Waa la soo qaadayaa…' : 'Soo qaad kuwo hore'}</Button>}
 
-      <div className="w-full bg-surface-container-low rounded-xl p-3 shadow-sm flex items-start gap-2.5">
-        <div className="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 mt-0.5"><Icon name="cloud_sync" className="text-on-secondary-fixed text-[15px]" /></div>
-        <div className="flex flex-col"><span className="font-label-ui text-label-ui text-on-surface font-semibold">Isku xirnaanta Xogta</span>
-          <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mt-0.5">Kaliya dhaqdhaqaaqyada la xaqiijiyay ayaa halkan ku jira. Fariimaha sugaya iyo kuwa aan transaction ahayn laguma darin wadarta. Waqtiyada waxaa loo xisaabiyaa {tz}.</p></div>
-      </div>
+      <p className="text-[12px] leading-[17px] text-on-surface-variant/90 text-center px-4 pb-2">Kaliya dhaqdhaqaaqyada la xaqiijiyay ayaa halkan ku jira. Fariimaha sugaya iyo kuwa aan transaction ahayn laguma darin wadarta. Waqtiga: {tz}.</p>
     </Main>
     <Sheet open={periodMenu} onClose={() => setPeriodMenu(false)} title="Muddada">
       {(['today', 'week', 'month', 'all'] as const).map(p => <button key={p} onClick={() => { setPeriod({ period: p }); setPeriodMenu(false); }}
-        className={`flex items-center justify-between p-3 rounded-xl ${period.period === p ? 'bg-primary-fixed' : 'bg-surface-container-low'}`}><span className="font-title-md text-body-md">{periodLabel({ period: p })}</span>{period.period === p && <Icon name="check" />}</button>)}
-      <button onClick={() => { setPeriodMenu(false); setCustomOpen(true); }} className="flex items-center gap-2 p-3 rounded-xl bg-surface-container-low"><Icon name="calendar_today" className="text-secondary" /><span className="font-title-md text-body-md">Taariikh dooro…</span></button>
+        className={`flex items-center justify-between h-14 px-4 rounded-2xl pressable ${period.period === p ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-surface-container-low'}`}><span className="text-[16px] font-semibold">{periodLabel({ period: p })}</span>{period.period === p && <Icon name="check_circle" fill />}</button>)}
+      <button onClick={() => { setPeriodMenu(false); setCustomOpen(true); }} className="flex items-center gap-2.5 h-14 px-4 rounded-2xl bg-surface-container-low pressable"><Icon name="date_range" className="text-primary-container" /><span className="text-[16px] font-semibold">Taariikh dooro…</span></button>
     </Sheet>
     {customOpen && <DateRangeSheet open={customOpen} onClose={() => setCustomOpen(false)} value={period} onPick={setPeriod} tz={tz} />}
   </>;

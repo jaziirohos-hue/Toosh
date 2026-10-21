@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Toosh brand green behind the adaptive launcher icon. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:type="linear" android:angle="315" android:startColor="#FF13895A" android:endColor="#FF05472A" />
+</shape>

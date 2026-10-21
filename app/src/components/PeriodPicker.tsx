@@ -22,28 +22,30 @@ export function DateRangeSheet({ open, onClose, value, onPick, tz }: { open: boo
   return <Sheet open={open} onClose={onClose} title="Taariikh dooro">
     <p className="font-body-sm text-body-sm text-on-surface-variant">Maalmaha waxaa loo xisaabiyaa waqtiga akoonka ({tz}).</p>
     <div className="grid grid-cols-2 gap-3">
-      <label className="flex flex-col gap-1 font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Laga bilaabo
-        <input type="date" value={from} max={today} onChange={e => setFrom(e.target.value)} className="bg-surface-container-low text-on-surface font-body-md text-body-md normal-case tracking-normal px-3 py-2.5 rounded-lg" /></label>
-      <label className="flex flex-col gap-1 font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Ilaa
-        <input type="date" value={to} max={today} onChange={e => setTo(e.target.value)} className="bg-surface-container-low text-on-surface font-body-md text-body-md normal-case tracking-normal px-3 py-2.5 rounded-lg" /></label>
+      <label className="flex flex-col gap-1.5 text-[12.5px] font-semibold text-on-surface-variant">Laga bilaabo
+        <input type="date" value={from} max={today} onChange={e => setFrom(e.target.value)} className="h-12 bg-surface-container-low text-on-surface text-[15px] font-medium normal-case tracking-normal px-3 rounded-xl" /></label>
+      <label className="flex flex-col gap-1.5 text-[12.5px] font-semibold text-on-surface-variant">Ilaa
+        <input type="date" value={to} max={today} onChange={e => setTo(e.target.value)} className="h-12 bg-surface-container-low text-on-surface text-[15px] font-medium normal-case tracking-normal px-3 rounded-xl" /></label>
     </div>
     {invalid && <p role="alert" className="font-body-sm text-body-sm text-error">Taariikhda dhammaadka waa inay ka dambeysaa ama la mid tahay bilowga.</p>}
     <button type="button" disabled={invalid} onClick={() => { onPick({ period: 'custom', from, to }); onClose(); }}
-      className="w-full h-12 bg-primary-container text-on-primary rounded-lg font-title-md text-title-md disabled:opacity-50">Dooro</button>
+      className="w-full h-[52px] bg-primary-container text-on-primary rounded-2xl text-[16px] font-bold disabled:opacity-50 pressable">Dooro</button>
   </Sheet>;
 }
 
-/** Chip row from the Guud design: Maanta, Toddobaadkan, Bishan, Taariikh dooro. */
+/** Segmented control: Maanta | Toddobaadkan | Bishan | calendar (custom range). */
 export function PeriodChips({ value, onChange, tz }: { value: PeriodChoice; onChange: (p: PeriodChoice) => void; tz: string }) {
   const [open, setOpen] = useState(false);
-  const chip = (active: boolean) => `shrink-0 px-3.5 py-1.5 rounded-full font-label-ui text-label-ui transition-colors ${active ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`;
+  const seg = (active: boolean) => `h-9 rounded-full text-[13.5px] font-semibold transition-all duration-200 flex items-center justify-center gap-1 px-2 min-w-0 ${active ? 'bg-surface-container-lowest text-on-surface shadow-[0_1px_4px_rgba(14,26,19,0.14)]' : 'text-on-surface-variant'}`;
+  const custom = value.period === 'custom';
   return <>
-    <div className="flex items-center gap-2 overflow-x-auto py-1 -mx-margin px-margin no-scrollbar" role="group" aria-label="Muddada">
-      {(['today', 'week', 'month'] as const).map(p => <button key={p} type="button" aria-pressed={value.period === p} className={chip(value.period === p)} onClick={() => onChange({ period: p })}>{periodLabel({ period: p })}</button>)}
-      <button type="button" aria-pressed={value.period === 'custom'} className={`${chip(value.period === 'custom')} inline-flex items-center gap-1`} onClick={() => setOpen(true)}>
-        <Icon name="calendar_today" className="text-[14px]" /><span>{value.period === 'custom' ? periodLabel(value) : 'Taariikh dooro'}</span>
-      </button>
+    <div className="grid grid-cols-[1fr_1.35fr_1fr_auto] gap-1 p-1 rounded-full bg-surface-container" role="group" aria-label="Muddada">
+      {(['today', 'week', 'month'] as const).map(p => <button key={p} type="button" aria-pressed={value.period === p} className={seg(value.period === p)} onClick={() => onChange({ period: p })}><span className="truncate">{periodLabel({ period: p })}</span></button>)}
+      <button type="button" aria-pressed={custom} aria-label="Taariikh dooro" className={`${seg(custom)} w-11`} onClick={() => setOpen(true)}>
+        <Icon name="calendar_month" className="text-[19px]" /></button>
     </div>
+    {custom && <button type="button" onClick={() => setOpen(true)} className="-mt-2 self-start flex items-center gap-1.5 h-8 px-3 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-semibold">
+      <Icon name="date_range" className="text-[16px]" />{periodLabel(value)}<Icon name="edit" className="text-[14px]" /></button>}
     {open && <DateRangeSheet open={open} onClose={() => setOpen(false)} value={value} onPick={onChange} tz={tz} />}
   </>;
 }
