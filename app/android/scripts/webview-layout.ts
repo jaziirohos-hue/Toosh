@@ -5,6 +5,7 @@
  * Usage (from the repo root, emulator running, API on :8787): npx tsx app/android/scripts/webview-layout.ts <outDir>
  */
 import { execFileSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { _android as android } from 'playwright';
 import { auditLayout } from '../../../e2e/layout-audit.ts';
 
@@ -49,7 +50,6 @@ console.log(`font_scale 1.3 -> app zoom ${zoom || '(none)'}`);
 if (zoom !== '1.3') failures.push(`expected the app to scale to 1.3 at font size 130%, got "${zoom}"`);
 
 const shot = () => execFileSync('adb', ['exec-out', 'screencap', '-p'], { maxBuffer: 64 << 20 });
-const { writeFileSync } = await import('node:fs');
 async function check(name: string) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1200);
@@ -67,7 +67,17 @@ await check('login');
 await page.locator('#phone-number').fill(phone);
 await page.locator('#password').fill(PASSWORD);
 await page.getByRole('button', { name: /^Fur Toosh/ }).click();
-await page.getByTestId('total-in').waitFor({ timeout: 30000 });
+try {
+  // A first sign-in on a phone may open the source-phone setup; the layout check only needs to be signed in.
+  await page.waitForFunction(() => /#\/(guud|taleefanka-asalka)/.test(location.hash) || document.querySelector('[data-testid="total-in"]'), null, { timeout: 30000 });
+  await page.evaluate(() => { window.location.hash = '#/guud'; });
+  await page.getByTestId('total-in').waitFor({ timeout: 30000 });
+} catch (e) {
+  writeFileSync(`${out}/font130-signin-failed.png`, shot());
+  const state = await page.evaluate(() => ({ hash: location.hash, text: document.body.innerText.slice(0, 600) })).catch(() => null);
+  console.error('Sign-in did not reach the app:', JSON.stringify(state));
+  throw e;
+}
 for (const route of ['guud', 'fariimaha', 'dhaqdhaqaaq', 'dejinta']) {
   await page.evaluate(r => { window.location.hash = `#/${r}`; }, route);
   await check(route);
