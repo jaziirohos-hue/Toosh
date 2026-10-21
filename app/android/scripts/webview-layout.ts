@@ -48,13 +48,15 @@ const zoom = await page.evaluate(() => document.documentElement.style.zoom);
 console.log(`font_scale 1.3 -> app zoom ${zoom || '(none)'}`);
 if (zoom !== '1.3') failures.push(`expected the app to scale to 1.3 at font size 130%, got "${zoom}"`);
 
-const shot = (name: string) => execFileSync('adb', ['exec-out', 'screencap', '-p'], { maxBuffer: 64 << 20 });
+const shot = () => execFileSync('adb', ['exec-out', 'screencap', '-p'], { maxBuffer: 64 << 20 });
 const { writeFileSync } = await import('node:fs');
 async function check(name: string) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1200);
+  // tsx keeps function names with a __name() helper; give the page the same no-op helper before sending the audit.
+  await page.evaluate('globalThis.__name = (f) => f');
   const issues = await page.evaluate(auditLayout);
-  writeFileSync(`${out}/font130-${name}.png`, shot(name));
+  writeFileSync(`${out}/font130-${name}.png`, shot());
   console.log(`${name}: ${issues.length ? issues.join(' | ') : 'OK'}`);
   failures.push(...issues.map(i => `${name}: ${i}`));
 }
