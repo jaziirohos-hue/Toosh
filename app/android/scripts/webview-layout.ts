@@ -51,6 +51,7 @@ if (zoom !== '1.3') failures.push(`expected the app to scale to 1.3 at font size
 const shot = (name: string) => execFileSync('adb', ['exec-out', 'screencap', '-p'], { maxBuffer: 64 << 20 });
 const { writeFileSync } = await import('node:fs');
 async function check(name: string) {
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1200);
   const issues = await page.evaluate(auditLayout);
   writeFileSync(`${out}/font130-${name}.png`, shot(name));

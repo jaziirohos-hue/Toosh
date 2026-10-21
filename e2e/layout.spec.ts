@@ -27,6 +27,7 @@ async function seed(request: import('@playwright/test').APIRequestContext) {
 
 async function audit(page: Page, zoom: number, name: string) {
   await page.evaluate(z => { document.documentElement.style.zoom = String(z); document.documentElement.style.setProperty('--app-zoom', String(z)); }, zoom);
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(400);
   const issues = await page.evaluate(auditLayout);
   expect(issues, `${name} at ${Math.round(zoom * 100)}%`).toEqual([]);
