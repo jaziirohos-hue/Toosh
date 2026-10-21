@@ -138,11 +138,13 @@ test('two devices editing the same message get a visible conflict, not a silent 
     return p;
   };
   const a = await login(); const b = await login();
+  // B starts editing first, so B's form is based on the version before A's change (a form that has not been
+  // touched yet simply refreshes to the newest version, which is not a conflict).
+  await b.getByRole('radio', { name: /Soo galay/ }).click();
   await a.getByRole('radio', { name: /Baxay/ }).click();
   await a.getByRole('button', { name: 'Kaydi Dhaqdhaqaaqa' }).click();
   await expect(a).toHaveURL(/#\/(fariimaha|guud)/);
 
-  await b.getByRole('radio', { name: /Soo galay/ }).click();
   await b.getByRole('button', { name: 'Kaydi Dhaqdhaqaaqa' }).click();
   await expect(b.getByRole('region', { name: 'Isku dhac' })).toBeVisible();
   await expect(b.getByText('Aalad kale ayaa beddeshay fariintan')).toBeVisible();

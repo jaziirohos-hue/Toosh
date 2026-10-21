@@ -7,6 +7,18 @@ Toosh runs as one Vercel project:
 
 Both have free plans that need no credit card. Nothing here buys anything.
 
+## Current deployment (set up 2026-10-21)
+
+- Address: **https://toosh.vercel.app** (Vercel project `toosh`, team `jaziiro`, region iad1 / Washington, D.C.).
+- Database: Neon Free (`neon-cyclamen-diamond`, Washington, D.C.), connected with the variable prefix `DATABASE`.
+- Deployed from the branch `claude/laughing-bohr-6fmo6s`. The project's production branch is still `main`, so a
+  push to `main` without this code would make a failing build; Vercel keeps the last good deployment live when a
+  build fails. To deploy new code, merge the branch into `main` or redeploy the branch from the Vercel dashboard.
+- Vercel Authentication protects preview deployments only. Production is public, and Toosh's own sign-in
+  protects every account's data.
+- Verified on 2026-10-21 against https://toosh.vercel.app: `scripts/check-deployment.mjs` passed all 16 checks;
+  the 3 browser tests passed, repeated twice.
+
 ## Free-plan limits (checked 2026-10-20)
 
 | | Limit | Source |

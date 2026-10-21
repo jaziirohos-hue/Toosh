@@ -88,7 +88,7 @@ fast Node server that shares the TypeScript parser with the app.
   show amounts, names, numbers or SMS text, and are private on the lock screen. Release builds allow HTTPS only.
 - **Sign-in protection:** per-IP rate limits, and an account lock after 10 wrong passwords (15 minutes).
 
-Hosting on the internet for free: [docs/HOSTING.md](docs/HOSTING.md).
+Live at **https://toosh.vercel.app** (free Vercel + Neon). Setup, limits and secrets: [docs/HOSTING.md](docs/HOSTING.md).
 
 ## Local setup (verified)
 
