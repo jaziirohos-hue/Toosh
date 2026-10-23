@@ -74,6 +74,33 @@ fast Node server that shares the TypeScript parser with the app.
   Arrival order does not matter, so an older imported SMS never replaces a newer balance. It is shown separately from
   the totals; Toosh never treats "in minus out" as the balance and never invents an opening balance.
 
+### Expenses, budgets and goals ("Maamul Qarashaadkaaga Si Fudud.")
+
+- **Qarash tab:** outgoing EVC Plus payments and hand-entered expenses in one list, with search, filters (category,
+  source, paid/unpaid, currency) and day/week/month/custom periods. Each expense has a name, amount, currency (USD or
+  SOS), category, date, optional description and payment status. Editing uses a version check, so an older edit
+  never silently overwrites a newer one. Deleting hides the row (`deleted_at`), it is not erased.
+- **Categories:** Biil (Bills), Korantada, Iskuulka, Dugsiga, Gaari Raac, Kirada, Biyaha, Cuntada, Internet,
+  Caafimaadka, Qarashaad Kale, plus your own. An outgoing EVC payment can be given a category (stored apart from
+  the SMS record, which never changes).
+- **Spending** = outgoing EVC payments + paid manual expenses. Unpaid bills are shown separately. USD and SOS are
+  never added together or converted.
+- **Budgets:** daily, weekly or monthly, overall or per category, with a warning level; Guud and Qarash show
+  warnings when a budget nears or passes its limit (in-app alerts, not phone notifications).
+- **Savings goals** with progress.
+- **Guud** shows income, spending and what is left, today/week/month spending, spending by category and budgets.
+
+### App lock, account and preferences
+
+- **App PIN** (4–6 digits): stored only on the device as a PBKDF2-SHA-256 hash with a random salt; wrong guesses
+  back off (after 5: 30 s, doubling, up to 1 hour). Optional fingerprint / phone screen lock on Android. Locks on
+  open, after leaving the app for the chosen time, and after inactivity. Signing out removes the PIN.
+- **Password:** change it in Dejinta (needs the current one; other viewing devices are signed out, the SMS phone
+  stays connected). **Recovery codes:** 10 one-time codes, stored as scrypt hashes and shown once; "Ma ilowday
+  furaha sirta?" on sign-in uses one to set a new password. Wrong codes count toward the sign-in lockout.
+- **Hide amounts** (eye icon or Dejinta) shows ****** instead of every amount, remembered on the device.
+- **Language** Somali (default) or English, **theme** system/light/dark, **default currency** USD or SOS.
+
 ### Security and privacy
 
 - **Account isolation:** every query filters by account, and PostgreSQL row-level security (`FORCE ROW LEVEL
@@ -189,9 +216,9 @@ Install a debug APK with `adb install -r app/android/app/build/outputs/apk/debug
 ## Tests
 
 ```bash
-npm test                                  # shared (19), API with Postgres + RLS (20), app offline queue (4)
+npm test                                  # shared (25), API with Postgres + RLS (30), app offline queue (4)
 npm run typecheck
-npx playwright test                       # needs the API running (scripts/local/start.sh); 3 browser tests
+npx playwright test                       # needs the API running (scripts/local/start.sh); 11 browser tests
 node scripts/check-deployment.mjs <url>   # auth, isolation, persistence, two-client sync against a deployment
 cd app/android && ./gradlew testDebugUnitTest   # 5 native JVM tests
 ```
@@ -213,6 +240,7 @@ Playwright creates test accounts in the local `toosh` database through the publi
 | `shared/test/*` | Parser, money, phone, periods, validation | — |
 | `server/test/api.test.ts` | Postgres, RLS, idempotency, concurrency, audit, totals, balances, events | HTTP calls via Fastify inject |
 | `app/test/outbox.test.ts` | Queue logic, restart recovery, conflicts | IndexedDB (fake-indexeddb), server replies |
+| `e2e/finance.spec.ts` | Expenses, EVC categories, budgets, goals, hide amounts, language, theme, app PIN, password change, recovery codes | The source phone |
 | `e2e/flow.spec.ts` | Browser UI, API, Postgres, live updates, conflict screen | The source phone: the test sends the uploader's HTTP requests |
 | `RealSmsFlowTest` + `emulator-e2e.sh` | Android SMS delivery (`adb emu sms send`), receiver, multipart, filter, SIM routing, encrypted queue, WorkManager, offline then reconnect, inbox import, real API | The SIM network is the emulator's modem |
 | Physical phone | **Not yet done** (see below) | — |
@@ -231,5 +259,8 @@ Playwright creates test accounts in the local `toosh` database through the publi
    - On a dual-SIM phone, confirm the SIM is identified.
    - Check with the phone offline, after a reboot, and with the manufacturer's battery saver on.
    - Compare the amounts with the original SMS.
-5. **More EVC Plus formats:** only the formats in the tests are recognised automatically. Merchant payments, bills,
+5. **eDahab (Somtel) and Jeeb (Somnet):** not supported yet. Real sample messages (money in, money out, balance)
+   are needed to write and test their formats.
+6. **Ads:** not added. Vercel Hobby is for non-commercial use; ads need a paid plan or another host.
+7. **More EVC Plus formats:** only the formats in the tests are recognised automatically. Merchant payments, bills,
    airtime and English-language receipts currently go to review. Add redacted real examples as parser test vectors.
