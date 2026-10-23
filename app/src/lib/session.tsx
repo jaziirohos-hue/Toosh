@@ -5,12 +5,38 @@ import { idbClear, idbGet, idbSet } from './idb.ts';
 import { isNativeAndroid, TooshNative, type NativeStatus } from './native.ts';
 import { clearOutbox, flushOutbox } from './outbox.ts';
 import { setOfflineCopies, startLiveUpdates, stopLiveUpdates } from './sync.ts';
-import type { Me } from './types.ts';
+import { setLanguage, type Language } from './i18n.ts';
+import type { Currency, Me } from './types.ts';
 
-export interface DevicePrefs { lock: boolean; offlineCopies: boolean }
+export interface DevicePrefs {
+  /** Legacy: lock with the phone's own fingerprint / screen lock (kept for people who turned it on before app PINs). */
+  lock: boolean;
+  offlineCopies: boolean;
+  /** Show ****** instead of money amounts. */
+  hideAmounts: boolean;
+  language: Language;
+  /** Currency preselected for new expenses, budgets and goals. */
+  currency: Currency;
+  theme: 'system' | 'light' | 'dark';
+  /** In-app and phone alerts when a budget nears or passes its limit. */
+  budgetAlerts: boolean;
+  /** Seconds the app may be in the background (or untouched) before it locks again. */
+  lockAfter: number;
+  /** Offer fingerprint / face unlock alongside the app PIN. */
+  biometric: boolean;
+}
 const PREFS_KEY = 'toosh.prefs';
+const DEFAULT_PREFS: DevicePrefs = { lock: false, offlineCopies: true, hideAmounts: false, language: 'so', currency: 'USD', theme: 'system', budgetAlerts: true, lockAfter: 30, biometric: false };
 export function readPrefs(): DevicePrefs {
-  try { return { lock: false, offlineCopies: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') }; } catch { return { lock: false, offlineCopies: true }; }
+  try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') }; } catch { return { ...DEFAULT_PREFS }; }
+}
+/** Applies the theme and language to the document (called at start-up and whenever they change). */
+export function applyLook(p: DevicePrefs) {
+  setLanguage(p.language);
+  const root = document.documentElement;
+  if (p.theme === 'system') delete root.dataset.theme; else root.dataset.theme = p.theme;
+  const dark = p.theme === 'dark' || (p.theme === 'system' && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0f1713' : '#f3f6f4');
 }
 
 interface SessionValue {
@@ -130,6 +156,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const next = { ...prev, ...p };
       localStorage.setItem(PREFS_KEY, JSON.stringify(next));
       setOfflineCopies(next.offlineCopies);
+      applyLook(next);
       return next;
     });
   }, []);

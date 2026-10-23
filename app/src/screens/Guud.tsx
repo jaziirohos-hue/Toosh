@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { PeriodChips, periodQuery } from '../components/PeriodPicker.tsx';
-import { Banner, EmptyState, Group, Header, Icon, Main, SectionTitle, Sheet, Spinner, TxRow } from '../components/ui.tsx';
+import { CategoryIcon, cash, isZero, useCategories } from '../components/finance.tsx';
+import { Banner, EmptyState, EyeToggle, Group, Header, Icon, Main, SectionTitle, Sheet, Spinner, TxRow, useAmounts } from '../components/ui.tsx';
+import { t } from '../lib/i18n.ts';
+import { BudgetAlerts, BudgetCard } from './Qarash.tsx';
 import { api, qs } from '../lib/api.ts';
 import { ago, masked, money, shortDateTime } from '../lib/format.ts';
 import { isNativeAndroid, TooshNative } from '../lib/native.ts';
 import { navigate } from '../lib/router.ts';
 import { useSession } from '../lib/session.tsx';
 import { invalidateAll, useConnection, useResource } from '../lib/sync.ts';
-import type { PeriodChoice, Summary } from '../lib/types.ts';
+import type { FinanceSummary, PeriodChoice, Summary } from '../lib/types.ts';
 
 const STALE_BALANCE_MS = 24 * 3600 * 1000;
 
@@ -19,6 +22,8 @@ export function Guud() {
   const [refreshing, setRefreshing] = useState(false);
   const key = selectedNumberId ? `summary:${selectedNumberId}:${JSON.stringify(period)}` : null;
   const summary = useResource<Summary>(key, () => api(`/summary${qs({ ...periodQuery(period), evcNumberId: selectedNumberId })}`));
+  const finance = useResource<FinanceSummary>(`finance:${JSON.stringify(period)}`, () => api(`/finance${qs(periodQuery(period))}`));
+  const { show } = useAmounts();
   const number = me!.evcNumbers.find(n => n.id === selectedNumberId) ?? null;
   const source = me!.devices.find(d => d.id === number?.sourceDeviceId) ?? null;
   const thisIsSource = Boolean(source?.current);
@@ -73,9 +78,10 @@ export function Guud() {
             {me!.evcNumbers.length > 1 && <Icon name="expand_more" className="text-[16px] -mr-1" />}</span>
         </button>
 
-        <div className="relative mt-6 text-[13px] font-medium text-white/75 flex items-center gap-1.5"><Icon name="account_balance_wallet" className="text-[16px]" />Haraaga EVC Plus</div>
+        <div className="relative mt-5 flex items-center gap-1.5 text-[13px] font-medium text-white/75"><Icon name="account_balance_wallet" className="text-[16px]" /><span className="flex-1">Haraaga EVC Plus</span>
+          <EyeToggle className="-mr-2 -my-2 text-white/85 active:bg-white/10" /></div>
         <div className="relative mt-1 flex items-baseline gap-2">
-          <span data-testid="balance" className="text-[clamp(24px,12.5cqw,40px)] leading-[1.25] whitespace-nowrap font-extrabold tracking-[-0.02em]">{balance ? money(balance.amount) : '—'}</span>
+          <span data-testid="balance" className="text-[clamp(24px,12.5cqw,40px)] leading-[1.25] whitespace-nowrap font-extrabold tracking-[-0.02em]">{balance ? show(money(balance.amount)) : '—'}</span>
           <span className="text-[14px] font-semibold text-white/70">USD</span>
         </div>
         <p className="relative mt-1 text-[12.5px] leading-[1.36] text-white/70">
@@ -121,12 +127,14 @@ export function Guud() {
               <span className="text-[13.5px] font-semibold text-on-surface-variant">{inn ? 'Soo galay' : 'Baxay'}</span>
             </div>
             <div>
-              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[clamp(18px,5.6cqw,22px)] leading-[1.25] font-extrabold tracking-tight break-all ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? money(t.total, inn ? '+' : '-') : '—'}</span>
+              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[clamp(18px,5.6cqw,22px)] leading-[1.25] font-extrabold tracking-tight break-all ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? show(money(t.total, inn ? '+' : '-')) : '—'}</span>
               <span className="text-[12.5px] text-on-surface-variant">{t ? `${t.count} jeer` : '—'}</span>
             </div>
           </div>;
         })}
       </div>
+
+      {finance.data && <MoneyOverview f={finance.data} />}
 
       <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">Dhammaan<Icon name="chevron_right" className="text-[20px]" /></a>}>
         Dhaqdhaqaaqyada</SectionTitle>
@@ -144,5 +152,56 @@ export function Guud() {
         className={`flex items-center justify-between min-h-14 py-2 px-4 rounded-2xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'} leading-tight`}>
         <span className="text-[16px] font-bold">{masked(n.msisdn)}</span><span className="text-[14px] text-on-surface-variant">{n.displayName}</span></button>)}
     </Sheet>
+  </>;
+}
+
+/** Income, spending and what is left (all EVC numbers + hand-entered expenses), by category and against budgets. */
+function MoneyOverview({ f }: { f: FinanceSummary }) {
+  const { show } = useAmounts();
+  const cats = useCategories();
+  const sos = !isZero(f.expenses.SOS) || !isZero(f.unpaid.SOS) || !isZero(f.spendingMonth.SOS);
+  const negative = f.remaining.USD.startsWith('-');
+  const max = (cur: string) => f.categories.filter(c => c.currency === cur).reduce((m, c) => Math.max(m, Number(c.amount)), 0) || 1;
+  const top = f.categories.slice(0, 6);
+  return <>
+    <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/qarash">{t('Qarash', 'Expenses')}<Icon name="chevron_right" className="text-[20px]" /></a>}>
+      {t('Lacagtaada', 'Your money')}</SectionTitle>
+    <div className="card overflow-hidden">
+      <div className="grid grid-cols-1 @min-[360px]:grid-cols-3 divide-y @min-[360px]:divide-y-0 @min-[360px]:divide-x divide-outline-variant/40">
+        {([['income', t('Dakhli', 'Income'), 'south_west', 'text-primary-container', f.income.USD, '+'],
+          ['expenses', t('Qarash', 'Expenses'), 'north_east', 'text-on-surface', f.expenses.USD, '-'],
+          ['remaining', t('Hadhay', 'Remaining'), 'account_balance', negative ? 'text-error' : 'text-on-surface', f.remaining.USD, '']] as const).map(([k, label, icon, cls, v, sign]) =>
+          <div key={k} className="p-4 flex flex-col gap-1 min-w-0">
+            <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><Icon name={icon} className="text-[16px]" />{label}</span>
+            <span data-testid={`fin-${k}`} className={`text-[clamp(17px,5.4cqw,20px)] leading-[1.3] font-extrabold tracking-tight break-all ${cls}`}>{show(cash(v, 'USD', sign as '' | '+' | '-'))}</span>
+          </div>)}
+      </div>
+      {sos && <div className="px-4 py-2.5 border-t border-outline-variant/40 text-[13px] text-on-surface-variant flex flex-wrap gap-x-3">
+        <span>{t('Qarash SOS', 'SOS spent')}: <strong className="text-on-surface">{show(cash(f.expenses.SOS, 'SOS'))}</strong></span></div>}
+      {(!isZero(f.unpaid.USD) || !isZero(f.unpaid.SOS)) && <div className="px-4 py-2.5 border-t border-outline-variant/40 text-[13px] text-tertiary-container font-semibold flex items-center gap-1.5">
+        <Icon name="schedule" className="text-[16px]" />{t('Biilal aan la bixin', 'Unpaid bills')}: {[!isZero(f.unpaid.USD) && show(cash(f.unpaid.USD, 'USD')), !isZero(f.unpaid.SOS) && show(cash(f.unpaid.SOS, 'SOS'))].filter(Boolean).join(' · ')}</div>}
+      <div className="grid grid-cols-3 border-t border-outline-variant/40 bg-surface-container-low/60">
+        {([[t('Maanta', 'Today'), f.spendingToday], [t('Toddobaadkan', 'This week'), f.spendingWeek], [t('Bishan', 'This month'), f.spendingMonth]] as const).map(([label, v]) =>
+          <div key={label} className="px-2 py-3 flex flex-col items-center text-center gap-0.5 min-w-0">
+            <span className="text-[12px] text-on-surface-variant leading-tight">{label}</span>
+            <span className="text-[14px] font-bold text-on-surface break-all leading-tight">{show(cash(v.USD, 'USD'))}</span>
+            {!isZero(v.SOS) && <span className="text-[11.5px] font-semibold text-on-surface-variant break-all leading-tight">{show(cash(v.SOS, 'SOS'))}</span>}
+          </div>)}
+      </div>
+    </div>
+    <p className="px-1 -mt-2 text-[12px] leading-[1.36] text-on-surface-variant">{t('Dakhliga iyo qarashka EVC waa dhammaan lambarada akoonka; qarashaadka gacanta waa la daray. Lacagaha aan la bixin laguma darin.', 'EVC income and spending cover every number on the account, plus expenses you add. Unpaid items are not counted.')}</p>
+
+    <BudgetAlerts budgets={f.budgets} cats={cats} />
+    {top.length > 0 && <div className="card p-4 flex flex-col gap-3" aria-label={t('Qarashka qaybaha', 'Spending by category')}>
+      <span className="text-[14px] font-bold text-on-surface">{t('Qarashka qaybaha', 'Spending by category')}</span>
+      {top.map(c => { const info = cats.get(c.category); const w = Math.max(3, (Number(c.amount) / max(c.currency)) * 100);
+        return <div key={`${c.category}|${c.currency}`} className="flex items-center gap-3">
+          <CategoryIcon size="sm" info={info} />
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex flex-wrap justify-between gap-x-2 text-[13.5px]"><span className="font-semibold text-on-surface break-words">{info.label}</span><span className="font-bold text-on-surface whitespace-nowrap">{show(cash(c.amount, c.currency))}</span></div>
+            <div className="h-1.5 rounded-full bg-surface-container-high overflow-hidden"><div className={`h-full rounded-full ${info.bar}`} style={{ width: `${w}%` }} /></div>
+          </div></div>; })}
+    </div>}
+    {f.budgets.length > 0 && <Group>{f.budgets.slice(0, 3).map(b => <BudgetCard key={b.id} b={b} cats={cats} onClick={() => navigate('qarash/miisaaniyad')} />)}</Group>}
   </>;
 }

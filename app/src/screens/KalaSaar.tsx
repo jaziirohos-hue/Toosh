@@ -9,6 +9,10 @@ import { useSession } from '../lib/session.tsx';
 import { useConnection, useResource } from '../lib/sync.ts';
 import type { HistoryEntry, Message } from '../lib/types.ts';
 import { OutboxBadge, useOutbox } from './Fariimaha.tsx';
+import { CategoryGrid, CategoryIcon, offlineAware, useCategories } from '../components/finance.tsx';
+import { Sheet } from '../components/ui.tsx';
+import { t } from '../lib/i18n.ts';
+import { invalidateAll } from '../lib/sync.ts';
 
 type Choice = 'incoming' | 'outgoing' | 'ignored' | null;
 
@@ -41,7 +45,7 @@ const CLASS_TEXT: Record<string, string> = { PENDING: 'Sugaya', TRANSACTION: 'Tr
 export function KalaSaar({ id }: { id: string }) {
   const { tz } = useSession();
   const connection = useConnection();
-  const detail = useResource<{ message: Message; history: HistoryEntry[] }>(`message:${id}`, () => api(`/messages/${id}`));
+  const detail = useResource<{ message: Message; history: HistoryEntry[]; category?: string | null }>(`message:${id}`, () => api(`/messages/${id}`));
   const outbox = useOutbox();
   const entry = outbox.find(e => e.messageId === id);
   const m = detail.data?.message;
@@ -145,6 +149,8 @@ export function KalaSaar({ id }: { id: string }) {
         </div>}
       </section>
 
+      {m.classification === 'TRANSACTION' && m.transaction?.direction === 'OUT' && <TxCategory messageId={m.id} value={detail.data?.category ?? null} onSaved={detail.reload} />}
+
       <section className="flex flex-col gap-2">
         <h3 className="px-1 text-[17px] font-bold text-on-surface flex items-center justify-between"><span>Dooro nooca</span><span className="text-[12.5px] font-semibold text-on-surface-variant">Tallaabada 1aad</span></h3>
         <div className="card overflow-hidden divide-y divide-outline-variant/40" role="radiogroup" aria-label="Nooca dhaqdhaqaaqa">
@@ -230,5 +236,32 @@ export function KalaSaar({ id }: { id: string }) {
           <Icon name={saving ? 'progress_activity' : 'check'} className={`text-[20px] ${saving ? 'animate-spin' : ''}`} /><span>{saving ? 'Waa la keydinayaa…' : 'Kaydi Dhaqdhaqaaqa'}</span></button>
       </div>
     </div>
+  </>;
+}
+
+/** Expense category of an outgoing EVC Plus payment (counts towards budgets and the category chart). */
+function TxCategory({ messageId, value, onSaved }: { messageId: string; value: string | null; onSaved: () => void }) {
+  const cats = useCategories();
+  const [open, setOpen] = useState(false);
+  const [pick, setPick] = useState<string | null>(value);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const info = cats.get(value);
+  async function save() {
+    setBusy(true); setError(null);
+    try { await api(`/messages/${messageId}/category`, { method: 'PUT', body: { category: pick } }); onSaved(); invalidateAll(); setOpen(false); }
+    catch (e) { setError(offlineAware(e)); } finally { setBusy(false); }
+  }
+  return <>
+    <button type="button" id="txCategoryBtn" onClick={() => { setPick(value); setOpen(true); }} className="card w-full text-left px-4 py-3.5 flex items-center gap-3 active:bg-surface-container-low">
+      <CategoryIcon info={info} />
+      <div className="flex-1 min-w-0"><div className="text-[12.5px] font-semibold text-on-surface-variant">{t('Qaybta qarashka', 'Expense category')}</div>
+        <div className="text-[15.5px] font-bold text-on-surface break-words">{value ? info.label : t('Dooro qayb', 'Choose a category')}</div></div>
+      <Icon name="chevron_right" className="text-on-surface-variant" /></button>
+    {open && <Sheet open onClose={() => setOpen(false)} title={t('Qaybta qarashka', 'Expense category')}>
+      <div className="overflow-y-auto max-h-[calc(60dvh/var(--app-zoom,1))] -mx-1 px-1"><CategoryGrid cats={cats} value={pick} onPick={setPick} allowNone /></div>
+      {error && <Banner tone="error" icon="error">{error}</Banner>}
+      <button type="button" disabled={busy} onClick={save} className="min-h-[52px] py-2 px-5 rounded-2xl text-[16px] font-bold flex items-center justify-center gap-2 pressable disabled:opacity-55 bg-primary-container text-on-primary leading-tight"><Icon name="check" className="text-[20px]" />{t('Kaydi', 'Save')}</button>
+    </Sheet>}
   </>;
 }

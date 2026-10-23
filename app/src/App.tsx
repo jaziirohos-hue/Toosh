@@ -12,6 +12,7 @@ import { Dhaqdhaqaaq } from './screens/Dhaqdhaqaaq.tsx';
 import { Fariimaha } from './screens/Fariimaha.tsx';
 import { Guud } from './screens/Guud.tsx';
 import { KalaSaar } from './screens/KalaSaar.tsx';
+import { Qarash } from './screens/Qarash.tsx';
 import { SourceSetup } from './screens/SourceSetup.tsx';
 
 const LOCK_AFTER_MS = 30000;
@@ -57,6 +58,7 @@ function Shell() {
   if (page === 'fariimaha') screen = <Fariimaha key={arg ?? 'all'} initialFilter={arg} />;
   else if (page === 'fariin' && arg) { screen = <KalaSaar key={arg} id={arg} />; nav = false; }
   else if (page === 'dhaqdhaqaaq') screen = <Dhaqdhaqaaq />;
+  else if (page === 'qarash') screen = <Qarash key={arg ?? 'list'} initialTab={arg} />;
   else if (page === 'dejinta') screen = <Dejinta />;
   else if (page === 'taleefanka-asalka') { screen = <SourceSetup />; nav = false; }
   else screen = <Guud />;

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 import { App } from './App.tsx';
 import { isNativeAndroid, TooshNative } from './lib/native.ts';
+import { applyLook, readPrefs } from './lib/session.tsx';
 
 /**
  * Follow the phone's font size by scaling the whole screen (text and the boxes around it together), between 90% and
@@ -20,4 +21,5 @@ async function applyFontScale() {
   } catch { /* keep 100% */ }
 }
 
+applyLook(readPrefs());
 applyFontScale().finally(() => createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>));

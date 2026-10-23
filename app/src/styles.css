@@ -124,3 +124,107 @@
 dialog[open] { animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .hero-gradient { background: radial-gradient(120% 140% at 100% 0%, #13895a 0%, rgba(19, 137, 90, 0) 55%), linear-gradient(160deg, #0a6b3f 0%, #05472a 100%); }
 @media (prefers-reduced-motion: reduce) { .screen-in, dialog[open] { animation: none; } }
+
+/* Dark theme: same colour roles with dark surfaces. Dejinta chooses system / light / dark. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: #0f1713;
+  --color-surface: #0f1713;
+  --color-surface-bright: #2a362f;
+  --color-surface-dim: #0f1713;
+  --color-surface-container-lowest: #16211b;
+  --color-surface-container-low: #1b2720;
+  --color-surface-container: #202c25;
+  --color-surface-container-high: #28352d;
+  --color-surface-container-highest: #334038;
+  --color-surface-variant: #28352d;
+  --color-on-surface: #e3ece6;
+  --color-on-background: #e3ece6;
+  --color-on-surface-variant: #a9b8ae;
+  --color-outline: #7f8d84;
+  --color-outline-variant: #36433b;
+  --color-primary: #9fe0b9;
+  --color-primary-container: #2e9160;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #d3f5e0;
+  --color-primary-fixed: #123d27;
+  --color-primary-fixed-dim: #9fe0b9;
+  --color-on-primary-fixed: #d3f5e0;
+  --color-on-primary-fixed-variant: #9fe0b9;
+  --color-secondary: #93ccff;
+  --color-secondary-container: #0b67a8;
+  --color-on-secondary: #00253f;
+  --color-on-secondary-container: #dcecfb;
+  --color-secondary-fixed: #10324b;
+  --color-secondary-fixed-dim: #93ccff;
+  --color-on-secondary-fixed: #dcecfb;
+  --color-on-secondary-fixed-variant: #93ccff;
+  --color-tertiary: #ffb95f;
+  --color-tertiary-container: #b06b06;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #ffecd1;
+  --color-tertiary-fixed: #3a2708;
+  --color-tertiary-fixed-dim: #ffb95f;
+  --color-on-tertiary-fixed: #ffecd1;
+  --color-on-tertiary-fixed-variant: #ffcf8f;
+  --color-error: #ff8a80;
+  --color-on-error: #3b0905;
+  --color-error-container: #4a1611;
+  --color-on-error-container: #ffdad5;
+  --color-inverse-surface: #e3ece6;
+  --color-inverse-on-surface: #1a2a21;
+  --color-inverse-primary: #0a6b3f;
+  --color-surface-tint: #9fe0b9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-background: #0f1713;
+  --color-surface: #0f1713;
+  --color-surface-bright: #2a362f;
+  --color-surface-dim: #0f1713;
+  --color-surface-container-lowest: #16211b;
+  --color-surface-container-low: #1b2720;
+  --color-surface-container: #202c25;
+  --color-surface-container-high: #28352d;
+  --color-surface-container-highest: #334038;
+  --color-surface-variant: #28352d;
+  --color-on-surface: #e3ece6;
+  --color-on-background: #e3ece6;
+  --color-on-surface-variant: #a9b8ae;
+  --color-outline: #7f8d84;
+  --color-outline-variant: #36433b;
+  --color-primary: #9fe0b9;
+  --color-primary-container: #2e9160;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #d3f5e0;
+  --color-primary-fixed: #123d27;
+  --color-primary-fixed-dim: #9fe0b9;
+  --color-on-primary-fixed: #d3f5e0;
+  --color-on-primary-fixed-variant: #9fe0b9;
+  --color-secondary: #93ccff;
+  --color-secondary-container: #0b67a8;
+  --color-on-secondary: #00253f;
+  --color-on-secondary-container: #dcecfb;
+  --color-secondary-fixed: #10324b;
+  --color-secondary-fixed-dim: #93ccff;
+  --color-on-secondary-fixed: #dcecfb;
+  --color-on-secondary-fixed-variant: #93ccff;
+  --color-tertiary: #ffb95f;
+  --color-tertiary-container: #b06b06;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #ffecd1;
+  --color-tertiary-fixed: #3a2708;
+  --color-tertiary-fixed-dim: #ffb95f;
+  --color-on-tertiary-fixed: #ffecd1;
+  --color-on-tertiary-fixed-variant: #ffcf8f;
+  --color-error: #ff8a80;
+  --color-on-error: #3b0905;
+  --color-error-container: #4a1611;
+  --color-on-error-container: #ffdad5;
+  --color-inverse-surface: #e3ece6;
+  --color-inverse-on-surface: #1a2a21;
+  --color-inverse-primary: #0a6b3f;
+  --color-surface-tint: #9fe0b9;
+  }
+}

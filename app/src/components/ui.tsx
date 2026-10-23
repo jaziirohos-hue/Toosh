@@ -1,6 +1,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { money, masked, shortDateTime } from '../lib/format.ts';
 import { navigate } from '../lib/router.ts';
+import { t } from '../lib/i18n.ts';
+import { useSession } from '../lib/session.tsx';
 import { useConnection } from '../lib/sync.ts';
 import type { Message } from '../lib/types.ts';
 
@@ -21,11 +23,12 @@ export function ConnectionPill() {
 }
 
 /** Top app bar. Main tabs show the screen name as a large title; inner screens show a back arrow and title. */
-export function Header({ subtitle, back, title }: { subtitle?: string; msisdn?: string | null; back?: () => void; title?: string }) {
+export function Header({ subtitle, back, title, action }: { subtitle?: string; msisdn?: string | null; back?: () => void; title?: string; action?: ReactNode }) {
   return <header className="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe">
     <div className="@container h-16 px-4 flex items-center gap-2.5 max-w-md mx-auto">
       {back && <button aria-label="Dib u noqo" onClick={back} className="w-10 h-10 -ml-1.5 rounded-full flex items-center justify-center text-on-surface active:bg-surface-container-high transition-colors"><Icon name="arrow_back" /></button>}
       <h1 className={`flex-1 min-w-0 truncate text-on-surface tracking-tight ${back ? 'text-[18px] font-bold' : 'text-[clamp(17px,7.2cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
+      {action}
       {!back && <>
         <ConnectionPill />
         <button aria-label="Akoonka iyo dejinta" onClick={() => navigate('dejinta')} className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shrink-0 pressable"><Icon name="person" fill className="text-on-primary text-[20px]" /></button>
@@ -48,7 +51,7 @@ export function BottomNav({ active, pending }: { active: string; pending: number
   };
   return <nav className="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant/40 pb-safe">
     <div className="@container max-w-md mx-auto flex items-stretch h-[68px] px-1">
-      {item('guud', 'space_dashboard', 'Guud')}{item('fariimaha', 'sms', 'Fariimaha', pending)}{item('dhaqdhaqaaq', 'swap_vert', 'Dhaqdhaqaaq')}{item('dejinta', 'settings', 'Dejinta')}
+      {item('guud', 'space_dashboard', t('Guud', 'Home'))}{item('fariimaha', 'sms', t('Fariimaha', 'Messages'), pending)}{item('qarash', 'payments', t('Qarash', 'Expenses'))}{item('dhaqdhaqaaq', 'swap_vert', t('Dhaqdhaqaaq', 'Activity'))}{item('dejinta', 'settings', t('Dejinta', 'Settings'))}
     </div>
   </nav>;
 }
@@ -85,6 +88,7 @@ export function Banner({ tone, icon, children }: { tone: 'info' | 'warn' | 'erro
 
 /** Transaction row for grouped lists (Guud, Dhaqdhaqaaq). The parent <Group> provides the card. */
 export function TxRow({ m, tz }: { m: Message; tz: string; variant?: 'guud' | 'list' }) {
+  const { show } = useAmounts();
   const t = m.transaction!;
   const out = t.direction === 'OUT';
   const manual = m.classificationSource === 'MANUAL';
@@ -100,8 +104,8 @@ export function TxRow({ m, tz }: { m: Message; tz: string; variant?: 'guud' | 'l
       {manual && <span className="inline-flex items-center gap-1 mt-1 px-2 py-[3px] rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11.5px] leading-none font-semibold"><Icon name="edit" className="text-[12px]" />Gacanta lagu saxay</span>}
     </div>
     <div className="flex flex-col items-end shrink-0 pl-1 ml-auto">
-      <span className={`text-[16px] leading-[1.38] font-bold tracking-tight ${out ? 'text-on-surface' : 'text-primary-container'}`}>{money(t.amount, out ? '-' : '+')}</span>
-      {m.balance && <span className="text-[12px] leading-[1.33] text-on-surface-variant">{money(m.balance.amount)}</span>}
+      <span className={`text-[16px] leading-[1.38] font-bold tracking-tight ${out ? 'text-on-surface' : 'text-primary-container'}`}>{show(money(t.amount, out ? '-' : '+'))}</span>
+      {m.balance && <span className="text-[12px] leading-[1.33] text-on-surface-variant">{show(money(m.balance.amount))}</span>}
     </div>
   </button>;
 }
@@ -141,4 +145,19 @@ export function Button({ kind = 'primary', icon, children, className = '', spin,
     : kind === 'ghost' ? 'bg-transparent text-primary-container' : 'bg-surface-container text-on-surface';
   return <button {...rest} className={`min-h-[52px] py-2 px-5 rounded-2xl text-[16px] font-bold flex items-center justify-center gap-2 pressable disabled:opacity-55 ${cls} ${className} leading-tight`}>
     {icon && <Icon name={icon} className={`text-[20px] ${spin ? 'animate-spin' : ''}`} />}{children}</button>;
+}
+
+/** Amount privacy: when "hide amounts" is on, every money figure shows as ******. */
+export const HIDDEN = '******';
+export function useAmounts() {
+  const { prefs, setPrefs } = useSession();
+  const hidden = prefs.hideAmounts;
+  return { hidden, show: (text: string) => (hidden ? HIDDEN : text), toggle: () => setPrefs({ hideAmounts: !hidden }) };
+}
+/** Eye button that hides or shows all amounts (remembered on this device). */
+export function EyeToggle({ className = '' }: { className?: string }) {
+  const { hidden, toggle } = useAmounts();
+  return <button type="button" onClick={toggle} aria-pressed={hidden} aria-label={hidden ? t('Muuji lacagta', 'Show amounts') : t('Qari lacagta', 'Hide amounts')}
+    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 pressable ${className}`}>
+    <Icon name={hidden ? 'visibility_off' : 'visibility'} className="text-[21px]" /></button>;
 }
