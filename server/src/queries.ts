@@ -15,8 +15,8 @@ export function resolveRange(q: RangeQuery, tz: string, now = new Date()): { sta
   catch (e) { throw new ApiError(400, 'INVALID_PERIOD', (e as Error).message); }
 }
 
-function encodeCursor(t: Date | string, id: string) { return Buffer.from(JSON.stringify([new Date(t).toISOString(), id])).toString('base64url'); }
-function decodeCursor(c: string | undefined): [string, string] | null {
+export function encodeCursor(t: Date | string, id: string) { return Buffer.from(JSON.stringify([new Date(t).toISOString(), id])).toString('base64url'); }
+export function decodeCursor(c: string | undefined): [string, string] | null {
   if (!c) return null;
   try {
     const [t, id] = JSON.parse(Buffer.from(c, 'base64url').toString());
@@ -26,7 +26,7 @@ function decodeCursor(c: string | undefined): [string, string] | null {
 }
 
 /** Builds WHERE clauses with numbered parameters. */
-class Where {
+export class Where {
   parts: string[] = []; params: unknown[] = [];
   add(sql: string, ...values: unknown[]) {
     let s = sql;

@@ -12,6 +12,7 @@ import {
 import type { Config } from './config.ts';
 import { inTx, isUniqueViolation, withAccount, type Db, type Tx } from './db.ts';
 import { ChangeHub, notifyAccount } from './events.ts';
+import { registerFinanceRoutes } from './finance.ts';
 import { ApiError, classifyMessage, ingestBatch, type Actor } from './messages.ts';
 import { latestBalances, listMessages, listTransactions, messageDetail, summary } from './queries.ts';
 
@@ -156,7 +157,12 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
     const { rows } = await tx.query(`SELECT greatest(
         (SELECT coalesce(max(change_seq), 0) FROM messages WHERE account_id = $1),
         (SELECT coalesce(max(change_seq), 0) FROM devices WHERE account_id = $1),
-        (SELECT coalesce(max(change_seq), 0) FROM evc_numbers WHERE account_id = $1))::text AS seq`, [A(req).accountId]);
+        (SELECT coalesce(max(change_seq), 0) FROM evc_numbers WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM expenses WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM expense_categories WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM transaction_categories WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM budgets WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM savings_goals WHERE account_id = $1))::text AS seq`, [A(req).accountId]);
     return { seq: rows[0].seq };
   }));
 
@@ -366,12 +372,18 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
   // Reading and classifying
   // -------------------------------------------------------------------------------------------------------------
   app.get('/api/v1/messages', { preHandler: authed }, async req => scoped(req, tx => listMessages(tx, A(req).accountId, A(req).timezone, req.query as any)));
-  app.get<{ Params: { id: string } }>('/api/v1/messages/:id', { preHandler: authed }, async req => scoped(req, tx => messageDetail(tx, A(req).accountId, req.params.id)));
+  app.get<{ Params: { id: string } }>('/api/v1/messages/:id', { preHandler: authed }, async req => scoped(req, async tx => {
+    const detail = await messageDetail(tx, A(req).accountId, req.params.id);
+    const { rows } = await tx.query('SELECT category_key, custom_category_id FROM transaction_categories WHERE account_id = $1 AND message_id = $2', [A(req).accountId, req.params.id]);
+    return { ...detail, category: rows[0] ? (rows[0].category_key ?? `custom:${rows[0].custom_category_id}`) : null };
+  }));
   app.put<{ Params: { id: string } }>('/api/v1/messages/:id/classification', { preHandler: authed }, async req =>
     ({ message: await scoped(req, tx => classifyMessage(tx, A(req), req.params.id, req.body)) }));
   app.get('/api/v1/transactions', { preHandler: authed }, async req => scoped(req, tx => listTransactions(tx, A(req).accountId, A(req).timezone, req.query as any)));
   app.get('/api/v1/summary', { preHandler: authed }, async req => scoped(req, tx => summary(tx, A(req).accountId, A(req).timezone, req.query as any)));
   app.get('/api/v1/balances', { preHandler: authed }, async req => scoped(req, async tx => ({ balances: await latestBalances(tx, A(req).accountId) })));
+
+  registerFinanceRoutes(app, { authed, scoped, ctx: A });
 
   /** Server-sent events: "something changed for this account". Clients refetch what they show. */
   app.get('/api/v1/events', { preHandler: authed }, async (req, reply) => {

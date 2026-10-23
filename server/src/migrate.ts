@@ -19,6 +19,11 @@ export async function grantRuntimeRole(db: Db, role: string) {
     `REVOKE ALL ON schema_migrations FROM ${role}`,
     `GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ${role}`,
     `GRANT EXECUTE ON FUNCTION app_setting(text), app_account() TO ${role}`,
+    // 002: expenses and budgets. Expenses and categories are hidden/archived, never deleted; a budget or an EVC
+    // payment's category can be removed.
+    `GRANT SELECT, INSERT, UPDATE ON expense_categories, expenses, savings_goals TO ${role}`,
+    `GRANT SELECT, INSERT, UPDATE, DELETE ON transaction_categories, budgets TO ${role}`,
+    `GRANT EXECUTE ON FUNCTION is_builtin_category(text) TO ${role}`,
   ];
   for (const statement of sql) await db.query(statement);
 }
