@@ -14,7 +14,7 @@ export const Logo = ({ className = 'h-8 w-8' }: { className?: string }) => <img 
 /** "Isku xiran" pill: reflects the real connection to the server. */
 export function ConnectionPill() {
   const c = useConnection();
-  const label = c === 'online' ? 'Isku xiran' : c === 'connecting' ? 'Isku xirmaya' : 'Offline';
+  const label = c === 'online' ? t('Isku xiran', 'Connected') : c === 'connecting' ? t('Isku xirmaya', 'Connecting') : 'Offline';
   const dot = c === 'online' ? 'bg-primary-container' : c === 'connecting' ? 'bg-secondary animate-pulse' : 'bg-outline';
   return <div role="status" aria-live="polite" className="flex items-center gap-1.5 min-h-8 py-1 pl-2.5 pr-3 @max-[330px]:px-3 rounded-full bg-surface-container-lowest border border-outline-variant/50 leading-tight shrink-0">
     <span className="relative flex w-2 h-2">{c === 'online' && <span className="absolute inset-0 rounded-full bg-primary-container/40 animate-ping" />}<span className={`relative w-2 h-2 rounded-full ${dot}`} /></span>
@@ -26,12 +26,12 @@ export function ConnectionPill() {
 export function Header({ subtitle, back, title, action }: { subtitle?: string; msisdn?: string | null; back?: () => void; title?: string; action?: ReactNode }) {
   return <header className="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe">
     <div className="@container h-16 px-4 flex items-center gap-2.5 max-w-md mx-auto">
-      {back && <button aria-label="Dib u noqo" onClick={back} className="w-10 h-10 -ml-1.5 rounded-full flex items-center justify-center text-on-surface active:bg-surface-container-high transition-colors"><Icon name="arrow_back" /></button>}
+      {back && <button aria-label={t('Dib u noqo', 'Back')} onClick={back} className="w-10 h-10 -ml-1.5 rounded-full flex items-center justify-center text-on-surface active:bg-surface-container-high transition-colors"><Icon name="arrow_back" /></button>}
       <h1 className={`flex-1 min-w-0 truncate text-on-surface tracking-tight ${back ? 'text-[18px] font-bold' : 'text-[clamp(17px,7.2cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
       {action}
       {!back && <>
         <ConnectionPill />
-        <button aria-label="Akoonka iyo dejinta" onClick={() => navigate('dejinta')} className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shrink-0 pressable"><Icon name="person" fill className="text-on-primary text-[20px]" /></button>
+        <button aria-label={t('Akoonka iyo dejinta', 'Account and settings')} onClick={() => navigate('dejinta')} className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shrink-0 pressable"><Icon name="person" fill className="text-on-primary text-[20px]" /></button>
       </>}
     </div>
   </header>;
@@ -51,7 +51,7 @@ export function BottomNav({ active, pending }: { active: string; pending: number
   };
   return <nav className="fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant/40 pb-safe">
     <div className="@container max-w-md mx-auto flex items-stretch h-[68px] px-1">
-      {item('guud', 'space_dashboard', t('Guud', 'Home'))}{item('fariimaha', 'sms', t('Fariimaha', 'Messages'), pending)}{item('qarash', 'payments', t('Qarash', 'Expenses'))}{item('dhaqdhaqaaq', 'swap_vert', t('Dhaqdhaqaaq', 'Activity'))}{item('dejinta', 'settings', t('Dejinta', 'Settings'))}
+      {item('guud', 'space_dashboard', t('Guud', 'Home'))}{item('fariimaha', 'sms', t('Fariimaha', 'Messages'), pending)}{item('qarash', 'payments', t('Qarash', 'Expenses'))}{item('dhaqdhaqaaq', 'swap_vert', t('Taariikh', 'Activity'))}{item('dejinta', 'settings', t('Dejinta', 'Settings'))}
     </div>
   </nav>;
 }
@@ -89,11 +89,11 @@ export function Banner({ tone, icon, children }: { tone: 'info' | 'warn' | 'erro
 /** Transaction row for grouped lists (Guud, Dhaqdhaqaaq). The parent <Group> provides the card. */
 export function TxRow({ m, tz }: { m: Message; tz: string; variant?: 'guud' | 'list' }) {
   const { show } = useAmounts();
-  const t = m.transaction!;
-  const out = t.direction === 'OUT';
+  const tx = m.transaction!;
+  const out = tx.direction === 'OUT';
   const manual = m.classificationSource === 'MANUAL';
-  const name = t.counterpartyName ?? (t.counterpartyPhone ? masked(t.counterpartyPhone) : out ? 'Lacag baxday' : 'Lacag soo gashay');
-  const subParts = [shortDateTime(t.occurredAt, tz), t.counterpartyName && t.counterpartyPhone ? masked(t.counterpartyPhone) : out ? 'Baxay' : 'Soo galay'];
+  const name = tx.counterpartyName ?? (tx.counterpartyPhone ? masked(tx.counterpartyPhone) : out ? t('Lacag baxday', 'Money sent') : t('Lacag soo gashay', 'Money received'));
+  const subParts = [shortDateTime(tx.occurredAt, tz), tx.counterpartyName && tx.counterpartyPhone ? masked(tx.counterpartyPhone) : out ? t('Baxay', 'Sent') : t('Soo galay', 'Received')];
   return <button type="button" onClick={() => navigate(`fariin/${m.id}`)}
     className="w-full text-left flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3.5 active:bg-surface-container-low transition-colors">
     <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${out ? 'bg-error-container text-on-error-container' : 'bg-primary-fixed text-on-primary-fixed-variant'}`}>
@@ -101,10 +101,10 @@ export function TxRow({ m, tz }: { m: Message; tz: string; variant?: 'guud' | 'l
     <div className="flex-1 min-w-[130px]">
       <div className="text-[15.5px] leading-[1.3] font-semibold text-on-surface line-clamp-2 break-words">{name}</div>
       <div className="text-[13px] leading-[1.38] text-on-surface-variant">{subParts.map((p, i) => <span key={i}>{i ? ' · ' : ''}<span className="whitespace-nowrap">{p}</span></span>)}</div>
-      {manual && <span className="inline-flex items-center gap-1 mt-1 px-2 py-[3px] rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11.5px] leading-none font-semibold"><Icon name="edit" className="text-[12px]" />Gacanta lagu saxay</span>}
+      {manual && <span className="inline-flex items-center gap-1 mt-1 px-2 py-[3px] rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11.5px] leading-none font-semibold"><Icon name="edit" className="text-[12px]" />{t('Gacanta lagu saxay', 'Corrected by hand')}</span>}
     </div>
     <div className="flex flex-col items-end shrink-0 pl-1 ml-auto">
-      <span className={`text-[16px] leading-[1.38] font-bold tracking-tight ${out ? 'text-on-surface' : 'text-primary-container'}`}>{show(money(t.amount, out ? '-' : '+'))}</span>
+      <span className={`text-[16px] leading-[1.38] font-bold tracking-tight ${out ? 'text-on-surface' : 'text-primary-container'}`}>{show(money(tx.amount, out ? '-' : '+'))}</span>
       {m.balance && <span className="text-[12px] leading-[1.33] text-on-surface-variant">{show(money(m.balance.amount))}</span>}
     </div>
   </button>;
@@ -119,7 +119,7 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
     <div className="px-5 pt-2.5 pb-safe flex flex-col gap-4">
       <div className="mx-auto w-9 h-1 rounded-full bg-outline-variant" />
       <div className="flex items-center justify-between -mt-1"><h2 className="text-[20px] font-bold tracking-tight">{title}</h2>
-        <button aria-label="Xir" onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-low active:bg-surface-container"><Icon name="close" className="text-[20px]" /></button></div>
+        <button aria-label={t('Xir', 'Close')} onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-low active:bg-surface-container"><Icon name="close" className="text-[20px]" /></button></div>
       {children}
       <div className="h-2" />
     </div>

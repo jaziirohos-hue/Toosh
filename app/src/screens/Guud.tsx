@@ -41,28 +41,28 @@ export function Guud() {
   }
 
   // Sync line: separates "last contact" from "last successful data sync", and shows this phone's own queue.
-  let syncTitle = 'Isku-xirka: Guuleystay'; let syncIcon = 'check_circle'; let syncTone = 'text-primary-container';
+  let syncTitle = t('Isku-xirka: Guuleystay', 'Sync: OK'); let syncIcon = 'check_circle'; let syncTone = 'text-primary-container';
   let syncDetail = '';
-  if (!source) { syncTitle = 'Taleefanka asalka weli lama xirin'; syncIcon = 'phonelink_off'; syncTone = 'text-tertiary-container'; syncDetail = 'Ku xir taleefanka Android ee SIM-ka EVC leh si fariimaha loo helo.'; }
+  if (!source) { syncTitle = t('Taleefanka asalka weli lama xirin', 'No source phone connected yet'); syncIcon = 'phonelink_off'; syncTone = 'text-tertiary-container'; syncDetail = t('Ku xir taleefanka Android ee SIM-ka EVC leh si fariimaha loo helo.', 'Connect the Android phone with the EVC SIM to receive messages.'); }
   else {
     const failed = thisIsSource ? native?.queue.failed ?? 0 : source.queueFailed ?? 0;
     const pending = thisIsSource ? (native?.queue.pending ?? 0) + (native?.queue.uploading ?? 0) : source.queuePending ?? 0;
     const permissionOff = thisIsSource ? native?.smsPermission !== 'GRANTED' : source.smsPermission === 'DENIED';
     const uploadAt = thisIsSource ? native?.lastUploadAt ?? source.lastUploadAt : source.lastUploadAt;
-    if (permissionOff) { syncTitle = 'Ogolaanshaha SMS waa xiran yahay'; syncIcon = 'sms_failed'; syncTone = 'text-error'; }
-    else if (thisIsSource && native?.authProblem) { syncTitle = 'Aaladdan lama aqbalin'; syncIcon = 'error'; syncTone = 'text-error'; }
-    else if (failed > 0) { syncTitle = `${failed} fariimood way fashilmeen`; syncIcon = 'error'; syncTone = 'text-error'; }
-    else if (pending > 0) { syncTitle = `${pending} fariimood ayaa sugaya dirid`; syncIcon = 'schedule'; syncTone = 'text-secondary'; }
-    else if (!sourceActive) { syncTitle = 'Taleefanka asalka muddo ma soo xirmin'; syncIcon = 'cloud_off'; syncTone = 'text-tertiary-container'; }
-    syncDetail = `La waafajiyay ${uploadAt ? shortDateTime(uploadAt, tz) : 'weli'} · La xiriiray ${ago(source.lastSeenAt)}`;
+    if (permissionOff) { syncTitle = t('Ogolaanshaha SMS waa xiran yahay', 'SMS permission is off'); syncIcon = 'sms_failed'; syncTone = 'text-error'; }
+    else if (thisIsSource && native?.authProblem) { syncTitle = t('Aaladdan lama aqbalin', 'This device was not accepted'); syncIcon = 'error'; syncTone = 'text-error'; }
+    else if (failed > 0) { syncTitle = t(`${failed} fariimood way fashilmeen`, `${failed} messages failed`); syncIcon = 'error'; syncTone = 'text-error'; }
+    else if (pending > 0) { syncTitle = t(`${pending} fariimood ayaa sugaya dirid`, `${pending} messages waiting to send`); syncIcon = 'schedule'; syncTone = 'text-secondary'; }
+    else if (!sourceActive) { syncTitle = t('Taleefanka asalka muddo ma soo xirmin', 'The source phone has not connected for a while'); syncIcon = 'cloud_off'; syncTone = 'text-tertiary-container'; }
+    syncDetail = `${t('La waafajiyay', 'Synced')} ${uploadAt ? shortDateTime(uploadAt, tz) : t('weli', 'never')} · ${t('La xiriiray', 'Contacted')} ${ago(source.lastSeenAt)}`;
   }
 
   const stale = balance ? Date.now() - Date.parse(balance.effectiveAt) > STALE_BALANCE_MS : false;
-  const sourceLabel = source ? (sourceActive ? 'Firfircoon' : 'Aamusan') : 'Ma xirna';
+  const sourceLabel = source ? (sourceActive ? t('Firfircoon', 'Active') : t('Aamusan', 'Quiet')) : t('Ma xirna', 'Not connected');
   const syncOk = syncIcon === 'check_circle';
 
   return <>
-    <Header subtitle="Guud" msisdn={number?.msisdn} />
+    <Header subtitle={t('Guud', 'Home')} msisdn={number?.msisdn} />
     <Main>
       <section className="hero-gradient relative overflow-hidden rounded-[28px] text-on-primary p-5 shadow-[0_18px_40px_-18px_rgba(5,71,42,0.75)]">
         <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full border-[28px] border-white/[0.04] pointer-events-none" />
@@ -78,15 +78,15 @@ export function Guud() {
             {me!.evcNumbers.length > 1 && <Icon name="expand_more" className="text-[16px] -mr-1" />}</span>
         </button>
 
-        <div className="relative mt-5 flex items-center gap-1.5 text-[13px] font-medium text-white/75"><Icon name="account_balance_wallet" className="text-[16px]" /><span className="flex-1">Haraaga EVC Plus</span>
+        <div className="relative mt-5 flex items-center gap-1.5 text-[13px] font-medium text-white/75"><Icon name="account_balance_wallet" className="text-[16px]" /><span className="flex-1">{t('Haraaga EVC Plus', 'EVC Plus balance')}</span>
           <EyeToggle className="-mr-2 -my-2 text-white/85 active:bg-white/10" /></div>
         <div className="relative mt-1 flex items-baseline gap-2">
           <span data-testid="balance" className="text-[clamp(24px,12.5cqw,40px)] leading-[1.25] whitespace-nowrap font-extrabold tracking-[-0.02em]">{balance ? show(money(balance.amount)) : '—'}</span>
           <span className="text-[14px] font-semibold text-white/70">USD</span>
         </div>
         <p className="relative mt-1 text-[12.5px] leading-[1.36] text-white/70">
-          {balance ? <>SMS-kii u dambeeyay · {shortDateTime(balance.effectiveAt, tz)}{stale && <span className="text-tertiary-fixed-dim font-semibold"> · Xog hore — sug fariin cusub</span>}</>
-            : 'Weli haraag lama helin. Wuxuu ka imaanayaa fariimaha EVC Plus.'}
+          {balance ? <>{t('SMS-kii u dambeeyay', 'Latest SMS')} · {shortDateTime(balance.effectiveAt, tz)}{stale && <span className="text-tertiary-fixed-dim font-semibold"> · {t('Xog hore — sug fariin cusub', 'Old — wait for a new message')}</span>}</>
+            : t('Weli haraag lama helin. Wuxuu ka imaanayaa fariimaha EVC Plus.', 'No balance yet. It comes from EVC Plus messages.')}
         </p>
       </section>
 
@@ -96,39 +96,39 @@ export function Guud() {
           <div className="text-[14.5px] leading-[1.38] font-semibold text-on-surface break-words">{syncTitle}</div>
           {syncDetail && <div className="text-[12.5px] leading-[1.36] text-on-surface-variant">{syncDetail}</div>}
         </div>
-        {source ? <button aria-label="Dib u eeg fariimaha" onClick={refresh} className="w-11 h-11 rounded-full flex items-center justify-center text-primary-container active:bg-surface-container-low shrink-0">
+        {source ? <button aria-label={t('Dib u eeg fariimaha', 'Check for messages')} onClick={refresh} className="w-11 h-11 rounded-full flex items-center justify-center text-primary-container active:bg-surface-container-low shrink-0">
           <Icon name="refresh" className={`text-[22px] ${refreshing ? 'animate-spin' : ''}`} /></button>
-          : <button onClick={() => navigate('taleefanka-asalka')} className="min-h-9 py-1 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-bold shrink-0 pressable leading-tight">Dejin</button>}
+          : <button onClick={() => navigate('taleefanka-asalka')} className="min-h-9 py-1 px-3.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[13px] font-bold shrink-0 pressable leading-tight">{t('Dejin', 'Set up')}</button>}
       </div>
-      {(connection === 'offline' || summary.stale) && <Banner tone="info" icon="cloud_off">Khadka wuu go'anyahay — xogtani waa tii ugu dambaysay{summary.savedAt ? ` (${shortDateTime(summary.savedAt, tz)})` : ''}.</Banner>}
+      {(connection === 'offline' || summary.stale) && <Banner tone="info" icon="cloud_off">{t("Khadka wuu go'anyahay — xogtani waa tii ugu dambaysay", 'Offline — this is the last saved data')}{summary.savedAt ? ` (${shortDateTime(summary.savedAt, tz)})` : ''}.</Banner>}
 
       {s && s.pendingCount > 0 && <div className="rounded-[20px] bg-tertiary-fixed p-4 flex flex-col gap-3">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center shrink-0"><Icon name="pending_actions" className="text-on-tertiary text-[21px]" /></div>
           <div className="flex-1 min-w-0 pt-0.5">
-            <span className="block text-[15px] leading-[1.33] font-bold text-on-tertiary-fixed">{s.pendingCount} Fariimood waxay u baahan yihiin kala saarid</span>
-            <span className="block text-[13px] leading-[1.38] text-on-tertiary-fixed-variant mt-0.5">Laguma darin wadarta ilaa la kala saaro.</span>
+            <span className="block text-[15px] leading-[1.33] font-bold text-on-tertiary-fixed">{t(`${s.pendingCount} Fariimood waxay u baahan yihiin kala saarid`, `${s.pendingCount} messages need review`)}</span>
+            <span className="block text-[13px] leading-[1.38] text-on-tertiary-fixed-variant mt-0.5">{t('Laguma darin wadarta ilaa la kala saaro.', 'Not counted in totals until reviewed.')}</span>
           </div>
         </div>
         <button onClick={() => navigate('fariimaha/pending')} aria-label={`Kala saar hadda (${s.pendingCount})`} className="min-h-11 py-1.5 rounded-full bg-tertiary-container text-on-tertiary text-[14.5px] font-bold flex items-center justify-center gap-1.5 pressable leading-tight">
-          Kala saar hadda<Icon name="arrow_forward" className="text-[18px]" /></button>
+          {t('Kala saar hadda', 'Review now')}<Icon name="arrow_forward" className="text-[18px]" /></button>
       </div>}
 
       <PeriodChips value={period} onChange={setPeriod} tz={tz} />
 
       <div className="grid grid-cols-1 @min-[330px]:grid-cols-2 gap-3">
         {(['IN', 'OUT'] as const).map(dir => {
-          const t = dir === 'IN' ? s?.incoming : s?.outgoing;
+          const tot = dir === 'IN' ? s?.incoming : s?.outgoing;
           const inn = dir === 'IN';
           return <div key={dir} className="card p-4 flex flex-col gap-3">
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${inn ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-error-container text-on-error-container'}`}>
                 <Icon name={inn ? 'south_west' : 'north_east'} className="text-[18px]" /></div>
-              <span className="text-[13.5px] font-semibold text-on-surface-variant">{inn ? 'Soo galay' : 'Baxay'}</span>
+              <span className="text-[13.5px] font-semibold text-on-surface-variant">{inn ? t('Soo galay', 'Received') : t('Baxay', 'Sent')}</span>
             </div>
             <div>
-              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[clamp(18px,5.6cqw,22px)] leading-[1.25] font-extrabold tracking-tight break-all ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{t ? show(money(t.total, inn ? '+' : '-')) : '—'}</span>
-              <span className="text-[12.5px] text-on-surface-variant">{t ? `${t.count} jeer` : '—'}</span>
+              <span data-testid={inn ? 'total-in' : 'total-out'} className={`block text-[clamp(18px,5.6cqw,22px)] leading-[1.25] font-extrabold tracking-tight break-all ${inn ? 'text-primary-container' : 'text-on-surface'}`}>{tot ? show(money(tot.total, inn ? '+' : '-')) : '—'}</span>
+              <span className="text-[12.5px] text-on-surface-variant">{tot ? t(`${tot.count} jeer`, `${tot.count} times`) : '—'}</span>
             </div>
           </div>;
         })}
@@ -136,18 +136,18 @@ export function Guud() {
 
       {finance.data && <MoneyOverview f={finance.data} />}
 
-      <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">Dhammaan<Icon name="chevron_right" className="text-[20px]" /></a>}>
-        Dhaqdhaqaaqyada</SectionTitle>
+      <SectionTitle action={<a className="text-[14px] font-bold text-primary-container flex items-center active:opacity-70" href="#/dhaqdhaqaaq">{t('Dhammaan', 'All')}<Icon name="chevron_right" className="text-[20px]" /></a>}>
+        {t('Dhaqdhaqaaqyada', 'Activity')}</SectionTitle>
       {summary.error && !s && <Banner tone="error" icon="error">{summary.error.message}</Banner>}
-      {!s && summary.loading && <Spinner label="Xogta waa la soo qaadayaa…" />}
-      {s && !s.recent.length && <EmptyState icon="receipt_long" title="Weli wax dhaqdhaqaaq ah ma jiraan" text="Muddadan wax dhaqdhaqaaq ah oo la xaqiijiyay ma jiraan." />}
+      {!s && summary.loading && <Spinner label={t('Xogta waa la soo qaadayaa…', 'Loading…')} />}
+      {s && !s.recent.length && <EmptyState icon="receipt_long" title={t('Weli wax dhaqdhaqaaq ah ma jiraan', 'No activity yet')} text={t('Muddadan wax dhaqdhaqaaq ah oo la xaqiijiyay ma jiraan.', 'No confirmed activity in this period.')} />}
       {s && s.recent.length > 0 && <Group>{s.recent.map(m => <TxRow key={m.id} m={m} tz={tz} />)}</Group>}
 
       <div className="flex items-center justify-center gap-1.5 pt-1 pb-2 text-on-surface-variant/80">
-        <Icon name="lock" className="text-[14px]" /><span className="text-[12px] text-center">Toosh ma diro lacag — kaliya wuxuu akhriyaa fariimaha EVC Plus.</span>
+        <Icon name="lock" className="text-[14px]" /><span className="text-[12px] text-center">{t('Toosh ma diro lacag — kaliya wuxuu akhriyaa fariimaha EVC Plus.', 'Toosh never sends money — it only reads EVC Plus messages.')}</span>
       </div>
     </Main>
-    <Sheet open={pickNumber} onClose={() => setPickNumber(false)} title="Dooro lambarka EVC">
+    <Sheet open={pickNumber} onClose={() => setPickNumber(false)} title={t('Dooro lambarka EVC', 'Choose EVC number')}>
       {me!.evcNumbers.map(n => <button key={n.id} onClick={() => { setSelectedNumberId(n.id); setPickNumber(false); }}
         className={`flex items-center justify-between min-h-14 py-2 px-4 rounded-2xl ${n.id === selectedNumberId ? 'bg-primary-fixed' : 'bg-surface-container-low'} leading-tight`}>
         <span className="text-[16px] font-bold">{masked(n.msisdn)}</span><span className="text-[14px] text-on-surface-variant">{n.displayName}</span></button>)}

@@ -4,8 +4,9 @@ import { API_BASE, ApiFailure, api, loadNativeToken, setToken } from './api.ts';
 import { idbClear, idbGet, idbSet } from './idb.ts';
 import { isNativeAndroid, TooshNative, type NativeStatus } from './native.ts';
 import { clearOutbox, flushOutbox } from './outbox.ts';
+import { clearPin } from './pin.ts';
 import { setOfflineCopies, startLiveUpdates, stopLiveUpdates } from './sync.ts';
-import { setLanguage, type Language } from './i18n.ts';
+import { setLanguage, t, type Language } from './i18n.ts';
 import type { Currency, Me } from './types.ts';
 
 export interface DevicePrefs {
@@ -22,11 +23,11 @@ export interface DevicePrefs {
   budgetAlerts: boolean;
   /** Seconds the app may be in the background (or untouched) before it locks again. */
   lockAfter: number;
-  /** Offer fingerprint / face unlock alongside the app PIN. */
-  biometric: boolean;
+  /** App PIN lock is on (the PIN itself is a salted hash in lib/pin.ts). */
+  appLock: boolean;
 }
 const PREFS_KEY = 'toosh.prefs';
-const DEFAULT_PREFS: DevicePrefs = { lock: false, offlineCopies: true, hideAmounts: false, language: 'so', currency: 'USD', theme: 'system', budgetAlerts: true, lockAfter: 30, biometric: false };
+const DEFAULT_PREFS: DevicePrefs = { lock: false, offlineCopies: true, hideAmounts: false, language: 'so', currency: 'USD', theme: 'system', budgetAlerts: true, lockAfter: 30, appLock: false };
 export function readPrefs(): DevicePrefs {
   try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') }; } catch { return { ...DEFAULT_PREFS }; }
 }
@@ -46,7 +47,7 @@ interface SessionValue {
   tz: string;
   signedOutReason: string | null;
   refreshMe: () => Promise<void>;
-  signIn: (kind: 'login' | 'register' | 'pair', body: Record<string, unknown>) => Promise<Me>;
+  signIn: (kind: 'login' | 'register' | 'pair' | 'recover', body: Record<string, unknown>) => Promise<Me>;
   signOut: () => Promise<void>;
   selectedNumberId: string | null;
   setSelectedNumberId: (id: string) => void;
@@ -103,6 +104,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setToken(null);
     if (isNativeAndroid) await TooshNative.setSession({ token: null, accountId: null, apiBase: API_BASE, deviceId: null }).catch(() => {});
     await clearOutbox(); await idbClear();
+    // The app PIN and phone lock belong to the signed-in person; the next person to sign in starts without them.
+    clearPin();
+    setPrefsState(prev => { const next = { ...prev, appLock: false, lock: false, hideAmounts: false }; localStorage.setItem(PREFS_KEY, JSON.stringify(next)); return next; });
     setMe(null); setSelected(null); setSignedOutReason(reason); setStatus('signedOut');
   }, []);
 
@@ -114,7 +118,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       await refreshMe();
     })();
     // Only a device that was signed in is told its session ended; a first visit just shows the sign-in screen.
-    const onUnauth = () => { resetLocal(statusRef.current === 'signedIn' ? 'Fadhigaagu wuu dhacay ama aaladdan waa laga saaray akoonka. Fadlan dib u gal.' : null); };
+    const onUnauth = () => { resetLocal(statusRef.current === 'signedIn' ? t('Fadhigaagu wuu dhacay ama aaladdan waa laga saaray akoonka. Fadlan dib u gal.', 'Your session ended or this device was removed from the account. Please sign in again.') : null); };
     window.addEventListener('toosh:unauthenticated', onUnauth);
     return () => window.removeEventListener('toosh:unauthenticated', onUnauth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,7 +135,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => { clearInterval(t); handle?.remove(); };
   }, [status, refreshNative]);
 
-  const signIn = useCallback(async (kind: 'login' | 'register' | 'pair', body: Record<string, unknown>) => {
+  const signIn = useCallback(async (kind: 'login' | 'register' | 'pair' | 'recover', body: Record<string, unknown>) => {
     const device = isNativeAndroid
       ? { name: native?.deviceModel ?? 'Android', platform: 'android', model: native?.deviceModel ?? null, appVersion: native?.appVersion ?? null }
       : deviceDescriptor();

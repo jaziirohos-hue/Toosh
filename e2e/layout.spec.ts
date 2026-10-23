@@ -22,6 +22,12 @@ async function seed(request: import('@playwright/test').APIRequestContext) {
     sms(`[-EVCPlus-] $3.90 ayaad uwareejisay Axmed Nuur(615551288), Tar: ${tar(at(20))} Haraagaagu waa $12341.60.`, 20, 2),
     sms(`[-EVCPlus-] $7.00 waxaad u dirtay 615998822 Tariikh: ${tar(at(10))}.`, 10, 3),
   ] } });
+  const today = new Date().toISOString().slice(0, 10);
+  await request.post('/api/v1/expenses', { headers: auth, data: { name: 'Fiiska iskuulka carruurta ee bisha', amount: '125.50', currency: 'USD', category: 'iskuulka', spentOn: today, paymentStatus: 'UNPAID', description: 'Labada wiil' } });
+  await request.post('/api/v1/expenses', { headers: auth, data: { name: 'Khudaar iyo hilib', amount: '1250000', currency: 'SOS', category: 'caafimaadka', spentOn: today, paymentStatus: 'PAID' } });
+  await request.put('/api/v1/budgets', { headers: auth, data: { period: 'MONTHLY', amount: '5', currency: 'USD' } });
+  await request.put('/api/v1/budgets', { headers: auth, data: { period: 'WEEKLY', category: 'gaari_raac', amount: '100', currency: 'USD' } });
+  await request.post('/api/v1/goals', { headers: auth, data: { name: 'Gaari cusub oo qoyska loogu talagalay', target: '12000', saved: '3500', currency: 'USD', targetDate: '2027-06-30' } });
   return phone;
 }
 
@@ -46,10 +52,14 @@ for (const [width, zoom] of [[412, 1], [412, 1.3], [320, 1], [320, 1.3]] as cons
     await page.locator('#password').fill(PASSWORD);
     await page.getByRole('button', { name: /^Fur Toosh/ }).click();
     await expect(page.getByTestId('total-in')).toBeVisible();
-    for (const route of ['guud', 'fariimaha', 'dhaqdhaqaaq', 'dejinta']) {
+    for (const route of ['guud', 'fariimaha', 'qarash', 'qarash/miisaaniyad', 'qarash/hadaf', 'dhaqdhaqaaq', 'dejinta']) {
       await page.goto(`/#/${route}`);
       await audit(page, zoom, route);
     }
+    await page.goto('/#/qarash');
+    await page.locator('#addExpenseBtn').click();
+    await audit(page, zoom, 'expense form');
+    await page.keyboard.press('Escape');
     await page.goto('/#/fariimaha/pending');
     await page.getByRole('button', { name: 'Kala Saar Hadda' }).first().click();
     await expect(page.getByTestId('original-sms')).toBeVisible();
