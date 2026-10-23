@@ -148,7 +148,7 @@ export function Dejinta() {
 
       <Button id="signOutBtn" kind="danger" icon="logout" onClick={() => setConfirmOut(true)} className="mt-2">{t('Ka bax Akoonka', 'Sign out')}</Button>
       <div className="flex flex-col items-center text-center gap-1 pb-2">
-        <span className="text-[13px] font-semibold text-on-surface-variant">Toosh v{native?.appVersion ?? '1.3.0'} · {isNativeAndroid ? 'Android' : 'Web'}</span>
+        <span className="text-[13px] font-semibold text-on-surface-variant">Toosh v{native?.appVersion ?? '1.3.1'} · {isNativeAndroid ? 'Android' : 'Web'}</span>
         <span className="text-[12px] text-on-surface-variant/80">{t('Toosh weligii ma weydiiyo PIN-ka EVC Plus.', 'Toosh never asks for your EVC Plus PIN.')}</span>
       </div>
     </Main>
