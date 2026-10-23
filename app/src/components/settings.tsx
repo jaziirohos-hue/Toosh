@@ -3,6 +3,7 @@ import { api, type ApiFailure } from '../lib/api.ts';
 import { t } from '../lib/i18n.ts';
 import { isNativeAndroid, TooshNative } from '../lib/native.ts';
 import { checkPin, clearPin, hasPin, setPin, validPin } from '../lib/pin.ts';
+import { navigate } from '../lib/router.ts';
 import { useSession } from '../lib/session.tsx';
 import { Field, INPUT, offlineAware } from './finance.tsx';
 import { Banner, Button, Group, GroupLabel, Icon, Sheet, Toggle } from './ui.tsx';
@@ -58,6 +59,12 @@ export function SettingsSections({ flash, onError }: { flash: (text: string) => 
   const androidOnly = t('App-ka Android oo keliya', 'Android app only');
 
   return <>
+    <GroupLabel>SIM Card</GroupLabel>
+    <Group>
+      <SettingRow id="simCardsBtn" icon="sim_card" iconCls="bg-secondary-fixed text-on-secondary-fixed-variant" title={t('SIM Card-yadayda', 'My SIM cards')}
+        sub={t('Ku dar, beddel ama tirtir SIM Card-yada aad isticmaasho', 'Add, edit or delete the SIM cards you use')} onClick={() => navigate('sim-card')} />
+    </Group>
+
     <GroupLabel>{t('Akoonka', 'Account')}</GroupLabel>
     <Group>
       <SettingRow id="editNameBtn" icon="badge" title={t('Magaca', 'Name')} sub={me!.account.displayName} onClick={() => setSheet('name')} />

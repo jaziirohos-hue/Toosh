@@ -14,6 +14,7 @@ import { Guud } from './screens/Guud.tsx';
 import { KalaSaar } from './screens/KalaSaar.tsx';
 import { LockGate } from './screens/Lock.tsx';
 import { Qarash } from './screens/Qarash.tsx';
+import { SimCards } from './screens/SimCards.tsx';
 import { SourceSetup } from './screens/SourceSetup.tsx';
 
 function Shell() {
@@ -28,12 +29,13 @@ function Shell() {
   else if (page === 'dhaqdhaqaaq') screen = <Dhaqdhaqaaq />;
   else if (page === 'qarash') screen = <Qarash key={arg ?? 'list'} initialTab={arg} />;
   else if (page === 'dejinta') screen = <Dejinta />;
+  else if (page === 'sim-card') screen = <SimCards />;
   else if (page === 'taleefanka-asalka') { screen = <SourceSetup />; nav = false; }
   else screen = <Guud />;
   return <div className="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
     {meIsCached && <div className="fixed top-[calc(env(safe-area-inset-top,0px)+64px)] inset-x-0 z-40 flex justify-center pointer-events-none"><span className="px-3 min-h-7 py-0.5 flex items-center rounded-full bg-inverse-surface text-inverse-on-surface text-[12px] font-semibold shadow-lg leading-tight">{t('Offline · xog kaydsan', 'Offline · saved data')}</span></div>}
     {me && screen}
-    {nav && <BottomNav active={page === 'fariin' ? 'fariimaha' : page ?? 'guud'} pending={pending.data?.pendingCount ?? 0} />}
+    {nav && <BottomNav active={page === 'fariin' ? 'fariimaha' : page === 'sim-card' ? 'dejinta' : page ?? 'guud'} pending={pending.data?.pendingCount ?? 0} />}
   </div>;
 }
 

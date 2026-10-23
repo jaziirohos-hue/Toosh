@@ -6,7 +6,15 @@ export type PhoneResult = { ok: true; e164: string } | { ok: false; error: 'EMPT
 
 const NATIONAL = /^[67]\d{8}$/; // Somali mobile ranges are 9 national digits starting with 6 or 7
 
-export function normalizeSomaliMsisdn(input: string): PhoneResult {
+export function normalizeSomaliMsisdn(input: string): PhoneResult { return normalizeWith(input, NATIONAL); }
+
+/**
+ * Any Somali mobile network for a SIM record: Hormuud (61, 77), Somtel (62, 65, 66), Telesom (63), Golis (90) …
+ * 9 national digits starting 6-9. Sign-in and EVC numbers keep the stricter rule above.
+ */
+export function normalizeSomaliSimNumber(input: string): PhoneResult { return normalizeWith(input, /^[6-9]\d{8}$/); }
+
+function normalizeWith(input: string, national: RegExp): PhoneResult {
   const raw = String(input ?? '').trim();
   if (!raw) return { ok: false, error: 'EMPTY' };
   if (/[^\d\s+().\-]/.test(raw)) return { ok: false, error: 'FORMAT' };
@@ -20,7 +28,7 @@ export function normalizeSomaliMsisdn(input: string): PhoneResult {
   else if (digits.startsWith('252') && digits.length === 12) digits = digits.slice(3);
   else if (digits.startsWith('0') && digits.length === 10) digits = digits.slice(1);
   if (!/^\d+$/.test(digits)) return { ok: false, error: 'FORMAT' };
-  if (!NATIONAL.test(digits)) return { ok: false, error: 'NOT_MOBILE' };
+  if (!national.test(digits)) return { ok: false, error: 'NOT_MOBILE' };
   return { ok: true, e164: `+252${digits}` };
 }
 

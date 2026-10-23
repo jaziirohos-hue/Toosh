@@ -85,3 +85,7 @@ export interface FinanceSummary {
   categories: { category: string; currency: Currency; amount: string; count: number }[];
   budgets: Budget[];
 }
+
+/** A SIM card record (server/src/sims.ts). Only a note in Toosh: it never controls the real SIM. */
+export type SimProvider = 'HORMUUD' | 'SOMTEL' | 'GOLIS' | 'OTHER';
+export interface SimCard { id: string; name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null; createdAt: string; updatedAt: string }

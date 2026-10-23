@@ -26,6 +26,8 @@ export async function grantRuntimeRole(db: Db, role: string) {
     `GRANT EXECUTE ON FUNCTION is_builtin_category(text) TO ${role}`,
     // 003: recovery codes are marked used or replaced, never deleted.
     `GRANT SELECT, INSERT, UPDATE ON recovery_codes TO ${role}`,
+    // 004: SIM card records can be deleted by their owner (row-level security limits it to their own rows).
+    `GRANT SELECT, INSERT, UPDATE, DELETE ON sim_cards TO ${role}`,
   ];
   for (const statement of sql) await db.query(statement);
 }

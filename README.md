@@ -101,6 +101,16 @@ fast Node server that shares the TypeScript parser with the app.
 - **Hide amounts** (eye icon or Dejinta) shows ****** instead of every amount, remembered on the device.
 - **Language** Somali (default) or English, **theme** system/light/dark, **default currency** USD or SOS.
 
+### SIM Card records (Dejinta → SIM Card)
+
+- Add, list, search (name, number, notes), filter by network, edit and delete the SIM cards you use. Each record
+  has a name, phone number (any Somali network, e.g. Golis 90…), network (Hormuud, Somtel, Golis, Other),
+  registration date and optional notes. The same number cannot be added twice to one account.
+- Each row has a trash button. Deleting asks for confirmation, removes only that record, and shows a success
+  message. EVC numbers, messages and everything else stay as they are.
+- A record is only a note in Toosh: adding, editing or deleting it never deactivates or changes the real SIM.
+- Row-level security limits every read, edit and delete to the signed-in account's own records.
+
 ### Security and privacy
 
 - **Account isolation:** every query filters by account, and PostgreSQL row-level security (`FORCE ROW LEVEL
@@ -216,9 +226,9 @@ Install a debug APK with `adb install -r app/android/app/build/outputs/apk/debug
 ## Tests
 
 ```bash
-npm test                                  # shared (25), API with Postgres + RLS (30), app offline queue (4)
+npm test                                  # shared (27), API with Postgres + RLS (33), app offline queue (4)
 npm run typecheck
-npx playwright test                       # needs the API running (scripts/local/start.sh); 11 browser tests
+npx playwright test                       # needs the API running (scripts/local/start.sh); 14 browser tests
 node scripts/check-deployment.mjs <url>   # auth, isolation, persistence, two-client sync against a deployment
 cd app/android && ./gradlew testDebugUnitTest   # 5 native JVM tests
 ```
@@ -241,6 +251,7 @@ Playwright creates test accounts in the local `toosh` database through the publi
 | `server/test/api.test.ts` | Postgres, RLS, idempotency, concurrency, audit, totals, balances, events | HTTP calls via Fastify inject |
 | `app/test/outbox.test.ts` | Queue logic, restart recovery, conflicts | IndexedDB (fake-indexeddb), server replies |
 | `e2e/finance.spec.ts` | Expenses, EVC categories, budgets, goals, hide amounts, language, theme, app PIN, password change, recovery codes | The source phone |
+| `e2e/sims.spec.ts` | SIM Card add, search, filter, edit, delete with confirmation, other account untouched | — |
 | `e2e/flow.spec.ts` | Browser UI, API, Postgres, live updates, conflict screen | The source phone: the test sends the uploader's HTTP requests |
 | `RealSmsFlowTest` + `emulator-e2e.sh` | Android SMS delivery (`adb emu sms send`), receiver, multipart, filter, SIM routing, encrypted queue, WorkManager, offline then reconnect, inbox import, real API | The SIM network is the emulator's modem |
 | Physical phone | **Not yet done** (see below) | — |

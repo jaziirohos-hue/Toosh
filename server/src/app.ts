@@ -13,6 +13,7 @@ import type { Config } from './config.ts';
 import { inTx, isUniqueViolation, withAccount, type Db, type Tx } from './db.ts';
 import { ChangeHub, notifyAccount } from './events.ts';
 import { registerFinanceRoutes } from './finance.ts';
+import { registerSimRoutes } from './sims.ts';
 import { ApiError, classifyMessage, ingestBatch, type Actor } from './messages.ts';
 import { latestBalances, listMessages, listTransactions, messageDetail, summary } from './queries.ts';
 
@@ -162,7 +163,8 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
         (SELECT coalesce(max(change_seq), 0) FROM expense_categories WHERE account_id = $1),
         (SELECT coalesce(max(change_seq), 0) FROM transaction_categories WHERE account_id = $1),
         (SELECT coalesce(max(change_seq), 0) FROM budgets WHERE account_id = $1),
-        (SELECT coalesce(max(change_seq), 0) FROM savings_goals WHERE account_id = $1))::text AS seq`, [A(req).accountId]);
+        (SELECT coalesce(max(change_seq), 0) FROM savings_goals WHERE account_id = $1),
+        (SELECT coalesce(max(change_seq), 0) FROM sim_cards WHERE account_id = $1))::text AS seq`, [A(req).accountId]);
     return { seq: rows[0].seq };
   }));
 
@@ -487,6 +489,7 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
   app.get('/api/v1/balances', { preHandler: authed }, async req => scoped(req, async tx => ({ balances: await latestBalances(tx, A(req).accountId) })));
 
   registerFinanceRoutes(app, { authed, scoped, ctx: A });
+  registerSimRoutes(app, { authed, scoped, ctx: A });
 
   /** Server-sent events: "something changed for this account". Clients refetch what they show. */
   app.get('/api/v1/events', { preHandler: authed }, async (req, reply) => {
