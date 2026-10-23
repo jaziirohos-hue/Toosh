@@ -13,7 +13,7 @@ const evcTime = (d: Date) => {
 };
 
 async function account(request: APIRequestContext) {
-  const phone = `61${String(Date.now()).slice(-7)}`;
+  const phone = `61${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
   const reg = await (await request.post('/api/v1/auth/register', { data: { displayName: 'Faadumo Cali', phone, password: PASSWORD, device: { platform: 'android', name: 'A54' } } })).json();
   const auth = { authorization: `Bearer ${reg.token}` };
   const numberId = reg.evcNumbers[0].id;

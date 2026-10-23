@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { formatMsisdn, normalizeSomaliMsisdn } from '@toosh/shared';
 import { SettingsSections } from '../components/settings.tsx';
-import { Banner, Button, Group, GroupLabel, Header, Icon, Main, Sheet } from '../components/ui.tsx';
+import { Banner, Button, Floating, Group, GroupLabel, Header, Icon, Main, Sheet } from '../components/ui.tsx';
 import { t } from '../lib/i18n.ts';
 import { api, type ApiFailure } from '../lib/api.ts';
 import { ago, initials, masked, timeOfDay } from '../lib/format.ts';
@@ -63,9 +63,9 @@ export function Dejinta() {
   return <>
     <Header subtitle={t('Dejinta', 'Settings')} msisdn={account.loginPhone} />
     <Main>
-      {toast && <div role="status" className="fixed left-4 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] z-[60] max-w-md mx-auto px-4 py-3 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-lg flex items-center gap-2.5 screen-in">
+      {toast && <Floating><div role="status" className="fixed left-4 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] z-[60] max-w-md mx-auto px-4 py-3 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-lg flex items-center gap-2.5 screen-in">
         <Icon name="check_circle" fill className="text-[20px] text-primary-fixed-dim" /><span className="text-[14px] flex-1">{toast}</span>
-        <span className="text-[12px] text-inverse-on-surface/70">{timeOfDay(new Date().toISOString(), tz)}</span></div>}
+        <span className="text-[12px] text-inverse-on-surface/70">{timeOfDay(new Date().toISOString(), tz)}</span></div></Floating>}
       {error && <Banner tone="error" icon="error">{error}</Banner>}
 
       <section className="card p-4 flex flex-wrap items-center gap-4">

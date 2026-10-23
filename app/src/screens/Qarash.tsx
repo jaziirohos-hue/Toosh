@@ -4,7 +4,7 @@ import {
   CategoryEditor, CategoryGrid, CategoryIcon, Field, INPUT, LABEL, Progress, Segmented, cash, isZero, offlineAware, useCategories, type Categories,
 } from '../components/finance.tsx';
 import { PeriodChips, periodQuery } from '../components/PeriodPicker.tsx';
-import { Banner, Button, EmptyState, EyeToggle, Group, Header, Icon, Main, SectionTitle, Sheet, Spinner, useAmounts } from '../components/ui.tsx';
+import { Banner, Button, EmptyState, EyeToggle, Floating, Group, Header, Icon, Main, SectionTitle, Sheet, Spinner, useAmounts } from '../components/ui.tsx';
 import { api, qs, type ApiFailure } from '../lib/api.ts';
 import { dayLabel } from '../lib/format.ts';
 import { t } from '../lib/i18n.ts';
@@ -114,11 +114,13 @@ function ExpensesTab({ cats }: { cats: Categories }) {
     {cursor && <Button kind="tonal" disabled={loadingMore} onClick={loadMore} className="self-center h-11 text-[14.5px]">{loadingMore ? t('Waa la soo qaadayaa…', 'Loading…') : t('Soo qaad kuwo hore', 'Load older')}</Button>}
     <button type="button" onClick={() => setManageOpen(true)} className="self-center min-h-10 px-4 rounded-full text-[14px] font-bold text-primary-container flex items-center gap-1.5 active:bg-surface-container-low">
       <Icon name="category" className="text-[19px]" />{t('Maamul qaybaha', 'Manage categories')}</button>
-    <p className="text-[12px] leading-[1.42] text-on-surface-variant/90 text-center px-4 pb-16">{t('Lacagaha EVC Plus ee baxay iyo qarashaadka gacanta lagu daray ayaa halkan ku jira. USD iyo SOS lama isku darin.', 'Outgoing EVC Plus payments and expenses you add are listed here. USD and SOS are never added together.')}</p>
+    <p className="text-[12px] leading-[1.42] text-on-surface-variant/90 text-center px-4">{t('Lacagaha EVC Plus ee baxay iyo qarashaadka gacanta lagu daray ayaa halkan ku jira. USD iyo SOS lama isku darin.', 'Outgoing EVC Plus payments and expenses you add are listed here. USD and SOS are never added together.')}</p>
+    {/* Room for the floating "Ku dar qarash" button, so it never covers the last items. */}
+    <div aria-hidden="true" className="h-24 shrink-0" />
 
-    <button type="button" id="addExpenseBtn" onClick={() => setEditing('new')}
+    <Floating><button type="button" id="addExpenseBtn" onClick={() => setEditing('new')}
       className="fixed z-40 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] min-h-14 pl-4 pr-5 rounded-2xl bg-primary-container text-on-primary text-[15.5px] font-bold flex items-center gap-2 shadow-[0_10px_28px_-8px_rgba(10,107,63,0.7)] pressable leading-tight max-w-[calc(100%-2rem)]">
-      <Icon name="add" className="text-[24px]" />{t('Ku dar qarash', 'Add expense')}</button>
+      <Icon name="add" className="text-[24px]" />{t('Ku dar qarash', 'Add expense')}</button></Floating>
 
     {editing && <ExpenseSheet cats={cats} expense={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     {evcItem && <EvcCategorySheet cats={cats} item={evcItem} onClose={() => setEvcItem(null)} />}

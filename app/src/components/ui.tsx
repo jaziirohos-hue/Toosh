@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { money, masked, shortDateTime } from '../lib/format.ts';
 import { navigate } from '../lib/router.ts';
 import { t } from '../lib/i18n.ts';
@@ -161,3 +162,9 @@ export function EyeToggle({ className = '' }: { className?: string }) {
     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 pressable ${className}`}>
     <Icon name={hidden ? 'visibility_off' : 'visibility'} className="text-[21px]" /></button>;
 }
+
+/**
+ * Renders on <body>. Screens fade in with a CSS transform, and a transformed parent makes `position: fixed`
+ * children scroll with the content; floating buttons and toasts go through this so they stay on the screen.
+ */
+export const Floating = ({ children }: { children: ReactNode }) => createPortal(children, document.body);

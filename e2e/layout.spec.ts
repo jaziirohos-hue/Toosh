@@ -9,7 +9,7 @@ import { auditLayout } from './layout-audit.ts';
 const PASSWORD = 'layout test password';
 
 async function seed(request: import('@playwright/test').APIRequestContext) {
-  const phone = `61${String(Date.now()).slice(-7)}`;
+  const phone = `61${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
   const reg = await (await request.post('/api/v1/auth/register', { data: { displayName: 'Maxamed Cabdiraxmaan Xasan Cali', phone, password: PASSWORD, device: { platform: 'android', name: 'Samsung Galaxy A14 5G', model: 'SM-A145F' } } })).json();
   const auth = { authorization: `Bearer ${reg.token}` };
   const numberId = reg.evcNumbers[0].id;

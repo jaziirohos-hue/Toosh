@@ -25,7 +25,7 @@ function todayAt(minutesAgo: number) {
 }
 
 async function simulatedSourcePhone(request: APIRequestContext) {
-  const phone = `61${String(Date.now()).slice(-7)}`;
+  const phone = `61${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
   const reg = await request.post('/api/v1/auth/register', { data: { displayName: 'Axmed Nuur Cali', phone, password: PASSWORD, device: { platform: 'android', name: 'Samsung Galaxy A54', model: 'SM-A546E' } } });
   expect(reg.status()).toBe(201);
   const body = await reg.json();
@@ -92,7 +92,7 @@ test('SMS -> stored -> classified or queued -> synced -> shown -> corrected -> t
   await expect(page.getByTestId('balance')).toHaveText('$49.585');
 
   // History: search and the manual badge.
-  await page.getByRole('link', { name: 'Dhaqdhaqaaq' }).click();
+  await page.getByRole('link', { name: 'Taariikh' }).click();
   await expect(page.getByTestId('history-out')).toHaveText('-$18.90');
   await page.getByRole('searchbox', { name: 'Raadi dhaqdhaqaaq' }).fill('Faarax');
   await expect(page.getByText('Gacanta lagu saxay')).toHaveCount(1);

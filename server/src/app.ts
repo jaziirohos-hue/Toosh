@@ -75,7 +75,7 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Toosh-Client'],
     credentials: false,
   });
-  await app.register(rateLimit, { max: 600, timeWindow: '1 minute' });
+  await app.register(rateLimit, { max: config.rateLimit, timeWindow: '1 minute' });
 
   app.setErrorHandler((error: any, req, reply) => {
     if (error instanceof ApiError) return reply.status(error.status).send({ error: error.code, message: error.message, details: error.details });

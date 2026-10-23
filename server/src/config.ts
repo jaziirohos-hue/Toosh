@@ -15,6 +15,8 @@ export interface Config {
   logLevel: string;
   /** Sign-in/registration attempts allowed per IP per minute. */
   authRateLimit: number;
+  /** Requests per minute per client address for everything else. */
+  rateLimit: number;
 }
 
 /**
@@ -53,5 +55,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     allowRlsBypass: env.ALLOW_RLS_BYPASS === 'true',
     logLevel: env.LOG_LEVEL ?? (production ? 'info' : 'warn'),
     authRateLimit: Number(env.AUTH_RATE_LIMIT ?? 10),
+    rateLimit: Number(env.RATE_LIMIT ?? 600),
   };
 }
