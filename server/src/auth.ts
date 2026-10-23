@@ -50,3 +50,18 @@ export function validatePassword(password: unknown): string | null {
   if (password.length > 128) return 'Furaha sirta ah aad buu u dheer yahay.';
   return null;
 }
+
+/** Ten one-time recovery codes, e.g. "K7QM4-XPA2B" (50 random bits each). Shown once; stored only as scrypt hashes. */
+export function newRecoveryCodes(count = 10): string[] {
+  return Array.from({ length: count }, () => {
+    let raw = '';
+    for (const b of randomBytes(10)) raw += CODE_ALPHABET[b % CODE_ALPHABET.length];
+    return `${raw.slice(0, 5)}-${raw.slice(5)}`;
+  });
+}
+/** Canonical form for hashing and checking: upper case, no spaces or dashes. Null when it cannot be a code. */
+export function normalizeRecoveryCode(input: unknown): string | null {
+  const raw = String(input ?? '').toUpperCase().replace(/[\s-]/g, '');
+  if (raw.length !== 10 || [...raw].some(c => !CODE_ALPHABET.includes(c))) return null;
+  return raw;
+}

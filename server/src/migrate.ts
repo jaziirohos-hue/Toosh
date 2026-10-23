@@ -24,6 +24,8 @@ export async function grantRuntimeRole(db: Db, role: string) {
     `GRANT SELECT, INSERT, UPDATE ON expense_categories, expenses, savings_goals TO ${role}`,
     `GRANT SELECT, INSERT, UPDATE, DELETE ON transaction_categories, budgets TO ${role}`,
     `GRANT EXECUTE ON FUNCTION is_builtin_category(text) TO ${role}`,
+    // 003: recovery codes are marked used or replaced, never deleted.
+    `GRANT SELECT, INSERT, UPDATE ON recovery_codes TO ${role}`,
   ];
   for (const statement of sql) await db.query(statement);
 }

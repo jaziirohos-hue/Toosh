@@ -7,7 +7,7 @@ import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import { DEFAULT_TIMEZONE, normalizeSomaliMsisdn } from '@toosh/shared';
 import {
-  DUMMY_HASH, hashPassword, isTokenShaped, newDeviceToken, newPairingCode, pairingHash, sha256, validatePassword, verifyPassword,
+  DUMMY_HASH, hashPassword, isTokenShaped, newDeviceToken, newPairingCode, newRecoveryCodes, normalizeRecoveryCode, pairingHash, sha256, validatePassword, verifyPassword,
 } from './auth.ts';
 import type { Config } from './config.ts';
 import { inTx, isUniqueViolation, withAccount, type Db, type Tx } from './db.ts';
@@ -252,6 +252,109 @@ export async function buildApp(config: Config, db: Db, hub: ChangeHub | null): P
   });
 
   app.get('/api/v1/me', { preHandler: authed }, async req => scoped(req, tx => sessionPayload(tx, A(req).accountId, A(req).deviceId)));
+
+  // -------------------------------------------------------------------------------------------------------------
+  // Profile, password and recovery codes.
+  // -------------------------------------------------------------------------------------------------------------
+  const LOCKED = () => new ApiError(429, 'LOCKED', 'Isku dayo badan. Sug 15 daqiiqo kadib isku day.');
+  const countFailure = (tx: Tx, accountId: string) => tx.query(`UPDATE accounts SET failed_logins = failed_logins + 1,
+    locked_until = CASE WHEN failed_logins + 1 >= 10 THEN now() + interval '15 minutes' ELSE locked_until END WHERE id = $1`, [accountId]);
+  /** Checks the signed-in person's current password; wrong guesses count towards the same lockout as sign-in. */
+  async function confirmPassword(req: FastifyRequest, password: unknown) {
+    const account = await scoped(req, async tx => (await tx.query('SELECT password_hash, locked_until FROM accounts WHERE id = $1', [A(req).accountId])).rows[0]);
+    if (account.locked_until && new Date(account.locked_until) > new Date()) throw LOCKED();
+    const ok = typeof password === 'string' && password.length <= 200 && await verifyPassword(password, account.password_hash);
+    await scoped(req, tx => ok ? tx.query('UPDATE accounts SET failed_logins = 0 WHERE id = $1', [A(req).accountId]) : countFailure(tx, A(req).accountId));
+    if (!ok) throw new ApiError(400, 'VALIDATION', 'Furaha sirta ah ee hadda waa khalad.', { currentPassword: 'Furaha sirta ah ee hadda waa khalad.' });
+  }
+  /** After a password change or recovery, other viewing devices are signed out; SMS-reading phones stay connected. */
+  async function signOutOtherViewers(tx: Tx, accountId: string, keepDeviceId: string) {
+    const { rowCount } = await tx.query(`UPDATE devices SET revoked_at = now(), revoked_by = $2, change_seq = nextval('change_seq')
+      WHERE account_id = $1 AND id <> $2 AND role = 'VIEWER' AND revoked_at IS NULL
+        AND NOT EXISTS (SELECT 1 FROM evc_numbers n WHERE n.source_device_id = devices.id)`, [accountId, keepDeviceId]);
+    return rowCount ?? 0;
+  }
+  const bumpDevice = (tx: Tx, deviceId: string) => tx.query(`UPDATE devices SET change_seq = nextval('change_seq') WHERE id = $1`, [deviceId]);
+
+  app.patch('/api/v1/me', { preHandler: authed }, async req => scoped(req, async tx => {
+    const body: any = req.body ?? {};
+    const displayName = shortText(body.displayName, 120);
+    if (!displayName) throw new ApiError(400, 'VALIDATION', 'Hubi xogta foomka.', { displayName: 'Geli magacaaga (ilaa 120 xaraf).' });
+    await tx.query('UPDATE accounts SET display_name = $2 WHERE id = $1', [A(req).accountId, displayName]);
+    await bumpDevice(tx, A(req).deviceId);
+    await notifyAccount(tx, A(req).accountId);
+    return sessionPayload(tx, A(req).accountId, A(req).deviceId);
+  }));
+
+  app.post('/api/v1/auth/password', { preHandler: authed, ...authLimit }, async req => {
+    const body: any = req.body ?? {};
+    const pw = validatePassword(body.newPassword);
+    if (pw) throw new ApiError(400, 'VALIDATION', 'Hubi xogta foomka.', { newPassword: pw });
+    if (body.newPassword === body.currentPassword) throw new ApiError(400, 'VALIDATION', 'Hubi xogta foomka.', { newPassword: 'Dooro furo ka duwan kan hadda.' });
+    await confirmPassword(req, body.currentPassword);
+    const hash = await hashPassword(body.newPassword);
+    return scoped(req, async tx => {
+      await tx.query('UPDATE accounts SET password_hash = $2, failed_logins = 0, locked_until = NULL WHERE id = $1', [A(req).accountId, hash]);
+      const signedOut = await signOutOtherViewers(tx, A(req).accountId, A(req).deviceId);
+      await notifyAccount(tx, A(req).accountId);
+      return { ok: true, signedOutDevices: signedOut };
+    });
+  });
+
+  app.get('/api/v1/auth/recovery-codes', { preHandler: authed }, async req => scoped(req, async tx => {
+    const { rows } = await tx.query(`SELECT count(*)::int AS remaining, max(created_at) AS created_at FROM recovery_codes
+      WHERE account_id = $1 AND used_at IS NULL AND replaced_at IS NULL`, [A(req).accountId]);
+    return { remaining: rows[0].remaining, createdAt: rows[0].created_at ? new Date(rows[0].created_at).toISOString() : null };
+  }));
+
+  /** New set of codes (needs the password again). Older unused codes stop working. The codes are returned once. */
+  app.post('/api/v1/auth/recovery-codes', { preHandler: authed, ...authLimit }, async req => {
+    const body: any = req.body ?? {};
+    await confirmPassword(req, body.password);
+    const codes = newRecoveryCodes();
+    const hashes = await Promise.all(codes.map(c => hashPassword(normalizeRecoveryCode(c)!)));
+    await scoped(req, async tx => {
+      await tx.query('UPDATE recovery_codes SET replaced_at = now() WHERE account_id = $1 AND used_at IS NULL AND replaced_at IS NULL', [A(req).accountId]);
+      for (const h of hashes) await tx.query('INSERT INTO recovery_codes (id, account_id, code_hash) VALUES ($1,$2,$3)', [randomUUID(), A(req).accountId, h]);
+    });
+    return { codes };
+  });
+
+  /** Forgotten password: phone number + one unused recovery code + a new password. Signs this device in. */
+  app.post('/api/v1/auth/recover', authLimit, async (req, reply) => {
+    const body: any = req.body ?? {};
+    const phone = normalizeSomaliMsisdn(body.phone ?? '');
+    const code = normalizeRecoveryCode(body.code);
+    const pw = validatePassword(body.newPassword);
+    if (pw) throw new ApiError(400, 'VALIDATION', 'Hubi xogta foomka.', { newPassword: pw });
+    const fail = () => new ApiError(401, 'INVALID_RECOVERY', 'Lambarka ama koodhka soo celinta waa khalad, ama koodhka hore ayaa loo isticmaalay.');
+    if (!phone.ok || !code) { await verifyPassword('x', DUMMY_HASH); throw fail(); }
+    const account = await inTx(db, { 'app.login_phone': phone.e164 }, async tx => (await tx.query('SELECT id, locked_until FROM accounts WHERE login_phone = $1', [phone.e164])).rows[0]);
+    if (!account) { await verifyPassword(code, DUMMY_HASH); throw fail(); }
+    if (account.locked_until && new Date(account.locked_until) > new Date()) throw LOCKED();
+    const candidates = await withAccount(db, account.id, async tx => (await tx.query(
+      'SELECT id, code_hash FROM recovery_codes WHERE account_id = $1 AND used_at IS NULL AND replaced_at IS NULL', [account.id])).rows);
+    let matched: string | null = null;
+    for (const c of candidates) if (await verifyPassword(code, c.code_hash)) { matched = c.id; break; }
+    if (!candidates.length) await verifyPassword(code, DUMMY_HASH);
+    const info = deviceInfo(body.device);
+    const newHash = matched ? await hashPassword(body.newPassword) : null;
+    const result = await withAccount(db, account.id, async tx => {
+      if (!matched) { await countFailure(tx, account.id); return null; }
+      // Mark the code used first; a second request racing with the same code finds nothing to update.
+      const used = await tx.query('UPDATE recovery_codes SET used_at = now() WHERE id = $1 AND used_at IS NULL AND replaced_at IS NULL', [matched]);
+      if (!used.rowCount) return null;
+      await tx.query('UPDATE accounts SET password_hash = $2, failed_logins = 0, locked_until = NULL WHERE id = $1', [account.id, newHash]);
+      const { device, token } = await createDevice(tx, account.id, info, 'VIEWER');
+      await tx.query('UPDATE recovery_codes SET used_by_device_id = $2 WHERE id = $1', [matched, device.id]);
+      await signOutOtherViewers(tx, account.id, device.id);
+      await notifyAccount(tx, account.id);
+      const left = (await tx.query('SELECT count(*)::int AS n FROM recovery_codes WHERE account_id = $1 AND used_at IS NULL AND replaced_at IS NULL', [account.id])).rows[0].n;
+      return { token, left, payload: await sessionPayload(tx, account.id, device.id) };
+    });
+    if (!result) throw fail();
+    return reply.send({ token: issueSession(reply, info.platform, result.token), recoveryCodesRemaining: result.left, ...result.payload });
+  });
 
   // -------------------------------------------------------------------------------------------------------------
   // Devices
