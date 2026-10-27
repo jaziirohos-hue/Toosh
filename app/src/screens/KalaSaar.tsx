@@ -5,6 +5,7 @@ import { api } from '../lib/api.ts';
 import { issueText, fullDateTime, masked, money } from '../lib/format.ts';
 import { discardEntry, enqueueClassification, overwriteWithMine } from '../lib/outbox.ts';
 import { goBack } from '../lib/router.ts';
+import { serverDetails } from '../lib/serverText.ts';
 import { useSession } from '../lib/session.tsx';
 import { invalidateAll, useConnection, useResource } from '../lib/sync.ts';
 import type { HistoryEntry, Message } from '../lib/types.ts';
@@ -80,7 +81,7 @@ export function KalaSaar({ id }: { id: string }) {
     if (!request) return;
     if (!form!.choice) { setErrors({ direction: t('Dooro nooca dhaqdhaqaaqa.', 'Choose the type.') }); return; }
     const v = validateClassification(request);
-    if (!v.ok) { setErrors(v.errors); return; }
+    if (!v.ok) { setErrors(serverDetails(v.errors)); return; }
     setErrors({}); setSaving(true); setNotice(null);
     let saved = false;
     await enqueueClassification(id, request, msg => { if (msg.id === id) { saved = true; setBaseVersion(msg.version); } });

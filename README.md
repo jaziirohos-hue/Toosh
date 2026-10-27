@@ -99,7 +99,7 @@ fast Node server that shares the TypeScript parser with the app.
   stays connected). **Recovery codes:** 10 one-time codes, stored as scrypt hashes and shown once; "Ma ilowday
   furaha sirta?" on sign-in uses one to set a new password. Wrong codes count toward the sign-in lockout.
 - **Hide amounts** (eye icon or Dejinta) shows ****** instead of every amount, remembered on the device.
-- **Language** Somali (default) or English, **theme** system/light/dark, **default currency** USD or SOS.
+- **Language** English (default) or Somali (Dejinta → Language; server messages are shown in the chosen language), **theme** system/light/dark, **default currency** USD or SOS.
 
 ### SIM Card records (Dejinta → SIM Card)
 

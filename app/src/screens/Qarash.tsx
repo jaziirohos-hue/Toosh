@@ -19,7 +19,7 @@ export function Qarash({ initialTab }: { initialTab?: string }) {
   const [tab, setTab] = useState<Tab>(initialTab === 'miisaaniyad' ? 'budgets' : initialTab === 'hadaf' ? 'goals' : 'expenses');
   const cats = useCategories();
   return <>
-    <Header subtitle={t('Qarash', 'Expenses')} action={<EyeToggle className="text-on-surface-variant active:bg-surface-container-high" />} />
+    <Header subtitle={t('Qarash', 'Expenses')} />
     <Main>
       <p className="px-1 -mt-1 text-[13.5px] font-semibold text-primary-container">{t('Maamul Qarashaadkaaga Si Fudud.', 'Manage your expenses with ease.')}</p>
       <Segmented label={t('Qaybta', 'Section')} value={tab} onChange={setTab}
@@ -93,7 +93,8 @@ function ExpensesTab({ cats }: { cats: Categories }) {
 
     <div className="card p-4 flex flex-col gap-3">
       <div className="flex items-center gap-2"><Icon name="payments" className="text-primary-container text-[20px]" /><span className="text-[14px] font-bold text-on-surface flex-1">{t('Wadarta qarashka', 'Total spent')}</span>
-        {page.loading && page.data && <Icon name="progress_activity" className="animate-spin text-[18px] text-on-surface-variant" />}</div>
+        {page.loading && page.data && <Icon name="progress_activity" className="animate-spin text-[18px] text-on-surface-variant" />}
+        <EyeToggle className="-my-2 -mr-2 text-on-surface-variant active:bg-surface-container-high" /></div>
       {!currencies.length && <span className="text-[24px] font-extrabold tracking-tight text-on-surface">{page.data ? show(cash('0', 'USD')) : '—'}</span>}
       {currencies.map(c => <div key={c} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
         <span data-testid={`spent-${c}`} className="text-[clamp(20px,7cqw,26px)] leading-[1.25] font-extrabold tracking-tight text-on-surface break-all">{show(cash(totals[c]!.paid, c))}</span>

@@ -64,11 +64,11 @@ async function check(name: string) {
 }
 
 await check('register');
-await page.getByRole('tab', { name: 'Gal Akoonka' }).dispatchEvent('click');
+await page.getByRole('tab', { name: 'Sign in' }).dispatchEvent('click');
 await check('login');
 await page.locator('#phone-number').fill(phone);
 await page.locator('#password').fill(PASSWORD);
-await page.getByRole('button', { name: /^Fur Toosh/ }).dispatchEvent('click');
+await page.getByRole('button', { name: /^Open Toosh/ }).dispatchEvent('click');
 try {
   // A first sign-in on a phone may open the source-phone setup; the layout check only needs to be signed in.
   await page.waitForFunction(() => /#\/(guud|taleefanka-asalka)/.test(location.hash) || document.querySelector('[data-testid="total-in"]'), null, { timeout: 30000 });
@@ -85,7 +85,7 @@ for (const route of ['guud', 'fariimaha', 'dhaqdhaqaaq', 'dejinta']) {
   await check(route);
 }
 await page.evaluate(() => { window.location.hash = '#/fariimaha/pending'; });
-await page.getByRole('button', { name: 'Kala Saar Hadda' }).first().dispatchEvent('click');
+await page.getByRole('button', { name: 'Review now' }).first().dispatchEvent('click');
 await page.getByTestId('original-sms').waitFor();
 await check('message-detail');
 

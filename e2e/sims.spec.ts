@@ -1,5 +1,8 @@
 /** SIM Card section (Dejinta → SIM Card): add, list, search, filter, edit, delete with confirmation. */
 import { expect, test } from '@playwright/test';
+import { useSomali } from './somali.ts';
+
+test.beforeEach(async ({ page }) => { await useSomali(page); });
 
 const PASSWORD = 'correct horse battery';
 

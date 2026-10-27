@@ -110,7 +110,7 @@ export function SettingsSections({ flash, onError }: { flash: (text: string) => 
     {sheet === 'pin-off' && <PinOffSheet onClose={close} onDone={() => { clearPin(); setPrefs({ appLock: false }); flash(t('PIN-ka waa la damiyay.', 'PIN turned off.')); }} />}
     {sheet === 'lockAfter' && <ChoiceSheet title={t('Qufulka tooska ah', 'Auto-lock')} value={prefs.lockAfter} onClose={close} onPick={v => setPrefs({ lockAfter: v })}
       options={LOCK_TIMES.map(([s, so, en]) => [s, t(so, en), t('Ka dib markaad ka baxdo app-ka ama aadan taaban', 'After leaving the app or not touching it')])} />}
-    {sheet === 'language' && <ChoiceSheet title={t('Luqadda', 'Language')} value={prefs.language} onClose={close} onPick={v => setPrefs({ language: v })} options={[['so', 'Soomaali'], ['en', 'English']]} />}
+    {sheet === 'language' && <ChoiceSheet title={t('Luqadda', 'Language')} value={prefs.language} onClose={close} onPick={v => setPrefs({ language: v, languageChosen: true })} options={[['en', 'English'], ['so', 'Soomaali']]} />}
     {sheet === 'theme' && <ChoiceSheet title={t('Habka iftiinka', 'Theme')} value={prefs.theme} onClose={close} onPick={v => setPrefs({ theme: v })}
       options={[['system', t('Sida taleefanka', 'Same as phone')], ['light', t('Iftiin', 'Light')], ['dark', t('Mugdi', 'Dark')]]} />}
     {sheet === 'currency' && <ChoiceSheet title={t('Lacagta caadiga ah', 'Default currency')} value={prefs.currency} onClose={close} onPick={v => setPrefs({ currency: v })}

@@ -1,5 +1,8 @@
 /** The floating "Ku dar qarash" button stays above the bottom bar and leaves the end of the list readable. */
 import { expect, test } from '@playwright/test';
+import { useSomali } from './somali.ts';
+
+test.beforeEach(async ({ page }) => { await useSomali(page); });
 
 for (const zoom of [1, 1.3]) test(`the floating Add button never covers the end of the expense list at ${Math.round(zoom * 100)}% font size`, async ({ page, request }) => {
   const phone = `61${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;

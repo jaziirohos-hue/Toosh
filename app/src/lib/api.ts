@@ -1,5 +1,6 @@
 import { isNativeAndroid, TooshNative } from './native.ts';
 import { t } from './i18n.ts';
+import { serverDetails, serverText } from './serverText.ts';
 
 /**
  * Android: requests go to VITE_API_BASE with a bearer token kept in the Android Keystore-backed store.
@@ -38,7 +39,8 @@ export async function api<T = any>(path: string, options: { method?: string; bod
   try { data = await res.json(); } catch { /* empty body */ }
   if (!res.ok) {
     if (res.status === 401) window.dispatchEvent(new CustomEvent('toosh:unauthenticated'));
-    throw new ApiFailure(res.status, data?.error ?? 'ERROR', data?.message ?? t('Codsigu ma guuleysan. Isku day mar kale.', 'The request failed. Try again.'), data?.details);
+    throw new ApiFailure(res.status, data?.error ?? 'ERROR', data?.message ? serverText(data.message) : t('Codsigu ma guuleysan. Isku day mar kale.', 'The request failed. Try again.'),
+      data?.details && data?.error !== 'VERSION_CONFLICT' ? serverDetails(data.details) : data?.details);
   }
   return data as T;
 }

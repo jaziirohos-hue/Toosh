@@ -16,6 +16,8 @@ export interface DevicePrefs {
   /** Show ****** instead of money amounts. */
   hideAmounts: boolean;
   language: Language;
+  /** True once the person picked a language; until then the app uses the default (English). */
+  languageChosen?: boolean;
   /** Currency preselected for new expenses, budgets and goals. */
   currency: Currency;
   theme: 'system' | 'light' | 'dark';
@@ -27,9 +29,14 @@ export interface DevicePrefs {
   appLock: boolean;
 }
 const PREFS_KEY = 'toosh.prefs';
-const DEFAULT_PREFS: DevicePrefs = { lock: false, offlineCopies: true, hideAmounts: false, language: 'so', currency: 'USD', theme: 'system', budgetAlerts: true, lockAfter: 30, appLock: false };
+const DEFAULT_PREFS: DevicePrefs = { lock: false, offlineCopies: true, hideAmounts: false, language: 'en', currency: 'USD', theme: 'system', budgetAlerts: true, lockAfter: 30, appLock: false };
 export function readPrefs(): DevicePrefs {
-  try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') }; } catch { return { ...DEFAULT_PREFS }; }
+  try {
+    const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}');
+    // English is the default. A language saved only because it was the old default (Somali) is not a choice.
+    if (!saved.languageChosen) delete saved.language;
+    return { ...DEFAULT_PREFS, ...saved };
+  } catch { return { ...DEFAULT_PREFS }; }
 }
 /** Applies the theme and language to the document (called at start-up and whenever they change). */
 export function applyLook(p: DevicePrefs) {

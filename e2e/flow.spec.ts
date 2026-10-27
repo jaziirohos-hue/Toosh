@@ -6,6 +6,9 @@
  * the emulator tests in android/ (see README). The viewing device is a real browser running the real app.
  */
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { useSomali } from './somali.ts';
+
+test.beforeEach(async ({ page }) => { await useSomali(page); });
 
 const PASSWORD = 'correct horse battery';
 const tz = 'Africa/Mogadishu';
@@ -127,6 +130,7 @@ test('two devices editing the same message get a visible conflict, not a silent 
   const login = async () => {
     const ctx = await browser.newContext();
     const p = await ctx.newPage();
+    await useSomali(p);
     await p.goto('/');
     await p.getByRole('tab', { name: 'Gal Akoonka' }).click();
     await p.locator('#phone-number').fill(src.phone);
@@ -156,7 +160,7 @@ test('two devices editing the same message get a visible conflict, not a silent 
 
 test('a viewing device can be revoked and is signed out', async ({ browser, request }) => {
   const src = await simulatedSourcePhone(request);
-  const ctx = await browser.newContext(); const p = await ctx.newPage();
+  const ctx = await browser.newContext(); const p = await ctx.newPage(); await useSomali(p);
   await p.goto('/');
   await p.getByRole('tab', { name: 'Gal Akoonka' }).click();
   await p.locator('#phone-number').fill(src.phone);

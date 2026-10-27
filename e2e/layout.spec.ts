@@ -4,6 +4,7 @@
  * whole screen up to 130% (app/src/main.tsx); here that is reproduced with the same CSS zoom.
  */
 import { expect, test, type Page } from '@playwright/test';
+import { useSomali } from './somali.ts';
 import { auditLayout } from './layout-audit.ts';
 
 const PASSWORD = 'layout test password';
@@ -41,17 +42,18 @@ async function audit(page: Page, zoom: number, name: string) {
 }
 
 // Phone widths: 412 (Playwright's Pixel 7), and a narrow 320-wide phone, each at normal and the largest font size.
-for (const [width, zoom] of [[412, 1], [412, 1.3], [320, 1], [320, 1.3]] as const) {
-  test(`no text spills or is cut off on a ${width}px phone at ${Math.round(zoom * 100)}% font size`, async ({ page, request }) => {
+for (const lang of ['en', 'so'] as const) for (const [width, zoom] of [[412, 1], [412, 1.3], [320, 1], [320, 1.3]] as const) {
+  test(`no text spills or is cut off on a ${width}px phone at ${Math.round(zoom * 100)}% font size (${lang === 'en' ? 'English' : 'Somali'})`, async ({ page, request }) => {
+    if (lang === 'so') await useSomali(page);
     await page.setViewportSize({ width, height: 800 });
     const phone = await seed(request);
     await page.goto('/');
     await audit(page, zoom, 'register');
-    await page.getByRole('tab', { name: 'Gal Akoonka' }).click();
+    await page.getByRole('tab', { name: /^(Gal Akoonka|Sign in)$/ }).click();
     await audit(page, zoom, 'login');
     await page.locator('#phone-number').fill(phone);
     await page.locator('#password').fill(PASSWORD);
-    await page.getByRole('button', { name: /^Fur Toosh/ }).click();
+    await page.getByRole('button', { name: /^(Fur|Open) Toosh/ }).click();
     await expect(page.getByTestId('total-in')).toBeVisible();
     for (const route of ['guud', 'fariimaha', 'qarash', 'qarash/miisaaniyad', 'qarash/hadaf', 'dhaqdhaqaaq', 'dejinta', 'sim-card']) {
       await page.goto(`/#/${route}`);
@@ -65,11 +67,11 @@ for (const [width, zoom] of [[412, 1], [412, 1.3], [320, 1], [320, 1.3]] as cons
     await page.locator('#addSimBtn').click();
     await audit(page, zoom, 'SIM card form');
     await page.keyboard.press('Escape');
-    await page.getByRole('button', { name: /^Tirtir / }).first().click();
+    await page.getByRole('button', { name: /^(Tirtir|Delete) / }).first().click();
     await audit(page, zoom, 'SIM delete confirmation');
     await page.keyboard.press('Escape');
     await page.goto('/#/fariimaha/pending');
-    await page.getByRole('button', { name: 'Kala Saar Hadda' }).first().click();
+    await page.getByRole('button', { name: /^(Kala Saar Hadda|Review now)$/ }).first().click();
     await expect(page.getByTestId('original-sms')).toBeVisible();
     await audit(page, zoom, 'message detail');
   });

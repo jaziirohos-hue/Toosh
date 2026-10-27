@@ -3,6 +3,9 @@
  * password change, recovery codes, language and theme. The source phone is simulated over HTTP (see flow.spec.ts).
  */
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import { useSomali } from './somali.ts';
+
+test.beforeEach(async ({ page }) => { await useSomali(page); });
 
 const PASSWORD = 'correct horse battery';
 const tz = 'Africa/Mogadishu';
