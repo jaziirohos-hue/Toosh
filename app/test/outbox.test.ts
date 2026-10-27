@@ -58,7 +58,7 @@ test('server errors and rate limits are retried; validation errors are reported'
   await o.flushOutbox();
   const [e] = await o.outboxEntries();
   assert.equal(e.state, 'failed');
-  assert.deepEqual(e.fieldErrors, { amount: 'Geli qaddarka lacagta.' });
+  assert.deepEqual(e.fieldErrors, { amount: 'Enter the amount.' }, 'server field errors are shown in the app language (English by default)');
 });
 
 test('a concurrent edit becomes a visible conflict; the person chooses mine or theirs', async () => {
