@@ -118,9 +118,9 @@ function ExpensesTab({ cats }: { cats: Categories }) {
     {/* Room for the floating "Ku dar qarash" button, so it never covers the last items. */}
     <div aria-hidden="true" className="h-24 shrink-0" />
 
-    <Floating><button type="button" id="addExpenseBtn" onClick={() => setEditing('new')}
-      className="fixed z-40 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] min-h-14 pl-4 pr-5 rounded-2xl bg-primary-container text-on-primary text-[15.5px] font-bold flex items-center gap-2 shadow-[0_10px_28px_-8px_rgba(10,107,63,0.7)] pressable leading-tight max-w-[calc(100%-2rem)]">
-      <Icon name="add" className="text-[24px]" />{t('Ku dar qarash', 'Add expense')}</button></Floating>
+    <Floating><button type="button" id="addExpenseBtn" onClick={() => setEditing('new')} aria-label={t('Ku dar qarash', 'Add expense')} title={t('Ku dar qarash', 'Add expense')}
+      className="fixed z-40 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_10px_28px_-8px_rgba(10,107,63,0.7)] pressable">
+      <Icon name="add" className="text-[30px]" /></button></Floating>
 
     {editing && <ExpenseSheet cats={cats} expense={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     {evcItem && <EvcCategorySheet cats={cats} item={evcItem} onClose={() => setEvcItem(null)} />}
