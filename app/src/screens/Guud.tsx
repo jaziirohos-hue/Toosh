@@ -172,7 +172,7 @@ function MoneyOverview({ f }: { f: FinanceSummary }) {
           ['expenses', t('Qarash', 'Expenses'), 'north_east', 'text-on-surface', f.expenses.USD, '-'],
           ['remaining', t('Hadhay', 'Remaining'), 'account_balance', negative ? 'text-error' : 'text-on-surface', f.remaining.USD, '']] as const).map(([k, label, icon, cls, v, sign]) =>
           <div key={k} className="p-4 flex flex-col gap-1 min-w-0">
-            <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><Icon name={icon} className="text-[16px] @max-[440px]:hidden" />{label}</span>
+            <span className="flex items-center gap-1.5 text-[13px] font-semibold text-on-surface-variant"><span className="@max-[440px]:hidden flex"><Icon name={icon} className="text-[16px]" /></span>{label}</span>
             <span data-testid={`fin-${k}`} className={`text-[clamp(17px,5.4cqw,20px)] leading-[1.3] font-extrabold tracking-tight break-all ${cls}`}>{show(cash(v, 'USD', sign as '' | '+' | '-'))}</span>
           </div>)}
       </div>
