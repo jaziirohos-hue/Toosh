@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import { formatMsisdn, localDate, normalizeSomaliSimNumber } from '@toosh/shared';
-import { Field, INPUT, LABEL, Segmented, offlineAware } from '../components/finance.tsx';
-import { Banner, Button, EmptyState, Floating, Group, Header, Icon, Main, Sheet, Spinner } from '../components/ui.tsx';
+import { formatMsisdn, localDate, normalizeSomaliSimNumber, providerFromCarrier } from '@toosh/shared';
+import { Field, INPUT, LABEL, Segmented, cash, offlineAware } from '../components/finance.tsx';
+import { Banner, Button, EmptyState, Floating, Group, Header, Icon, Main, Sheet, Spinner, Toggle, useAmounts } from '../components/ui.tsx';
 import { api, qs, type ApiFailure } from '../lib/api.ts';
 import { dayLabel } from '../lib/format.ts';
 import { t } from '../lib/i18n.ts';
-import { goBack } from '../lib/router.ts';
+import { isNativeAndroid, TooshNative, type Sim } from '../lib/native.ts';
+import { goBack, navigate } from '../lib/router.ts';
+import { linkSim, syncNativeMappings } from '../lib/sources.ts';
 import { useSession } from '../lib/session.tsx';
 import { invalidateAll, useResource } from '../lib/sync.ts';
-import type { SimCard, SimProvider } from '../lib/types.ts';
+import type { EvcNumber, SimCard, SimProvider } from '../lib/types.ts';
 
 const providerName = (p: SimProvider) => (p === 'HORMUUD' ? 'Hormuud' : p === 'SOMTEL' ? 'Somtel' : p === 'GOLIS' ? 'Golis' : t('Kale', 'Other'));
 const providerTone: Record<SimProvider, string> = {
@@ -23,6 +25,8 @@ export function SimCards() {
   const [editing, setEditing] = useState<SimCard | 'new' | null>(null);
   const [deleting, setDeleting] = useState<SimCard | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [detecting, setDetecting] = useState(false);
+  const [tracking, setTracking] = useState<SimCard | null>(null);
   useEffect(() => { const h = setTimeout(() => setQuery(q.trim()), 250); return () => clearTimeout(h); }, [q]);
   useEffect(() => { if (!toast) return; const h = setTimeout(() => setToast(null), 3500); return () => clearTimeout(h); }, [toast]);
   const params = { q: query, provider: provider === 'all' ? null : provider };
@@ -53,7 +57,7 @@ export function SimCards() {
       {!list.data && list.loading && <Spinner label={t('SIM Card-yada waa la soo qaadayaa…', 'Loading SIM cards…')} />}
       {list.data && <p className="px-1 -mb-2 text-[13px] font-semibold text-on-surface-variant" data-testid="sim-count">
         {filtered ? t(`${items.length} ka mid ah ${list.data.total} SIM Card`, `${items.length} of ${list.data.total} SIM cards`) : t(`${list.data.total} SIM Card`, `${list.data.total} SIM cards`)}</p>}
-      {items.length > 0 && <Group>{items.map(s => <div key={s.id} className="flex items-center gap-1 pl-4 pr-1.5">
+      {items.length > 0 && <Group>{items.map(s => <div key={s.id} data-testid="sim-row" className="flex flex-col pb-1"><div className="flex items-center gap-1 pl-4 pr-1.5">
         <button type="button" onClick={() => setEditing(s)} aria-label={`${t('Wax ka beddel', 'Edit')} ${s.name}`} className="flex-1 min-w-0 flex items-center gap-3 py-3.5 text-left active:opacity-70">
           <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 @max-[300px]:hidden ${providerTone[s.provider]}`}><Icon name="sim_card" className="text-[22px]" /></div>
           <div className="flex-1 min-w-0">
@@ -64,14 +68,18 @@ export function SimCards() {
         </button>
         <button type="button" onClick={() => setDeleting(s)} aria-label={`${t('Tirtir', 'Delete')} ${s.name}`} title={t('Tirtir', 'Delete')}
           className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-error active:bg-error-container"><Icon name="delete" className="text-[22px]" /></button>
-      </div>)}</Group>}
+      </div><SimMoney sim={s} onTrack={() => setTracking(s)} /></div>)}</Group>}
       {list.data && !items.length && <EmptyState icon="sim_card" title={filtered ? t('SIM Card lama helin', 'No SIM cards found') : t('Weli SIM Card ma jiro', 'No SIM cards yet')}
         text={filtered ? t('Beddel raadinta ama shirkadda.', 'Change the search or network.') : t('Ku dar SIM Card-yada aad isticmaasho si aad meel keliya uga aragto.', 'Add the SIM cards you use to see them in one place.')} />}
-      <Button id="addSimBtn" icon="add" onClick={() => setEditing('new')}>{t('Ku dar SIM Card', 'Add SIM card')}</Button>
+      {isNativeAndroid && <Button id="detectSimsBtn" icon="sim_card_download" onClick={() => setDetecting(true)}>{t('Ka soo qaado SIM-yada taleefanka', 'Find SIMs on this phone')}</Button>}
+      <Button id="addSimBtn" kind={isNativeAndroid ? 'tonal' : 'primary'} icon="add" onClick={() => setEditing('new')}>{t('Ku dar SIM Card gacan', 'Add SIM card by hand')}</Button>
+      {!isNativeAndroid && <p className="px-1 -mt-2 text-[12.5px] leading-[1.36] text-on-surface-variant">{t('SIM-yada si toos ah waxaa looga soo qaadaa app-ka Android ee taleefanka SIM-yadu ku jiraan.', 'SIMs are found automatically in the Android app on the phone that holds them.')}</p>}
     </Main>
 
     {editing && <SimSheet sim={editing === 'new' ? null : editing} onClose={() => setEditing(null)}
       onSaved={name => { list.reload(); invalidateAll(); setToast(editing === 'new' ? t(`${name} waa la daray.`, `${name} was added.`) : t(`${name} waa la kaydiyay.`, `${name} was saved.`)); }} />}
+    {detecting && <DetectSims existing={list.data?.simCards ?? []} onClose={() => setDetecting(false)} onDone={msg => { list.reload(); invalidateAll(); setToast(msg); }} />}
+    {tracking && <TrackSim sim={tracking} onClose={() => setTracking(null)} onDone={msg => { list.reload(); invalidateAll(); setToast(msg); }} />}
     {deleting && <DeleteSim sim={deleting} onClose={() => setDeleting(null)} onDeleted={name => { list.reload(); invalidateAll(); setToast(t(`SIM Card-ka "${name}" waa la tirtiray.`, `SIM card "${name}" was deleted.`)); }} />}
     {toast && <Floating><div role="status" data-testid="sim-toast" className="fixed left-4 right-4 bottom-[calc(max(env(safe-area-inset-bottom,0px),8px)+84px)] z-[60] max-w-md mx-auto px-4 py-3 rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-lg flex items-center gap-2.5 screen-in">
       <Icon name="check_circle" fill className="text-[20px] text-primary-fixed-dim" /><span className="text-[14px] flex-1 break-words">{toast}</span></div></Floating>}
@@ -141,5 +149,167 @@ function DeleteSim({ sim, onClose, onDeleted }: { sim: SimCard; onClose: () => v
     {error && <Banner tone="error" icon="error">{error}</Banner>}
     <div className="grid grid-cols-2 gap-2"><Button kind="tonal" onClick={onClose}>{t('Jooji', 'Cancel')}</Button>
       <Button id="confirmDeleteSimBtn" kind="danger" icon="delete" className="!bg-error !text-on-error" disabled={busy} onClick={remove}>{t('Tirtir', 'Delete')}</Button></div>
+  </Sheet>;
+}
+
+/** This month's EVC Plus money in and out for a SIM, or why there is none yet. */
+function SimMoney({ sim, onTrack }: { sim: SimCard; onTrack: () => void }) {
+  const { me, setSelectedNumberId } = useSession();
+  const { show } = useAmounts();
+  const tr = sim.tracking;
+  if (tr) {
+    return <div className="mx-4 mb-2.5 rounded-2xl bg-surface-container-low px-3 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5" data-testid="sim-money">
+      <span className="w-full text-[12px] font-semibold text-on-surface-variant">{t('Bishan · EVC Plus', 'This month · EVC Plus')}</span>
+      <span className="flex items-center gap-1 text-[14px] font-bold text-primary-container whitespace-nowrap"><Icon name="south_west" className="text-[16px]" />{show(cash(tr.inTotal, 'USD', '+'))}<span className="text-[12px] font-medium text-on-surface-variant">({tr.inCount})</span></span>
+      <span className="flex items-center gap-1 text-[14px] font-bold text-on-surface whitespace-nowrap"><Icon name="north_east" className="text-[16px] text-error" />{show(cash(tr.outTotal, 'USD', '-'))}<span className="text-[12px] font-medium text-on-surface-variant">({tr.outCount})</span></span>
+      <button type="button" onClick={() => { setSelectedNumberId(tr.evcNumberId); navigate('dhaqdhaqaaq'); }} className="ml-auto min-h-9 py-1 px-3 -mr-1 rounded-full text-[13px] font-bold text-primary-container flex items-center gap-0.5 active:bg-surface-container leading-tight">
+        {t('Dhaqdhaqaaq', 'Activity')}<Icon name="chevron_right" className="text-[18px]" /></button>
+      {!tr.sourceDeviceId && <span className="w-full text-[12px] text-tertiary-container">{t('Weli taleefan SMS-ka lambarkan akhriya lama xirin.', 'No phone reads this number’s SMS yet.')}</span>}
+    </div>;
+  }
+  if (sim.provider === 'HORMUUD') {
+    const here = isNativeAndroid && sim.simSubscriptionId !== null && sim.detectedDeviceId === me!.device.id;
+    return <div className="mx-4 mb-2.5 rounded-2xl bg-surface-container-low px-3 py-2.5 flex flex-wrap items-center gap-2">
+      <span className="flex-1 min-w-[150px] text-[12.5px] leading-[1.36] text-on-surface-variant">{here ? t('La soco lacagaha soo gala iyo kuwa baxa ee SIM-kan (EVC Plus).', 'Track money in and out on this SIM (EVC Plus).') : t('Si loola socdo lacagaha, ka fur Toosh taleefanka SIM-kan ku jiro.', 'To track money, open Toosh on the phone that holds this SIM.')}</span>
+      {here && <button type="button" onClick={onTrack} className="min-h-9 py-1 px-3.5 rounded-full bg-primary-container text-on-primary text-[13px] font-bold pressable leading-tight">{t('La soco', 'Track')}</button>}
+    </div>;
+  }
+  return <p className="mx-4 mb-2.5 text-[12px] leading-[1.36] text-on-surface-variant">{sim.provider === 'SOMTEL'
+    ? t('Lacagaha eDahab (Somtel) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'eDahab (Somtel) money is not read yet — sample SMS are needed.')
+    : sim.provider === 'GOLIS' ? t('Lacagaha Golis weli lama akhrin karo.', 'Golis money is not read yet.') : t('Lacagaha kaliya EVC Plus (Hormuud) ayaa hadda la akhriyaa.', 'Only EVC Plus (Hormuud) money is read for now.')}</p>;
+}
+
+/** Asks for the permissions needed to read EVC SMS for a SIM; returns an error text when one is refused. */
+async function ensureSmsPermission(): Promise<string | null> {
+  const status = await TooshNative.getStatus();
+  if (status.smsPermission === 'GRANTED') return null;
+  const r = await TooshNative.requestSmsPermission();
+  return r.state === 'GRANTED' ? null : t('Ogolaanshaha SMS lama bixin, sidaas darteed lacagaha lama soo qaban karo. Ka fur Settings-ka taleefanka.', 'SMS permission was not given, so money cannot be recorded. Allow it in the phone settings.');
+}
+
+/** Makes `phone` an EVC number of the account (if it is not already) and links it to `sim` on this phone. */
+async function trackOnThisPhone(phone: string, name: string, sim: Pick<Sim, 'subscriptionId' | 'simSlot' | 'carrierName'>, evcNumbers: EvcNumber[], strict: boolean): Promise<string | null> {
+  const denied = await ensureSmsPermission();
+  if (denied) return denied;
+  let number = evcNumbers.find(n => n.msisdn === phone);
+  if (!number) number = await api<EvcNumber>('/evc-numbers', { method: 'POST', body: { msisdn: phone, displayName: name } });
+  const r = await linkSim(number.id, sim);
+  if (r === 'other-phone') return t(`${name}: taleefan kale ayaa horay u akhriya SMS-ka lambarkan.`, `${name}: another phone already reads this number's SMS.`);
+  if (r === 'sim-in-use') return t(`${name}: SIM-kan waxaa horay loogu xiray lambar kale.`, `${name}: this SIM is already linked to another number.`);
+  await syncNativeMappings(strict);
+  return null;
+}
+
+interface Found { sim: Sim; pick: boolean; name: string; phone: string; provider: SimProvider; track: boolean; already: SimCard | null }
+
+/** Lists the SIMs in this phone; the person ticks which to add and whether to track their EVC Plus money. */
+function DetectSims({ existing, onClose, onDone }: { existing: SimCard[]; onClose: () => void; onDone: (msg: string) => void }) {
+  const { me, native, refreshNative, refreshMe, tz } = useSession();
+  const [found, setFound] = useState<Found[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<number, string>>({});
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { (async () => {
+    try {
+      let state = (await TooshNative.getStatus()).phoneStatePermission;
+      if (state !== 'GRANTED') state = (await TooshNative.requestPhoneStatePermission()).state;
+      await refreshNative();
+      if (state !== 'GRANTED') { setError(t('Toosh wuxuu u baahan yahay ogolaanshaha "Taleefanka" si uu u arko SIM-yada. Ka oggolow Settings-ka taleefanka.', 'Toosh needs the "Phone" permission to see the SIMs. Allow it in the phone settings.')); setFound([]); return; }
+      const { sims } = await TooshNative.listSims();
+      setFound(sims.map(sim => {
+        const number = sim.number ? normalizeSomaliSimNumber(sim.number) : null;
+        const phone = number?.ok ? number.e164 : null;
+        const already = existing.find(e => (e.detectedDeviceId === me!.device.id && e.simSubscriptionId === sim.subscriptionId) || (phone && e.phone === phone)) ?? null;
+        const provider = providerFromCarrier(sim.carrierName ?? sim.displayName);
+        return { sim, already, pick: !already, provider, track: provider === 'HORMUUD',
+          name: (sim.displayName || sim.carrierName || `SIM ${sim.simSlot + 1}`).slice(0, 60), phone: phone ? formatMsisdn(phone).replace('+252 ', '') : '' };
+      }));
+    } catch { setError(t('SIM-yada lama akhrin karin.', 'The SIMs could not be read.')); setFound([]); }
+  })(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const set = (i: number, p: Partial<Found>) => setFound(f => f!.map((x, j) => (j === i ? { ...x, ...p } : x)));
+  async function save() {
+    setError(null);
+    const picked = found!.map((f, i) => ({ f, i })).filter(x => x.f.pick && !x.f.already);
+    const errs: Record<number, string> = {};
+    for (const { f, i } of picked) {
+      if (!f.name.trim()) errs[i] = t('Geli magaca SIM-ka.', 'Enter a name for the SIM.');
+      else if (!normalizeSomaliSimNumber(f.phone).ok) errs[i] = t('Geli lambarka SIM-kan (Android ma bixin).', 'Enter this SIM’s number (Android did not provide it).');
+    }
+    setErrors(errs);
+    if (Object.keys(errs).length || !picked.length) { if (!picked.length) setError(t('Dooro ugu yaraan hal SIM.', 'Choose at least one SIM.')); return; }
+    setBusy(true);
+    const problems: string[] = []; let added = 0;
+    try {
+      for (const { f, i } of picked) {
+        const phone = (normalizeSomaliSimNumber(f.phone) as { e164: string }).e164;
+        try {
+          await api('/sim-cards', { method: 'POST', body: { name: f.name.trim(), phone, provider: f.provider, registeredOn: localDate(new Date(), tz), notes: null, simSlot: f.sim.simSlot, simSubscriptionId: f.sim.subscriptionId } });
+          added++;
+        } catch (e) { errs[i] = offlineAware(e); continue; }
+        if (f.track && f.provider === 'HORMUUD') {
+          const problem = await trackOnThisPhone(phone, f.name.trim(), f.sim, me!.evcNumbers, native?.strictFilter ?? true).catch(e => offlineAware(e));
+          if (problem) problems.push(problem);
+          else await refreshMe();
+        }
+      }
+      setErrors({ ...errs });
+      await refreshMe(); await refreshNative();
+      if (added && !Object.keys(errs).length) {
+        onDone(t(`${added} SIM ayaa la daray.`, `${added} SIM(s) added.`) + (problems.length ? ` ${problems.join(' ')}` : ''));
+        onClose();
+      } else if (problems.length) setError(problems.join(' '));
+    } finally { setBusy(false); }
+  }
+
+  return <Sheet open onClose={onClose} title={t('SIM-yada taleefanka', 'SIMs on this phone')}>
+    <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(70dvh/var(--app-zoom,1))] -mx-1 px-1 pb-1">
+      {!found && <Spinner label={t('SIM-yada waa la raadinayaa…', 'Looking for SIMs…')} />}
+      {found && !found.length && !error && <p className="text-[14px] text-on-surface-variant">{t('SIM firfircoon lama helin.', 'No active SIM found.')}</p>}
+      {found?.map((f, i) => <div key={f.sim.subscriptionId} data-testid="found-sim" className={`rounded-2xl p-3 flex flex-col gap-3 border-2 ${f.pick && !f.already ? 'border-primary-container bg-primary-fixed/30' : 'border-transparent bg-surface-container-low'}`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${providerTone[f.provider]}`}><Icon name="sim_card" className="text-[20px]" /></div>
+          <div className="flex-1 min-w-0"><div className="text-[15px] font-bold break-words">SIM {f.sim.simSlot + 1}{f.sim.carrierName ? ` · ${f.sim.carrierName}` : ''}</div>
+            <div className="text-[12.5px] text-on-surface-variant">{f.already ? t(`Horay ayaa loo daray: ${f.already.name}`, `Already added: ${f.already.name}`) : providerName(f.provider)}</div></div>
+          {!f.already && <Toggle label={`${t('Ku dar', 'Add')} SIM ${f.sim.simSlot + 1}`} checked={f.pick} onChange={v => set(i, { pick: v })} />}
+        </div>
+        {f.pick && !f.already && <>
+          <Field label={t('Magaca', 'Name')}><input value={f.name} maxLength={60} onChange={e => set(i, { name: e.target.value })} className={INPUT} /></Field>
+          <Field label={t('Lambarka', 'Number')} hint={f.sim.number ? undefined : t('Android ma bixin lambarka SIM-kan — geli.', 'Android did not give this SIM’s number — type it.')}>
+            <div className="flex items-center gap-2"><span className="text-[15px] font-bold text-on-surface-variant shrink-0">+252</span>
+              <input type="tel" inputMode="tel" value={f.phone} onChange={e => set(i, { phone: e.target.value })} placeholder="61 XXX XXXX" className={`${INPUT} font-semibold`} /></div></Field>
+          <div className="flex flex-col gap-1.5"><span className={LABEL}>{t('Shirkadda', 'Network')}</span>
+            <Segmented label={t('Shirkadda', 'Network')} value={f.provider} onChange={v => set(i, { provider: v, track: v === 'HORMUUD' })} options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} /></div>
+          {f.provider === 'HORMUUD' && <div className="flex items-center gap-3">
+            <span className="flex-1 text-[13.5px] leading-[1.38]"><strong className="block text-on-surface">{t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')}</strong><span className="text-on-surface-variant">{t('SMS-ka EVC ee SIM-kan ayaa la akhrinayaa: soo galay iyo baxay.', 'EVC SMS on this SIM are read: money in and out.')}</span></span>
+            <Toggle label={t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')} checked={f.track} onChange={v => set(i, { track: v })} /></div>}
+        </>}
+        {errors[i] && <p role="alert" className="text-[13px] text-error">{errors[i]}</p>}
+      </div>)}
+      {error && <Banner tone="error" icon="error">{error}</Banner>}
+    </div>
+    {found && found.some(f => !f.already) && <Button id="saveFoundSimsBtn" disabled={busy} icon={busy ? 'progress_activity' : 'check'} spin={busy} onClick={save}>{t('Ku dar SIM-yada la doortay', 'Add the chosen SIMs')}</Button>}
+  </Sheet>;
+}
+
+/** Starts tracking EVC Plus money for a SIM found on this phone earlier. */
+function TrackSim({ sim, onClose, onDone }: { sim: SimCard; onClose: () => void; onDone: (msg: string) => void }) {
+  const { me, native, refreshMe, refreshNative } = useSession();
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function go() {
+    setBusy(true); setError(null);
+    try {
+      const problem = await trackOnThisPhone(sim.phone, sim.name, { subscriptionId: sim.simSubscriptionId!, simSlot: sim.simSlot ?? 0, carrierName: providerName(sim.provider) }, me!.evcNumbers, native?.strictFilter ?? true);
+      await refreshMe(); await refreshNative();
+      if (problem) { setError(problem); return; }
+      onDone(t(`Lacagaha ${sim.name} hadda waa la la socdaa.`, `${sim.name} money is now tracked.`)); onClose();
+    } catch (e) { setError(offlineAware(e)); } finally { setBusy(false); }
+  }
+  return <Sheet open onClose={onClose} title={t('La soco lacagaha', 'Track money')}>
+    <p className="text-[14px] leading-[1.43] text-on-surface-variant">{t(`Toosh wuxuu akhrin doonaa fariimaha EVC Plus ee SIM-ka "${sim.name}" (${formatMsisdn(sim.phone)}) ee taleefankan, si loo arko lacagaha soo gala iyo kuwa baxa. Fariimaha kale lama keydiyo.`, `Toosh will read EVC Plus messages on the SIM "${sim.name}" (${formatMsisdn(sim.phone)}) on this phone to show money in and out. Other messages are never stored.`)}</p>
+    {error && <Banner tone="error" icon="error">{error}</Banner>}
+    <Button id="confirmTrackBtn" disabled={busy} icon="check" onClick={go}>{t('La soco', 'Track')}</Button>
   </Sheet>;
 }

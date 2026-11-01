@@ -88,4 +88,10 @@ export interface FinanceSummary {
 
 /** A SIM card record (server/src/sims.ts). Only a note in Toosh: it never controls the real SIM. */
 export type SimProvider = 'HORMUUD' | 'SOMTEL' | 'GOLIS' | 'OTHER';
-export interface SimCard { id: string; name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null; createdAt: string; updatedAt: string }
+export interface SimTracking { evcNumberId: string; sourceDeviceId: string | null; inTotal: string; inCount: number; outTotal: string; outCount: number }
+export interface SimCard {
+  id: string; name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null;
+  simSlot: number | null; simSubscriptionId: number | null; detectedDeviceId: string | null; createdAt: string; updatedAt: string;
+  /** EVC Plus money in/out this month, when the SIM's number is one of the account's EVC numbers. */
+  tracking?: SimTracking | null;
+}

@@ -89,6 +89,21 @@ await page.getByRole('button', { name: 'Review now' }).first().dispatchEvent('cl
 await page.getByTestId('original-sms').waitFor();
 await check('message-detail');
 
+// SIM Card: find the emulator's SIM, add it with money tracking, and see its EVC Plus totals.
+for (const route of ['qarash', 'sim-card']) {
+  await page.evaluate(r => { window.location.hash = `#/${r}`; }, route);
+  await check(route);
+}
+await page.locator('#detectSimsBtn').dispatchEvent('click');
+await page.getByTestId('found-sim').first().waitFor({ timeout: 20000 });
+await check('sim-detect');
+const numberInput = page.getByTestId('found-sim').first().locator('input[type="tel"]');
+if (!(await numberInput.inputValue())) await numberInput.fill(phone);
+await page.locator('#saveFoundSimsBtn').dispatchEvent('click');
+await page.getByTestId('sim-money').first().waitFor({ timeout: 30000 });
+await check('sim-tracked');
+console.log('SIM detection: the emulator SIM was found, added and is tracked.');
+
 adb('shell', 'settings', 'put', 'system', 'font_scale', '1.0');
 await device.close();
 if (failures.length) { console.error(`\n${failures.length} layout problem(s) at font size 130%:\n - ${failures.join('\n - ')}`); process.exit(1); }

@@ -16,3 +16,12 @@ test('SIM card validation', () => {
   assert.ok(!bad.ok);
   assert.deepEqual(Object.keys(bad.errors).sort(), ['name', 'notes', 'phone', 'provider', 'registeredOn']);
 });
+
+test('network from the SIM name Android shows', async () => {
+  const { providerFromCarrier } = await import('../src/index.ts');
+  assert.equal(providerFromCarrier('Hormuud'), 'HORMUUD');
+  assert.equal(providerFromCarrier('SOMTEL'), 'SOMTEL');
+  assert.equal(providerFromCarrier('Golis Telecom'), 'GOLIS');
+  assert.equal(providerFromCarrier('Telesom'), 'OTHER');
+  assert.equal(providerFromCarrier(null), 'OTHER');
+});

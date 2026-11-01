@@ -6,6 +6,7 @@ import { isNativeAndroid, TooshNative, type Sim } from '../lib/native.ts';
 import { goBack, navigate } from '../lib/router.ts';
 import { t } from '../lib/i18n.ts';
 import { useSession } from '../lib/session.tsx';
+import { syncNativeMappings } from '../lib/sources.ts';
 import type { EvcNumber } from '../lib/types.ts';
 
 /**
@@ -61,9 +62,7 @@ export function SourceSetup() {
         }
       }
       await refreshMe();
-      const fresh = await api<{ evcNumbers: EvcNumber[]; device: { id: string }; account: { id: string } }>('/me');
-      const mappings = fresh.evcNumbers.filter(n => n.sourceDeviceId === fresh.device.id).map(n => ({ subscriptionId: n.simSubscriptionId, simSlot: n.simSlot, evcNumberId: n.id, accountId: fresh.account.id }));
-      await TooshNative.setSourceMappings({ mappings, strictFilter: native?.strictFilter ?? true });
+      await syncNativeMappings(native?.strictFilter ?? true);
       await refreshNative();
     } catch (e) { setError((e as ApiFailure).message); }
     finally { setBusy(false); }

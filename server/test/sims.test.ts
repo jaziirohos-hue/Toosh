@@ -1,7 +1,7 @@
 import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { withAccount } from '../src/db.ts';
-import { call, ingest, OUT_SMS, setup, sms, sourceAccount, type TestEnv } from './helpers.ts';
+import { call, ingest, IN_SMS, OUT_SMS, setup, sms, sourceAccount, type TestEnv } from './helpers.ts';
 
 let env: TestEnv;
 before(async () => { env = await setup(); });
@@ -75,5 +75,41 @@ describe('SIM cards', () => {
     assert.equal((await call(env.app, 'GET', '/api/v1/sim-cards')).status, 401);
     const leaked = await withAccount(env.db, b.accountId, async tx => (await tx.query('SELECT count(*)::int AS n FROM sim_cards WHERE id = $1', [mine.id])).rows[0].n);
     assert.equal(leaked, 0, 'row-level security hides other accounts even without a WHERE');
+  });
+});
+
+describe('SIM cards found on the phone', () => {
+  const tz = 'Africa/Mogadishu';
+  const evcNow = (minutesAgo: number) => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      .formatToParts(new Date(Date.now() - minutesAgo * 60000)).map(x => [x.type, x.value]));
+    return `${p.day}/${p.month}/${p.year.slice(2)} ${p.hour}:${p.minute}:${p.second}`;
+  };
+
+  test('a detected SIM keeps its slot and phone; its EVC money in and out this month is shown', async () => {
+    const a = await sourceAccount(env.app);
+    const me = (await call(env.app, 'GET', '/api/v1/me', a.token)).body;
+    const evcPhone = me.evcNumbers[0].msisdn as string;
+    // Money in and out on this number one minute ago (inside this month except in the month's first minute).
+    const now = new Date();
+    await ingest(env.app, a.token, [
+      sms(a.numberId, IN_SMS('40', '140', evcNow(1)), now.toISOString()),
+      sms(a.numberId, OUT_SMS('15.50', '124.50', evcNow(1)), now.toISOString()),
+    ]);
+    const detected = await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Hormuud', phone: evcPhone, simSlot: 0, simSubscriptionId: 3 }));
+    assert.equal(detected.status, 201, JSON.stringify(detected.body));
+    assert.equal(detected.body.simCard.simSlot, 0);
+    assert.equal(detected.body.simCard.simSubscriptionId, 3);
+    assert.equal(detected.body.simCard.detectedDeviceId, a.deviceId);
+    await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Golis', phone: '907771234', provider: 'GOLIS' }));
+    assert.equal((await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ phone: '617770000', simSlot: 9 }))).status, 400, 'invalid slot');
+
+    const list = (await call(env.app, 'GET', '/api/v1/sim-cards', a.token)).body.simCards;
+    const hor = list.find((s: any) => s.name === 'Hormuud');
+    assert.equal(hor.tracking.evcNumberId, a.numberId);
+    assert.equal(hor.tracking.sourceDeviceId, a.deviceId);
+    assert.deepEqual([hor.tracking.inTotal, hor.tracking.inCount, hor.tracking.outTotal, hor.tracking.outCount], ['40.00', 1, '15.50', 1]);
+    assert.equal(list.find((s: any) => s.name === 'Golis').tracking, null, 'a number that is not an EVC number has no totals');
+    assert.equal(list.find((s: any) => s.name === 'Golis').detectedDeviceId, null);
   });
 });

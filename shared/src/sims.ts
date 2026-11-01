@@ -9,7 +9,7 @@ export const SIM_PROVIDERS = ['HORMUUD', 'SOMTEL', 'GOLIS', 'OTHER'] as const;
 export type SimProvider = (typeof SIM_PROVIDERS)[number];
 export const SIM_PROVIDER_NAMES: Record<SimProvider, string> = { HORMUUD: 'Hormuud', SOMTEL: 'Somtel', GOLIS: 'Golis', OTHER: 'Kale' };
 
-export interface SimCardInput { name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null }
+export interface SimCardInput { name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null; simSlot: number | null; simSubscriptionId: number | null }
 
 const clean = (v: unknown, max: number): string | null =>
   (typeof v === 'string' && v.trim() && v.trim().length <= max && !/[\u0000-\u0008\u000b-\u001f]/.test(v) ? v.trim() : null);
@@ -31,6 +31,20 @@ export function validateSimCard(input: any, today: string): Validation<SimCardIn
     notes = clean(b.notes, 500);
     if (!notes) errors.notes = 'Qoraalku waa ugu badnaan 500 xaraf.';
   }
+  // Set when the SIM was picked from the phone's own list (Android); both empty for a SIM typed in by hand.
+  const int = (v: unknown, max: number) => (v === undefined || v === null || v === '' ? null : Number.isInteger(v) && (v as number) >= 0 && (v as number) <= max ? (v as number) : NaN);
+  const simSlot = int(b.simSlot, 7); const simSubscriptionId = int(b.simSubscriptionId, 2147483647);
+  if (Number.isNaN(simSlot) || Number.isNaN(simSubscriptionId)) errors.sim = 'SIM aan sax ahayn.';
   if (Object.keys(errors).length) return { ok: false, errors };
-  return { ok: true, value: { name: name!, phone: (phone as { e164: string }).e164, provider: b.provider, registeredOn: b.registeredOn, notes } };
+  return { ok: true, value: { name: name!, phone: (phone as { e164: string }).e164, provider: b.provider, registeredOn: b.registeredOn, notes, simSlot, simSubscriptionId } };
+
+}
+
+/** Network from the name Android shows for a SIM ("Hormuud", "SOMTEL", "Golis Telecom"…); "OTHER" when unknown. */
+export function providerFromCarrier(name: string | null | undefined): SimProvider {
+  const n = String(name ?? '').toLowerCase();
+  if (n.includes('hormuud')) return 'HORMUUD';
+  if (n.includes('somtel')) return 'SOMTEL';
+  if (n.includes('golis')) return 'GOLIS';
+  return 'OTHER';
 }

@@ -29,6 +29,7 @@ async function seed(request: import('@playwright/test').APIRequestContext) {
   await request.put('/api/v1/budgets', { headers: auth, data: { period: 'MONTHLY', amount: '5', currency: 'USD' } });
   await request.put('/api/v1/budgets', { headers: auth, data: { period: 'WEEKLY', category: 'gaari_raac', amount: '100', currency: 'USD' } });
   await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'SIM-ka labaad ee ganacsiga iyo qoyska', phone: '907771234', provider: 'GOLIS', registeredOn: '2023-05-01', notes: 'Waxaa la isticmaalaa marka la safrayo Garowe iyo Boosaaso' } });
+  await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Hormuud-ka EVC Plus ee ganacsiga', phone, provider: 'HORMUUD', registeredOn: '2022-02-02' } });
   await request.post('/api/v1/goals', { headers: auth, data: { name: 'Gaari cusub oo qoyska loogu talagalay', target: '12000', saved: '3500', currency: 'USD', targetDate: '2027-06-30' } });
   return phone;
 }

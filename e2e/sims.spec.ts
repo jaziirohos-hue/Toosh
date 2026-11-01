@@ -85,3 +85,37 @@ test('SIM cards: add, search, filter, edit, delete only after confirming', async
   const me = await (await request.get('/api/v1/me', { headers: { authorization: `Bearer ${reg.token}` } })).json();
   expect(me.evcNumbers).toHaveLength(1);
 });
+
+test('a SIM whose number is an EVC number shows money in and out this month, and opens its activity', async ({ page, request }) => {
+  const phone = `61${String(Math.floor(Math.random() * 1e7)).padStart(7, '0')}`;
+  const reg = await (await request.post('/api/v1/auth/register', { data: { displayName: 'Cali', phone, password: PASSWORD, device: { platform: 'android', name: 'A54' } } })).json();
+  const auth = { authorization: `Bearer ${reg.token}` };
+  const numberId = reg.evcNumbers[0].id;
+  await request.post(`/api/v1/evc-numbers/${numberId}/source`, { headers: auth, data: { simSubscriptionId: 1, simSlot: 0, simLabel: 'SIM 1' } });
+  const tar = (d: Date) => new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Mogadishu', hourCycle: 'h23', day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(d).replace(',', '');
+  const at = new Date(Date.now() - 60000);
+  const msg = (body: string, i: number) => ({ clientMessageId: `simtrack-${Date.now()}-${i}`, evcNumberId: numberId, sender: '192', body, smsTimestamp: at.toISOString(), receivedAt: at.toISOString(), simSubscriptionId: 1, simSlot: 0, importMethod: 'LIVE', partsCount: 1 });
+  await request.post('/api/v1/ingest/messages', { headers: auth, data: { messages: [
+    msg(`[-EVCPLUS-] waxaad $25 ka heshay 615223344, Tar: ${tar(at)} haraagagu waa $125.`, 1),
+    msg(`[-EVCPlus-] $7.25 ayaad uwareejisay Dukaan(615551288), Tar: ${tar(at)} Haraagaagu waa $117.75.`, 2),
+  ] } });
+  await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Hormuud-kayga', phone, provider: 'HORMUUD', registeredOn: '2024-01-01' } });
+  await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Somtel', phone: '652223344', provider: 'SOMTEL', registeredOn: '2024-01-01' } });
+
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Gal Akoonka' }).click();
+  await page.locator('#phone-number').fill(phone);
+  await page.locator('#password').fill(PASSWORD);
+  await page.getByRole('button', { name: /^Fur Toosh/ }).click();
+  await expect(page.getByTestId('fin-income')).toBeVisible();
+  await page.goto('/#/sim-card');
+  const money = page.getByTestId('sim-money');
+  await expect(money).toHaveCount(1);
+  await expect(money).toContainText('+$25.00');
+  await expect(money).toContainText('-$7.25');
+  await expect(page.getByText('Lacagaha eDahab (Somtel) weli lama akhrin karo')).toBeVisible();
+  // Find-on-phone is offered only in the Android app.
+  await expect(page.locator('#detectSimsBtn')).toHaveCount(0);
+  await money.getByRole('button', { name: /Dhaqdhaqaaq/ }).click();
+  await expect(page.getByTestId('history-in')).toHaveText('+$25.00');
+});

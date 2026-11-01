@@ -108,6 +108,12 @@ fast Node server that shares the TypeScript parser with the app.
   registration date and optional notes. The same number cannot be added twice to one account.
 - Each row has a trash button. Deleting asks for confirmation, removes only that record, and shows a success
   message. EVC numbers, messages and everything else stay as they are.
+- **Find SIMs on this phone** (Android app): lists the phone's SIMs (slot and network from Android). Tick the ones
+  to add; name and network are filled in, the number too when Android provides it (many phones do not, then you
+  type it). For a Hormuud SIM, "Track money" makes its number an EVC number and links it to that SIM on this phone,
+  so its EVC Plus SMS are read.
+- Each SIM whose number is an EVC number shows this month's money in and out (EVC Plus) and opens its activity.
+  eDahab (Somtel) and Golis money are not read yet.
 - A record is only a note in Toosh: adding, editing or deleting it never deactivates or changes the real SIM.
 - Row-level security limits every read, edit and delete to the signed-in account's own records.
 
