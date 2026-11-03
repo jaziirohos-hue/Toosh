@@ -25,3 +25,9 @@ test('network from the SIM name Android shows', async () => {
   assert.equal(providerFromCarrier('Telesom'), 'OTHER');
   assert.equal(providerFromCarrier(null), 'OTHER');
 });
+
+test('Somnet is a network choice', async () => {
+  const { providerFromCarrier, validateSimCard } = await import('../src/index.ts');
+  assert.equal(providerFromCarrier('SOMNET'), 'SOMNET');
+  assert.ok(validateSimCard({ name: 'Jeeb', phone: '68 123 4567', provider: 'SOMNET', registeredOn: '2025-01-01' }, '2026-11-03').ok);
+});

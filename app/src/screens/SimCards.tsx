@@ -12,9 +12,10 @@ import { useSession } from '../lib/session.tsx';
 import { invalidateAll, useResource } from '../lib/sync.ts';
 import type { EvcNumber, SimCard, SimProvider } from '../lib/types.ts';
 
-const providerName = (p: SimProvider) => (p === 'HORMUUD' ? 'Hormuud' : p === 'SOMTEL' ? 'Somtel' : p === 'GOLIS' ? 'Golis' : t('Kale', 'Other'));
+const providerName = (p: SimProvider) => (p === 'HORMUUD' ? 'Hormuud' : p === 'SOMTEL' ? 'Somtel' : p === 'SOMNET' ? 'Somnet' : p === 'GOLIS' ? 'Golis' : t('Kale', 'Other'));
 const providerTone: Record<SimProvider, string> = {
   HORMUUD: 'bg-primary-fixed text-on-primary-fixed-variant', SOMTEL: 'bg-secondary-fixed text-on-secondary-fixed-variant',
+  SOMNET: 'bg-error-container text-on-error-container',
   GOLIS: 'bg-tertiary-fixed text-on-tertiary-fixed-variant', OTHER: 'bg-surface-container-high text-on-surface',
 };
 
@@ -48,7 +49,7 @@ export function SimCards() {
           className="w-full min-h-12 py-2 pl-12 pr-4 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-[15px] placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary-container leading-tight" />
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label={t('Shirkadda', 'Network')}>
-        {(['all', 'HORMUUD', 'SOMTEL', 'GOLIS', 'OTHER'] as const).map(p => <button key={p} type="button" aria-pressed={provider === p} onClick={() => setProvider(p)}
+        {(['all', 'HORMUUD', 'SOMTEL', 'SOMNET', 'GOLIS', 'OTHER'] as const).map(p => <button key={p} type="button" aria-pressed={provider === p} onClick={() => setProvider(p)}
           className={`min-h-9 py-1 px-3.5 rounded-full text-[13.5px] font-semibold leading-tight pressable ${provider === p ? 'bg-primary-container text-on-primary' : 'bg-surface-container text-on-surface'}`}>
           {p === 'all' ? t('Dhammaan', 'All') : providerName(p)}</button>)}
       </div>
@@ -120,7 +121,7 @@ function SimSheet({ sim, onClose, onSaved }: { sim: SimCard | null; onClose: () 
           <input id="sim-phone" type="tel" inputMode="tel" autoComplete="off" value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} placeholder="61 XXX XXXX" className={`${INPUT} font-semibold`} /></div></Field>
       <div className="flex flex-col gap-1.5"><span className={LABEL}>{t('Shirkadda isgaarsiinta', 'Network provider')}</span>
         <Segmented label={t('Shirkadda isgaarsiinta', 'Network provider')} value={f.provider} onChange={v => setF({ ...f, provider: v })}
-          options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} />
+          options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['SOMNET', 'Somnet'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} />
         {errors.provider && <span role="alert" className="px-1 text-[13px] text-error">{errors.provider}</span>}</div>
       <Field label={t('Taariikhda diiwaangelinta', 'Registration date')} error={errors.registeredOn}>
         <input id="sim-date" type="date" value={f.registeredOn} max={today} onChange={e => setF({ ...f, registeredOn: e.target.value })} className={INPUT} /></Field>
@@ -176,6 +177,7 @@ function SimMoney({ sim, onTrack }: { sim: SimCard; onTrack: () => void }) {
   }
   return <p className="mx-4 mb-2.5 text-[12px] leading-[1.36] text-on-surface-variant">{sim.provider === 'SOMTEL'
     ? t('Lacagaha eDahab (Somtel) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'eDahab (Somtel) money is not read yet — sample SMS are needed.')
+    : sim.provider === 'SOMNET' ? t('Lacagaha Jeeb (Somnet) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'Jeeb (Somnet) money is not read yet — sample SMS are needed.')
     : sim.provider === 'GOLIS' ? t('Lacagaha Golis weli lama akhrin karo.', 'Golis money is not read yet.') : t('Lacagaha kaliya EVC Plus (Hormuud) ayaa hadda la akhriyaa.', 'Only EVC Plus (Hormuud) money is read for now.')}</p>;
 }
 
@@ -280,7 +282,7 @@ function DetectSims({ existing, onClose, onDone }: { existing: SimCard[]; onClos
             <div className="flex items-center gap-2"><span className="text-[15px] font-bold text-on-surface-variant shrink-0">+252</span>
               <input type="tel" inputMode="tel" value={f.phone} onChange={e => set(i, { phone: e.target.value })} placeholder="61 XXX XXXX" className={`${INPUT} font-semibold`} /></div></Field>
           <div className="flex flex-col gap-1.5"><span className={LABEL}>{t('Shirkadda', 'Network')}</span>
-            <Segmented label={t('Shirkadda', 'Network')} value={f.provider} onChange={v => set(i, { provider: v, track: v === 'HORMUUD' })} options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} /></div>
+            <Segmented label={t('Shirkadda', 'Network')} value={f.provider} onChange={v => set(i, { provider: v, track: v === 'HORMUUD' })} options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['SOMNET', 'Somnet'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} /></div>
           {f.provider === 'HORMUUD' && <div className="flex items-center gap-3">
             <span className="flex-1 text-[13.5px] leading-[1.38]"><strong className="block text-on-surface">{t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')}</strong><span className="text-on-surface-variant">{t('SMS-ka EVC ee SIM-kan ayaa la akhrinayaa: soo galay iyo baxay.', 'EVC SMS on this SIM are read: money in and out.')}</span></span>
             <Toggle label={t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')} checked={f.track} onChange={v => set(i, { track: v })} /></div>}

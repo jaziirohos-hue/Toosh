@@ -5,9 +5,9 @@
 import { isIsoDate, type Validation } from './finance.ts';
 import { normalizeSomaliSimNumber } from './phone.ts';
 
-export const SIM_PROVIDERS = ['HORMUUD', 'SOMTEL', 'GOLIS', 'OTHER'] as const;
+export const SIM_PROVIDERS = ['HORMUUD', 'SOMTEL', 'SOMNET', 'GOLIS', 'OTHER'] as const;
 export type SimProvider = (typeof SIM_PROVIDERS)[number];
-export const SIM_PROVIDER_NAMES: Record<SimProvider, string> = { HORMUUD: 'Hormuud', SOMTEL: 'Somtel', GOLIS: 'Golis', OTHER: 'Kale' };
+export const SIM_PROVIDER_NAMES: Record<SimProvider, string> = { HORMUUD: 'Hormuud', SOMTEL: 'Somtel', SOMNET: 'Somnet', GOLIS: 'Golis', OTHER: 'Kale' };
 
 export interface SimCardInput { name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null; simSlot: number | null; simSubscriptionId: number | null }
 
@@ -22,7 +22,7 @@ export function validateSimCard(input: any, today: string): Validation<SimCardIn
   if (!name) errors.name = 'Geli magaca SIM-ka (ilaa 60 xaraf).';
   const phone = normalizeSomaliSimNumber(typeof b.phone === 'string' ? b.phone : '');
   if (!phone.ok) errors.phone = 'Geli lambar taleefan Soomaali ah oo sax ah (sida 61 512 3456).';
-  if (!SIM_PROVIDERS.includes(b.provider)) errors.provider = 'Dooro shirkadda: Hormuud, Somtel, Golis ama Kale.';
+  if (!SIM_PROVIDERS.includes(b.provider)) errors.provider = 'Dooro shirkadda: Hormuud, Somtel, Somnet, Golis ama Kale.';
   if (!isIsoDate(b.registeredOn)) errors.registeredOn = 'Geli taariikh sax ah.';
   else if (b.registeredOn > today) errors.registeredOn = 'Taariikhdu ma noqon karto mustaqbalka.';
   else if (b.registeredOn < '1990-01-01') errors.registeredOn = 'Taariikh aad u fog.';
@@ -40,11 +40,12 @@ export function validateSimCard(input: any, today: string): Validation<SimCardIn
 
 }
 
-/** Network from the name Android shows for a SIM ("Hormuud", "SOMTEL", "Golis Telecom"…); "OTHER" when unknown. */
+/** Network from the name Android shows for a SIM ("Hormuud", "SOMTEL", "Somnet", "Golis Telecom"…); "OTHER" when unknown. */
 export function providerFromCarrier(name: string | null | undefined): SimProvider {
   const n = String(name ?? '').toLowerCase();
   if (n.includes('hormuud')) return 'HORMUUD';
   if (n.includes('somtel')) return 'SOMTEL';
+  if (n.includes('somnet')) return 'SOMNET';
   if (n.includes('golis')) return 'GOLIS';
   return 'OTHER';
 }

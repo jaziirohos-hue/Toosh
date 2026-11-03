@@ -90,7 +90,7 @@ const EN: Record<string, string> = {
   'Lambarkan horay ayaa loogu daray SIM Card-yadaada.': 'This number is already in your SIM cards.',
   'Geli magaca SIM-ka (ilaa 60 xaraf).': 'Enter the SIM card name (up to 60 characters).',
   'Geli lambar taleefan Soomaali ah oo sax ah (sida 61 512 3456).': 'Enter a valid Somali phone number (e.g. 61 512 3456).',
-  'Dooro shirkadda: Hormuud, Somtel, Golis ama Kale.': 'Choose the network: Hormuud, Somtel, Golis or Other.',
+  'Dooro shirkadda: Hormuud, Somtel, Somnet, Golis ama Kale.': 'Choose the network: Hormuud, Somtel, Somnet, Golis or Other.',
   'Qoraalku waa ugu badnaan 500 xaraf.': 'Notes are at most 500 characters.',
 };
 

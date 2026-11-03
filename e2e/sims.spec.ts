@@ -101,6 +101,7 @@ test('a SIM whose number is an EVC number shows money in and out this month, and
   ] } });
   await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Hormuud-kayga', phone, provider: 'HORMUUD', registeredOn: '2024-01-01' } });
   await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Somtel', phone: '652223344', provider: 'SOMTEL', registeredOn: '2024-01-01' } });
+  await request.post('/api/v1/sim-cards', { headers: auth, data: { name: 'Somnet', phone: '681234567', provider: 'SOMNET', registeredOn: '2024-01-01' } });
 
   await page.goto('/');
   await page.getByRole('tab', { name: 'Gal Akoonka' }).click();
@@ -114,6 +115,8 @@ test('a SIM whose number is an EVC number shows money in and out this month, and
   await expect(money).toContainText('+$25.00');
   await expect(money).toContainText('-$7.25');
   await expect(page.getByText('Lacagaha eDahab (Somtel) weli lama akhrin karo')).toBeVisible();
+  await expect(page.getByText('Lacagaha Jeeb (Somnet) weli lama akhrin karo')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Somnet', exact: true })).toBeVisible();
   // Find-on-phone is offered only in the Android app.
   await expect(page.locator('#detectSimsBtn')).toHaveCount(0);
   await money.getByRole('button', { name: /Dhaqdhaqaaq/ }).click();

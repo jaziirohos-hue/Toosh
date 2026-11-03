@@ -87,7 +87,7 @@ export interface FinanceSummary {
 }
 
 /** A SIM card record (server/src/sims.ts). Only a note in Toosh: it never controls the real SIM. */
-export type SimProvider = 'HORMUUD' | 'SOMTEL' | 'GOLIS' | 'OTHER';
+export type SimProvider = 'HORMUUD' | 'SOMTEL' | 'SOMNET' | 'GOLIS' | 'OTHER';
 export interface SimTracking { evcNumberId: string; sourceDeviceId: string | null; inTotal: string; inCount: number; outTotal: string; outCount: number }
 export interface SimCard {
   id: string; name: string; phone: string; provider: SimProvider; registeredOn: string; notes: string | null;

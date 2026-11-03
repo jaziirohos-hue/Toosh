@@ -20,6 +20,7 @@ describe('SIM cards', () => {
     assert.equal(golis.status, 201, 'Golis numbers (90…) are accepted');
     assert.equal(golis.body.simCard.notes, null);
     await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Somtel', phone: '652223344', provider: 'SOMTEL', notes: null }));
+    assert.equal((await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Somnet Jeeb', phone: '681234567', provider: 'SOMNET', notes: null }))).body.simCard?.provider, 'SOMNET');
 
     assert.equal((await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Copy' }))).status, 409, 'same number twice');
     const bad = await call(env.app, 'POST', '/api/v1/sim-cards', a.token, { name: '', phone: '123', provider: 'TELESOM', registeredOn: '2999-01-01' });
@@ -27,8 +28,8 @@ describe('SIM cards', () => {
     assert.deepEqual(Object.keys(bad.body.details).sort(), ['name', 'phone', 'provider', 'registeredOn']);
 
     const all = await call(env.app, 'GET', '/api/v1/sim-cards', a.token);
-    assert.equal(all.body.total, 3);
-    assert.deepEqual(all.body.simCards.map((s: any) => s.name), ['Golis Garowe', 'SIM-ka shaqada', 'Somtel']);
+    assert.equal(all.body.total, 4);
+    assert.deepEqual(all.body.simCards.map((s: any) => s.name), ['Golis Garowe', 'SIM-ka shaqada', 'Somnet Jeeb', 'Somtel']);
     assert.equal((await call(env.app, 'GET', '/api/v1/sim-cards?provider=GOLIS', a.token)).body.simCards.length, 1);
     assert.equal((await call(env.app, 'GET', '/api/v1/sim-cards?q=shaqada', a.token)).body.simCards.length, 1);
     assert.equal((await call(env.app, 'GET', '/api/v1/sim-cards?q=0652', a.token)).body.simCards[0].name, 'Somtel', 'search by number');
