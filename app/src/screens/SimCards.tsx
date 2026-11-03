@@ -7,7 +7,7 @@ import { dayLabel } from '../lib/format.ts';
 import { t } from '../lib/i18n.ts';
 import { isNativeAndroid, TooshNative, type Sim } from '../lib/native.ts';
 import { goBack, navigate } from '../lib/router.ts';
-import { linkSim, syncNativeMappings } from '../lib/sources.ts';
+import { trackOnThisPhone } from '../lib/sources.ts';
 import { useSession } from '../lib/session.tsx';
 import { invalidateAll, useResource } from '../lib/sync.ts';
 import type { EvcNumber, SimCard, SimProvider } from '../lib/types.ts';
@@ -181,27 +181,6 @@ function SimMoney({ sim, onTrack }: { sim: SimCard; onTrack: () => void }) {
   return <p className="mx-4 mb-2.5 text-[12px] leading-[1.36] text-on-surface-variant">{sim.provider === 'SOMTEL'
     ? t('Lacagaha eDahab (Somtel) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'eDahab (Somtel) money is not read yet — sample SMS are needed.')
     : sim.provider === 'GOLIS' ? t('Lacagaha Golis weli lama akhrin karo.', 'Golis money is not read yet.') : t('Lacagaha kaliya EVC Plus (Hormuud) iyo Jeeb (Somnet) ayaa hadda la akhriyaa.', 'Only EVC Plus (Hormuud) and Jeeb (Somnet) money is read for now.')}</p>;
-}
-
-/** Asks for the permissions needed to read EVC SMS for a SIM; returns an error text when one is refused. */
-async function ensureSmsPermission(): Promise<string | null> {
-  const status = await TooshNative.getStatus();
-  if (status.smsPermission === 'GRANTED') return null;
-  const r = await TooshNative.requestSmsPermission();
-  return r.state === 'GRANTED' ? null : t('Ogolaanshaha SMS lama bixin, sidaas darteed lacagaha lama soo qaban karo. Ka fur Settings-ka taleefanka.', 'SMS permission was not given, so money cannot be recorded. Allow it in the phone settings.');
-}
-
-/** Makes `phone` an EVC number of the account (if it is not already) and links it to `sim` on this phone. */
-async function trackOnThisPhone(phone: string, name: string, sim: Pick<Sim, 'subscriptionId' | 'simSlot' | 'carrierName'>, evcNumbers: EvcNumber[], strict: boolean): Promise<string | null> {
-  const denied = await ensureSmsPermission();
-  if (denied) return denied;
-  let number = evcNumbers.find(n => n.msisdn === phone);
-  if (!number) number = await api<EvcNumber>('/evc-numbers', { method: 'POST', body: { msisdn: phone, displayName: name } });
-  const r = await linkSim(number.id, sim);
-  if (r === 'other-phone') return t(`${name}: taleefan kale ayaa horay u akhriya SMS-ka lambarkan.`, `${name}: another phone already reads this number's SMS.`);
-  if (r === 'sim-in-use') return t(`${name}: SIM-kan waxaa horay loogu xiray lambar kale.`, `${name}: this SIM is already linked to another number.`);
-  await syncNativeMappings(strict);
-  return null;
 }
 
 interface Found { sim: Sim; pick: boolean; name: string; phone: string; provider: SimProvider; track: boolean; already: SimCard | null }

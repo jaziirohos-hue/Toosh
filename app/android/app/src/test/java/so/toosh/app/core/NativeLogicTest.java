@@ -31,7 +31,21 @@ public class NativeLogicTest {
         }
     }
 
-    @Test public void multipartPartsAreJoinedInOrderPerSender() {
+    @Test public void learnedRulesMatchTheSharedVectors() throws Exception {
+        File f = new File("../../../shared/test/rule-vectors.json");
+        assertTrue("rule vectors found at " + f.getAbsolutePath(), f.exists());
+        JSONArray vectors = new JSONArray(new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8));
+        assertTrue(vectors.length() >= 5);
+        for (int i = 0; i < vectors.length(); i++) {
+            JSONObject v = vectors.getJSONObject(i);
+            List<LearnedRules.Rule> rules = LearnedRules.parse(new JSONArray().put(v.getJSONObject("rule")).toString());
+            assertEquals("pattern compiles in Java: " + v.getJSONObject("rule").getString("pattern"), 1, rules.size());
+            assertEquals(v.toString(), v.getBoolean("match"), LearnedRules.match(rules, v.getString("sender"), v.getString("body")) != null);
+            assertEquals(v.toString(), v.getBoolean("keeps"), LearnedRules.keeps(rules, v.getString("sender"), v.getString("body")));
+        }
+    }
+
+        @Test public void multipartPartsAreJoinedInOrderPerSender() {
         String part1 = "[-EVCPlus-] $3.90 ayaad uwareejisay Qof Tusaale(615551288), Tar: 19/10/26 18:40:41 ";
         String part2 = "Haraagaagu waa $51.59. Ka qeyb gal tartanka www.example.com";
         List<SmsAssembler.Part> parts = Arrays.asList(

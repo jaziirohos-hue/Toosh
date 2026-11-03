@@ -63,6 +63,8 @@ export function SettingsSections({ flash, onError }: { flash: (text: string) => 
     <Group>
       <SettingRow id="simCardsBtn" icon="sim_card" iconCls="bg-secondary-fixed text-on-secondary-fixed-variant" title={t('SIM Card-yadayda', 'My SIM cards')}
         sub={t('Ku dar, beddel ama tirtir SIM Card-yada aad isticmaasho', 'Add, edit or delete the SIM cards you use')} onClick={() => navigate('sim-card')} />
+      <SettingRow id="teachBtn" icon="school" title={t('Bar Toosh fariimaha', 'Teach Toosh messages')}
+        sub={t('Fariimaha taleefanka iyo qaababka la baray', 'Phone messages and taught formats')} onClick={() => navigate('fariimaha-taleefanka')} />
     </Group>
 
     <GroupLabel>{t('Akoonka', 'Account')}</GroupLabel>

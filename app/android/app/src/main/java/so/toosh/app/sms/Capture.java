@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import java.util.List;
 
 import so.toosh.app.core.EvcFilter;
+import so.toosh.app.core.LearnedRules;
 import so.toosh.app.core.ImportIdentity;
 import so.toosh.app.core.SimRouter;
 import so.toosh.app.core.SmsAssembler;
@@ -29,7 +30,8 @@ public final class Capture {
         List<SimRouter.Mapping> mappings = settings.mappings();
         // Capture starts only after this phone was set up as a source for a signed-in account.
         if (account == null || mappings.isEmpty()) return Result.NOT_CONFIGURED;
-        if (!EvcFilter.isRelevant(m.sender, m.body, settings.strictFilter())) return Result.NOT_RELEVANT;
+        // EVC Plus / Jeeb, or a format the person taught Toosh (money in or out).
+        if (!EvcFilter.isRelevant(m.sender, m.body, settings.strictFilter()) && !LearnedRules.keeps(settings.learnedRules(), m.sender, m.body)) return Result.NOT_RELEVANT;
         Integer slot = slotFor(context, m.subscriptionId);
         SimRouter.Route route = SimRouter.route(m.subscriptionId, slot, mappings, activeSimCount(context));
         SmsStore.Row r = new SmsStore.Row();

@@ -28,6 +28,8 @@ export async function grantRuntimeRole(db: Db, role: string) {
     `GRANT SELECT, INSERT, UPDATE ON recovery_codes TO ${role}`,
     // 004: SIM card records can be deleted by their owner (row-level security limits it to their own rows).
     `GRANT SELECT, INSERT, UPDATE, DELETE ON sim_cards TO ${role}`,
+    // 007: taught message formats; the owner can remove a rule.
+    `GRANT SELECT, INSERT, UPDATE, DELETE ON message_rules TO ${role}`,
   ];
   for (const statement of sql) await db.query(statement);
 }

@@ -89,6 +89,15 @@ await page.getByRole('button', { name: 'Review now' }).first().dispatchEvent('cl
 await page.getByTestId('original-sms').waitFor();
 await check('message-detail');
 
+// All phone messages and the teaching sheet (the emulator inbox holds the test SMS).
+await page.evaluate(() => { window.location.hash = '#/fariimaha-taleefanka'; });
+await page.getByTestId('phone-message').first().waitFor({ timeout: 20000 });
+await check('phone-messages');
+await page.getByTestId('phone-message').first().dispatchEvent('click');
+await page.getByTestId('teach-body').waitFor();
+await check('teach');
+await page.keyboard.press('Escape');
+
 // SIM Card: find the emulator's SIM, add it with money tracking, and see its EVC Plus totals.
 for (const route of ['qarash', 'sim-card']) {
   await page.evaluate(r => { window.location.hash = `#/${r}`; }, route);

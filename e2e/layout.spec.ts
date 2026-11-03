@@ -56,7 +56,7 @@ for (const lang of ['en', 'so'] as const) for (const [width, zoom] of [[412, 1],
     await page.locator('#password').fill(PASSWORD);
     await page.getByRole('button', { name: /^(Fur|Open) Toosh/ }).click();
     await expect(page.getByTestId('total-in')).toBeVisible();
-    for (const route of ['guud', 'fariimaha', 'qarash', 'qarash/miisaaniyad', 'qarash/hadaf', 'dhaqdhaqaaq', 'dejinta', 'sim-card']) {
+    for (const route of ['guud', 'fariimaha', 'qarash', 'qarash/miisaaniyad', 'qarash/hadaf', 'dhaqdhaqaaq', 'dejinta', 'sim-card', 'fariimaha-taleefanka']) {
       await page.goto(`/#/${route}`);
       await audit(page, zoom, route);
     }

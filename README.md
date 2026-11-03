@@ -123,6 +123,21 @@ eDahab (Somtel) and Golis are not read yet (no real samples).
 - A record is only a note in Toosh: adding, editing or deleting it never deactivates or changes the real SIM.
 - Row-level security limits every read, edit and delete to the signed-in account's own records.
 
+### Teaching Toosh new messages ("Bar Toosh")
+
+- **All phone messages** (Android app; Messages → "All phone messages", or Settings): the phone's received SMS from
+  every sender, with search and a sender filter. They are read on the phone only and not uploaded.
+- Tap a message and say what it is: **money in**, **money out** or **not money**, then pick the amount (and
+  optionally the balance and the other person's name). Toosh builds a pattern from that one example: same sender,
+  same wording, with amount, balance, name, phone, dates and times left open (`shared/src/rules.ts`).
+- The phone then keeps later SMS that fit a money pattern (`LearnedRules.java`; shared test vectors keep the Java and
+  TypeScript matchers identical), older ones on the phone are imported, and the server sorts them automatically.
+  Messages already waiting for review that fit are sorted at once. A message corrected by hand is never changed.
+- If the SIM the message came to is not linked yet, Toosh asks for its number and links it (like SIM Card → Track).
+- Taught formats are listed and can be removed; removing one keeps what it already sorted.
+- Toosh is **not** made the phone's default SMS app on purpose: that app must handle every SMS, MMS and one-time code,
+  and a fault there could lose messages. Reading the inbox is enough to show and learn from them.
+
 ### Security and privacy
 
 - **Account isolation:** every query filters by account, and PostgreSQL row-level security (`FORCE ROW LEVEL

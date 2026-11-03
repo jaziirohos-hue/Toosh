@@ -46,6 +46,9 @@ export interface LocalMessage {
   state: 'PENDING' | 'UPLOADING' | 'FAILED' | 'UNMATCHED' | 'SYNCED'; attempts: number; lastError: string | null; serverMessageId: string | null;
 }
 
+/** An SMS in the phone's inbox, read only to show it in "All phone messages" (never uploaded from there). */
+export interface PhoneMessage { id: number; sender: string; body: string; date: number; subscriptionId: number | null; kept: boolean; taughtRuleId: string | null }
+
 export interface TooshNativePlugin {
   getSession(): Promise<{ token: string | null; accountId: string | null }>;
   setSession(options: { token: string | null; accountId: string | null; apiBase: string; deviceId: string | null }): Promise<void>;
@@ -63,6 +66,8 @@ export interface TooshNativePlugin {
   retryFailed(): Promise<void>;
   syncNow(): Promise<void>;
   setPreferences(options: { notifyNew?: boolean; notifyPending?: boolean; strictFilter?: boolean }): Promise<void>;
+  setLearnedRules(options: { rules: { id: string; sender: string; pattern: string; direction: string }[] }): Promise<{ count: number }>;
+  listPhoneMessages(options: { limit: number; before?: number }): Promise<{ messages: PhoneMessage[] }>;
   canAuthenticate(): Promise<{ available: boolean }>;
   authenticate(options: { title: string; subtitle: string }): Promise<{ success: boolean; error: string | null }>;
   addListener(event: 'queueChanged', fn: (status: NativeStatus) => void): Promise<PluginListenerHandle>;

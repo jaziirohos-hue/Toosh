@@ -7,7 +7,7 @@
  * Each account is processed inside its own row-level-security context, so the regular DATABASE_URL role works.
  */
 import { createPool, withAccount } from './db.ts';
-import { reprocessMessage } from './messages.ts';
+import { loadRules, reprocessMessage } from './messages.ts';
 
 const args = process.argv.slice(2);
 const accountId = args[args.indexOf('--account') + 1];
@@ -19,7 +19,7 @@ const db = createPool(process.env.DATABASE_URL!);
 const ids = await withAccount(db, accountId, async tx => (await tx.query('SELECT id FROM messages WHERE account_id = $1 ORDER BY received_at', [accountId])).rows.map(r => r.id));
 let changed = 0; let manual = 0;
 for (const id of ids) {
-  const r = await withAccount(db, accountId, tx => reprocessMessage(tx, accountId, id));
+  const r = await withAccount(db, accountId, async tx => reprocessMessage(tx, accountId, id, 'parser', await loadRules(tx, accountId)));
   if (r.changed) changed++;
   if (r.manual) manual++;
 }

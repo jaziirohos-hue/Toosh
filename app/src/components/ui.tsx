@@ -28,7 +28,7 @@ export function Header({ subtitle, back, title, action }: { subtitle?: string; m
   return <header className="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe">
     <div className="@container h-16 px-4 flex items-center gap-2.5 max-w-md mx-auto">
       {back && <button aria-label={t('Dib u noqo', 'Back')} onClick={back} className="w-10 h-10 -ml-1.5 rounded-full flex items-center justify-center text-on-surface active:bg-surface-container-high transition-colors"><Icon name="arrow_back" /></button>}
-      <h1 className={`flex-1 min-w-0 truncate text-on-surface tracking-tight ${back ? 'text-[18px] font-bold' : 'text-[clamp(17px,7.2cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
+      <h1 className={`flex-1 min-w-0 text-on-surface tracking-tight ${back ? 'text-[18px] leading-[1.15] font-bold line-clamp-2 break-words' : 'truncate text-[clamp(17px,7.2cqw,26px)] leading-none font-extrabold pl-0.5'}`}>{title ?? subtitle}</h1>
       {action}
       {!back && <>
         <ConnectionPill />

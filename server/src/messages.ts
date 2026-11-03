@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import {
-  isIsoInstant, isRelevantEvcMessage, normalizeSender, parseEvcSms, parsedToJson, toDecimalString, validateClassification,
-  type ParsedSms,
+  isIsoInstant, isRelevantEvcMessage, matchRule, normalizeSender, parsedToJson, parseWithRules, toDecimalString, validateClassification,
+  type LearnedRule, type ParsedSms,
 } from '@toosh/shared';
 import { isUniqueViolation, type Tx } from './db.ts';
 import { notifyAccount } from './events.ts';
@@ -100,7 +100,13 @@ export type IngestResult =
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function validateIngestItem(raw: any, now = new Date()): { ok: true; item: IngestItem } | { ok: false; code: string } {
+/** The account's taught message formats (shared/src/rules.ts). */
+export async function loadRules(tx: Tx, accountId: string): Promise<LearnedRule[]> {
+  const { rows } = await tx.query('SELECT id, sender, pattern, direction FROM message_rules WHERE account_id = $1 ORDER BY created_at', [accountId]);
+  return rows;
+}
+
+export function validateIngestItem(raw: any, now = new Date(), rules: readonly LearnedRule[] = []): { ok: true; item: IngestItem } | { ok: false; code: string } {
   if (!raw || typeof raw !== 'object') return { ok: false, code: 'INVALID' };
   const id = raw.clientMessageId;
   if (typeof id !== 'string' || !/^[A-Za-z0-9_.:-]{8,128}$/.test(id)) return { ok: false, code: 'INVALID_CLIENT_ID' };
@@ -119,7 +125,7 @@ export function validateIngestItem(raw: any, now = new Date()): { ok: true; item
   if (!['LIVE', 'INITIAL_IMPORT', 'RECOVERY'].includes(method)) return { ok: false, code: 'INVALID_IMPORT_METHOD' };
   const parts = raw.partsCount ?? 1;
   if (!Number.isSafeInteger(parts) || parts < 1 || parts > 30) return { ok: false, code: 'INVALID_PARTS' };
-  if (!isRelevantEvcMessage(raw.sender, raw.body, false)) return { ok: false, code: 'NOT_EVC_MESSAGE' };
+  if (!isRelevantEvcMessage(raw.sender, raw.body, false) && !matchRule(rules, raw.sender, raw.body)) return { ok: false, code: 'NOT_EVC_MESSAGE' };
   return { ok: true, item: {
     clientMessageId: id, evcNumberId: raw.evcNumberId.toLowerCase(), sender: raw.sender.trim(), body: raw.body,
     smsTimestamp: new Date(raw.smsTimestamp).toISOString(), receivedAt: new Date(raw.receivedAt).toISOString(),
@@ -149,11 +155,12 @@ export async function ingestBatch(tx: Tx, actor: Actor, rawItems: unknown[], now
   const { rows: numbers } = await tx.query(
     'SELECT id, sim_subscription_id FROM evc_numbers WHERE account_id = $1 AND source_device_id = $2', [actor.accountId, actor.deviceId]);
   const owned = new Map(numbers.map(n => [n.id as string, n]));
+  const rules = await loadRules(tx, actor.accountId);
   const results: IngestResult[] = [];
   let changed = false;
   for (const raw of rawItems) {
     const clientMessageId = typeof (raw as any)?.clientMessageId === 'string' ? (raw as any).clientMessageId.slice(0, 128) : '';
-    const v = validateIngestItem(raw, now);
+    const v = validateIngestItem(raw, now, rules);
     if (!v.ok) { results.push({ clientMessageId, status: 'rejected', code: v.code, retryable: false }); continue; }
     const item = v.item;
     const number = owned.get(item.evcNumberId);
@@ -162,7 +169,7 @@ export async function ingestBatch(tx: Tx, actor: Actor, rawItems: unknown[], now
       results.push({ clientMessageId, status: 'rejected', code: 'SIM_MISMATCH', retryable: false }); continue;
     }
     const key = dedupeKey(item);
-    const parsed = parseEvcSms(item.body, { timeZone: EVC_TIMEZONE, receivedAt: new Date(item.receivedAt) });
+    const parsed = parseWithRules(item.body, item.sender, rules, { timeZone: EVC_TIMEZONE, receivedAt: new Date(item.receivedAt) });
     let eff = effectiveFromParse(parsed, item.receivedAt);
     let reasons: string[] = [];
     const id = randomUUID();
@@ -291,11 +298,11 @@ function toMilliString(decimal: string): string {
 // ---------------------------------------------------------------------------------------------------------------
 // Reprocessing (parser upgrades). Manual corrections are never overwritten.
 // ---------------------------------------------------------------------------------------------------------------
-export async function reprocessMessage(tx: Tx, accountId: string, id: string, actorName = 'parser') {
+export async function reprocessMessage(tx: Tx, accountId: string, id: string, actorName = 'parser', rules: readonly LearnedRule[] = []) {
   const { rows } = await tx.query('SELECT * FROM messages WHERE account_id = $1 AND id = $2 FOR UPDATE', [accountId, id]);
   const current = rows[0];
   if (!current) throw new ApiError(404, 'NOT_FOUND', 'Message not found');
-  const parsed = parseEvcSms(current.body, { timeZone: EVC_TIMEZONE, receivedAt: new Date(current.received_at) });
+  const parsed = parseWithRules(current.body, current.sender, rules, { timeZone: EVC_TIMEZONE, receivedAt: new Date(current.received_at) });
   const reasons: string[] = current.parsed?.reviewReasons ?? [];
   const parsedValue = JSON.stringify(parsedJson(parsed, reasons));
   if (current.classification_source === 'MANUAL') {

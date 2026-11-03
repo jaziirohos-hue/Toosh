@@ -3,6 +3,7 @@
  * number. Used by the source-phone setup screen and by SIM Card detection.
  */
 import { api, type ApiFailure } from './api.ts';
+import { t } from './i18n.ts';
 import { TooshNative, type Sim } from './native.ts';
 import type { EvcNumber } from './types.ts';
 
@@ -30,4 +31,33 @@ export async function linkSim(numberId: string, sim: Pick<Sim, 'subscriptionId' 
     if (code === 'SIM_IN_USE') return 'sim-in-use';
     throw e;
   }
+}
+
+/** Asks for the permissions needed to read EVC SMS for a SIM; returns an error text when one is refused. */
+export async function ensureSmsPermission(): Promise<string | null> {
+  const status = await TooshNative.getStatus();
+  if (status.smsPermission === 'GRANTED') return null;
+  const r = await TooshNative.requestSmsPermission();
+  return r.state === 'GRANTED' ? null : t('Ogolaanshaha SMS lama bixin, sidaas darteed lacagaha lama soo qaban karo. Ka fur Settings-ka taleefanka.', 'SMS permission was not given, so money cannot be recorded. Allow it in the phone settings.');
+}
+
+/** Makes `phone` an EVC number of the account (if it is not already) and links it to `sim` on this phone. */
+export async function trackOnThisPhone(phone: string, name: string, sim: Pick<Sim, 'subscriptionId' | 'simSlot' | 'carrierName'>, evcNumbers: EvcNumber[], strict: boolean): Promise<string | null> {
+  const denied = await ensureSmsPermission();
+  if (denied) return denied;
+  let number = evcNumbers.find(n => n.msisdn === phone);
+  if (!number) number = await api<EvcNumber>('/evc-numbers', { method: 'POST', body: { msisdn: phone, displayName: name } });
+  const r = await linkSim(number.id, sim);
+  if (r === 'other-phone') return t(`${name}: taleefan kale ayaa horay u akhriya SMS-ka lambarkan.`, `${name}: another phone already reads this number's SMS.`);
+  if (r === 'sim-in-use') return t(`${name}: SIM-kan waxaa horay loogu xiray lambar kale.`, `${name}: this SIM is already linked to another number.`);
+  await syncNativeMappings(strict);
+  return null;
+}
+
+
+/** Sends the account's taught formats to the phone so it keeps SMS that fit them (Android only). */
+export async function syncRulesToPhone() {
+  const r = await api<{ patterns: { id: string; sender: string; pattern: string; direction: string }[] }>('/rules');
+  await TooshNative.setLearnedRules({ rules: r.patterns });
+  return r.patterns.length;
 }

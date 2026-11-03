@@ -134,6 +134,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (status !== 'signedIn') return;
     startLiveUpdates();
+    // The phone keeps SMS of formats the person taught Toosh: give it the current list (Android).
+    if (isNativeAndroid) import('./sources.ts').then(m => m.syncRulesToPhone()).catch(() => {});
     flushOutbox().catch(() => {});
     if (!isNativeAndroid) return;
     let handle: { remove: () => Promise<void> } | null = null;

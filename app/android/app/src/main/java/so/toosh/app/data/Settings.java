@@ -71,6 +71,19 @@ public final class Settings {
         return out;
     }
 
+    /** Taught message formats from the server (GET /api/v1/rules → patterns), kept for this account only. */
+    public synchronized void setLearnedRules(String json) {
+        prefs.edit().putString("learnedRules", json == null ? "[]" : json).putString("learnedRulesAccount", accountId()).commit();
+        cachedRules = null;
+    }
+    private List<so.toosh.app.core.LearnedRules.Rule> cachedRules;
+    public synchronized List<so.toosh.app.core.LearnedRules.Rule> learnedRules() {
+        String acc = accountId();
+        if (acc == null || !acc.equals(prefs.getString("learnedRulesAccount", null))) return java.util.Collections.emptyList();
+        if (cachedRules == null) cachedRules = so.toosh.app.core.LearnedRules.parse(prefs.getString("learnedRules", "[]"));
+        return cachedRules;
+    }
+
     public boolean strictFilter() { return prefs.getBoolean("strictFilter", true); }
     public void setStrictFilter(boolean v) { prefs.edit().putBoolean("strictFilter", v).apply(); }
     public boolean notifyNew() { return prefs.getBoolean("notifyNew", false); }

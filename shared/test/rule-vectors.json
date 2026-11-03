@@ -1,0 +1,62 @@
+[
+  {
+    "rule": {
+      "id": "a",
+      "sender": "EDAHAB",
+      "pattern": "^\\[\\-EDAHAB\\-\\]\\s+Waxaad\\s+\\$(?<amount>\\d[\\d,]*(?:\\.\\d+)?)\\s+u\\s+dirtay\\s+(?<name>.+?)\\((?<phone>\\+?\\d{7,15})\\)\\s+\\d+\\/\\d+\\/\\d+\\s+\\d+:\\d+:\\d+\\.\\s+Haraagaaga\\s+waa\\s+\\$(?<balance>\\d[\\d,]*(?:\\.\\d+)?)\\s+Mahadsanid$",
+      "direction": "OUT"
+    },
+    "sender": "eDahab",
+    "body": "[-EDAHAB-] Waxaad $3 u dirtay HODAN(651112233) 04/11/26 08:01:02.  Haraagaaga waa $37.25 Mahadsanid",
+    "match": true,
+    "keeps": true
+  },
+  {
+    "rule": {
+      "id": "a",
+      "sender": "EDAHAB",
+      "pattern": "^\\[\\-EDAHAB\\-\\]\\s+Waxaad\\s+\\$(?<amount>\\d[\\d,]*(?:\\.\\d+)?)\\s+u\\s+dirtay\\s+(?<name>.+?)\\((?<phone>\\+?\\d{7,15})\\)\\s+\\d+\\/\\d+\\/\\d+\\s+\\d+:\\d+:\\d+\\.\\s+Haraagaaga\\s+waa\\s+\\$(?<balance>\\d[\\d,]*(?:\\.\\d+)?)\\s+Mahadsanid$",
+      "direction": "OUT"
+    },
+    "sender": "EDAHAB",
+    "body": "[-EDAHAB-] Waxaad $3 ka heshay HODAN(651112233) 04/11/26 08:01:02. Haraagaaga waa $37.25 Mahadsanid",
+    "match": false,
+    "keeps": false
+  },
+  {
+    "rule": {
+      "id": "a",
+      "sender": "EDAHAB",
+      "pattern": "^\\[\\-EDAHAB\\-\\]\\s+Waxaad\\s+\\$(?<amount>\\d[\\d,]*(?:\\.\\d+)?)\\s+u\\s+dirtay\\s+(?<name>.+?)\\((?<phone>\\+?\\d{7,15})\\)\\s+\\d+\\/\\d+\\/\\d+\\s+\\d+:\\d+:\\d+\\.\\s+Haraagaaga\\s+waa\\s+\\$(?<balance>\\d[\\d,]*(?:\\.\\d+)?)\\s+Mahadsanid$",
+      "direction": "OUT"
+    },
+    "sender": "5551234",
+    "body": "[-EDAHAB-] Waxaad $3 u dirtay HODAN(651112233) 04/11/26 08:01:02. Haraagaaga waa $37.25 Mahadsanid",
+    "match": false,
+    "keeps": false
+  },
+  {
+    "rule": {
+      "id": "b",
+      "sender": "898",
+      "pattern": "^\\[\\-JEEB\\-\\]\\s+\\$(?<amount>\\d[\\d,]*(?:\\.\\d+)?)\\s+ayaad\\s+ka\\s+Heshay\\s+(?<name>.+?)\\((?<phone>\\+?\\d{7,15})\\),\\d+\\/\\d+\\/\\d+\\s+\\d+:\\d+:\\d+\\s+via\\s+Local\\s+Clearing\\s+House,\\s+Haraagaagu\\s+waa\\s+\\$(?<balance>\\d[\\d,]*(?:\\.\\d+)?)\\.$",
+      "direction": "IN"
+    },
+    "sender": "898",
+    "body": "[-JEEB-] $1,250.00 ayaad ka heshay ALI(252681234567),02/11/26 16:28:15 via Local Clearing House, Haraagaagu waa $1,250.20.",
+    "match": true,
+    "keeps": true
+  },
+  {
+    "rule": {
+      "id": "c",
+      "sender": "EDAHAB",
+      "pattern": "^EDAHAB:\\s+Ku\\s+guuleyso\\s+\\$\\d+\\s+hadiyad!\\s+Dir\\s+\\d+\\s+ilaa\\s+\\d+$",
+      "direction": "NONE"
+    },
+    "sender": "EDAHAB",
+    "body": "EDAHAB: Ku guuleyso $250 hadiyad! Dir 7 ilaa 2233",
+    "match": true,
+    "keeps": false
+  }
+]

@@ -176,6 +176,11 @@ export function Fariimaha({ initialFilter }: { initialFilter?: string }) {
   return <>
     <Header subtitle={t('Fariimaha', 'Messages')} msisdn={me!.evcNumbers[0]?.msisdn} />
     <Main>
+      <button type="button" id="phoneMessagesBtn" onClick={() => navigate('fariimaha-taleefanka')} className="card w-full text-left px-4 py-3 flex items-center gap-3 active:bg-surface-container-low">
+        <div className="w-10 h-10 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center shrink-0"><Icon name="school" className="text-[20px]" /></div>
+        <div className="flex-1 min-w-0"><div className="text-[15px] font-bold text-on-surface">{t('Dhammaan fariimaha taleefanka', 'All phone messages')}</div>
+          <div className="text-[12.5px] text-on-surface-variant">{t('Shaandhee oo bar Toosh fariimaha cusub (eDahab, Golis…)', 'Filter and teach Toosh new messages (eDahab, Golis…)')}</div></div>
+        <Icon name="chevron_right" className="text-on-surface-variant" /></button>
       <div className="flex flex-col gap-3">
         <div className="relative flex items-center w-full">
           <Icon name="search" className="absolute left-4 text-on-surface-variant text-[22px] pointer-events-none" />

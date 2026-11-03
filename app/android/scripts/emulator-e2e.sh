@@ -56,6 +56,12 @@ step reconnected -e expect 5
 send 898 "[-JEEB-] \$0.05 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: $(TZ=Africa/Mogadishu date '+%d/%m/%Y %H:%M:%S'):98 haraagaagu waa \$0.67."
 step jeeb -e expect 6
 
+# "Bar Toosh": a sender Toosh does not know is kept only after its format is taught.
+step teach
+send EDAHAB "[-EDAHAB-] Waxaad \$3 u dirtay HODAN(651112233) $(TZ=Africa/Mogadishu date '+%d/%m/%y %H:%M:%S'). Haraagaaga waa \$37.25 Mahadsanid"
+send EDAHAB "EDAHAB: Ku guuleyso hadiyad! Dir 1 ilaa 2233"
+step taught -e expect 7
+
 # Screenshots of the native build: the launch splash, the signed-in app, and the launcher icon in the app drawer.
 adb shell am force-stop "$PKG" || true
 adb shell am start -n "$PKG/.MainActivity" || true

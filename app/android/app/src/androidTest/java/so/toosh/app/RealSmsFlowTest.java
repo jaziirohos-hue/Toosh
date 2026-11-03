@@ -176,6 +176,42 @@ public class RealSmsFlowTest {
         Log.i(TAG, "step-ok reconnected");
     }
 
+    /** "Bar Toosh": teach a format from a sender Toosh does not know, and hand the pattern to the phone. */
+    @Test public void teach() throws Exception {
+        assumeTrue(step("teach"));
+        String example = "[-EDAHAB-] Waxaad $12.50 u dirtay CABDI XASAN NUUR(659998877) 03/11/26 10:20:30. Haraagaaga waa $40.25 Mahadsanid";
+        JSONObject r = call("POST", "/api/v1/rules", state().getString("token"), new JSONObject().put("sender", "EDAHAB").put("body", example)
+            .put("direction", "OUT").put("amount", "12.50").put("balance", "40.25").put("counterpartyName", "CABDI XASAN NUUR"));
+        JSONObject list = call("GET", "/api/v1/rules", state().getString("token"), null);
+        new Settings(target()).setLearnedRules(list.getJSONArray("patterns").toString());
+        assertEquals(1, new Settings(target()).learnedRules().size());
+        Log.i(TAG, "taught rule " + r.getJSONObject("rule").getString("id"));
+        Log.i(TAG, "step-ok teach");
+    }
+
+    /** An SMS from that sender, in the taught format, is now kept, uploaded and sorted as money out. */
+    @Test public void taught() throws Exception {
+        assumeTrue(step("taught"));
+        int total = Integer.parseInt(args().getString("expect", "7"));
+        waitForSynced(total, 180_000);
+        JSONObject page = call("GET", "/api/v1/messages?limit=100", state().getString("token"), null);
+        assertEquals("the taught SMS was stored once (the noise SMS from the same sender was not)", total, page.getJSONObject("counts").getInt("all"));
+        boolean found = false;
+        org.json.JSONArray items = page.getJSONArray("items");
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject m = items.getJSONObject(i);
+            if (!m.getString("body").startsWith("[-EDAHAB-]")) continue;
+            found = true;
+            assertEquals("TRANSACTION", m.getString("classification"));
+            JSONObject t = m.getJSONObject("transaction");
+            assertEquals("OUT", t.getString("direction"));
+            assertEquals("3.00", t.getString("amount"));
+            assertEquals("HODAN", t.getString("counterpartyName"));
+        }
+        assertTrue("the taught EDAHAB message is on the server", found);
+        Log.i(TAG, "step-ok taught");
+    }
+
     /** A real Somnet Jeeb SMS from 898 is stored, uploaded and recognised as money out, like EVC Plus. */
     @Test public void jeeb() throws Exception {
         assumeTrue(step("jeeb"));

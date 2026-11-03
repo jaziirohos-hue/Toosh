@@ -41,6 +41,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
+import so.toosh.app.core.EvcFilter;
+import so.toosh.app.core.LearnedRules;
 import so.toosh.app.core.SimRouter;
 import so.toosh.app.data.SmsStore;
 import so.toosh.app.net.Sync;
@@ -218,6 +220,44 @@ public class TooshNativePlugin extends Plugin {
                 call.resolve(new JSObject().put("scanned", c.scanned).put("queued", c.queued).put("duplicates", c.duplicates));
             } catch (Exception e) { call.reject("Import failed"); }
         }, "toosh-import").start();
+    }
+
+    /** Formats taught in the app (Bar Toosh); SMS that fit a money-in/out format are kept like EVC Plus SMS. */
+    @PluginMethod public void setLearnedRules(PluginCall call) {
+        JSArray rules = call.getArray("rules", new JSArray());
+        settings.setLearnedRules(rules.toString());
+        call.resolve(new JSObject().put("count", LearnedRules.parse(rules.toString()).size()));
+    }
+
+    /**
+     * The phone's received SMS, newest first, for the "All phone messages" screen. Read here only to show them on this
+     * phone: nothing is stored or uploaded. `kept` says whether Toosh keeps it (EVC Plus, Jeeb or a taught format).
+     */
+    @PluginMethod public void listPhoneMessages(PluginCall call) {
+        if (!"GRANTED".equals(state("readSms"))) { call.reject("READ_SMS permission is required"); return; }
+        int limit = Math.max(1, Math.min(call.getInt("limit", 100), 300));
+        long before = call.getLong("before", 0L);
+        new Thread(() -> {
+            JSArray out = new JSArray();
+            List<LearnedRules.Rule> rules = settings.learnedRules();
+            String where = before > 0 ? "date < ?" : null;
+            String[] args = before > 0 ? new String[]{String.valueOf(before)} : null;
+            try (android.database.Cursor c = getContext().getContentResolver().query(android.net.Uri.parse("content://sms/inbox"), null, where, args, "date DESC")) {
+                if (c != null) {
+                    int id = c.getColumnIndex("_id"), address = c.getColumnIndex("address"), body = c.getColumnIndex("body"), date = c.getColumnIndex("date"), sub = c.getColumnIndex("sub_id");
+                    while (c.moveToNext() && out.length() < limit) {
+                        String sender = c.getString(address), text = c.getString(body);
+                        if (text == null) continue;
+                        LearnedRules.Rule hit = LearnedRules.match(rules, sender, text);
+                        out.put(new JSObject().put("id", c.getLong(id)).put("sender", sender == null ? "" : sender).put("body", text)
+                            .put("date", c.getLong(date)).put("subscriptionId", sub >= 0 && !c.isNull(sub) ? c.getInt(sub) : null)
+                            .put("kept", EvcFilter.isRelevant(sender, text, settings.strictFilter()) || (hit != null && !"NONE".equals(hit.direction)))
+                            .put("taughtRuleId", hit == null ? null : hit.id));
+                    }
+                }
+                call.resolve(new JSObject().put("messages", out));
+            } catch (Exception e) { call.reject("Messages could not be read"); }
+        }, "toosh-phone-messages").start();
     }
 
     @PluginMethod public void getLocalMessages(PluginCall call) {
