@@ -25,6 +25,8 @@ step() {
 evc_time() { TZ=Africa/Mogadishu date -d "$1" '+%d/%m/%y %H:%M:%S'; }
 send() { adb emu sms send "$1" "$2"; sleep 3; }
 
+# The API must still be running on the host; if not, show why instead of a connection error from the phone.
+curl -sf localhost:8787/api/v1/health >/dev/null || { echo "The API on the host (:8787) is not running. Last server log lines:"; tail -n 60 ../../server.log || true; exit 1; }
 step prepare
 
 # Real modem SMS. The app UI is not open: capture runs from the manifest receiver and background work only.

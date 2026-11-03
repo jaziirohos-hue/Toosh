@@ -58,8 +58,21 @@ public class RealSmsFlowTest {
         return new JSONObject(r.body);
     }
 
+    /** Right after boot the emulator's network to the host (10.0.2.2) can take a little while; wait for the API. */
+    private void waitForApi(long timeoutMs) throws Exception {
+        long end = System.currentTimeMillis() + timeoutMs;
+        Exception last = null;
+        while (System.currentTimeMillis() < end) {
+            try { if (Api.HTTP.send("GET", apiBase() + "/api/v1/health", null, null).status == 200) { Log.i(TAG, "API reachable"); return; } }
+            catch (Exception e) { last = e; }
+            Thread.sleep(2000);
+        }
+        throw new AssertionError("the API at " + apiBase() + " was not reachable from the emulator for " + timeoutMs / 1000 + " s", last);
+    }
+
     @Test public void prepare() throws Exception {
         assumeTrue(step("prepare"));
+        waitForApi(90_000);
         String phone = "61" + String.valueOf(System.currentTimeMillis()).substring(6);
         JSONObject device = new JSONObject().put("platform", "android").put("name", "Emulator").put("model", android.os.Build.MODEL);
         JSONObject reg = call("POST", "/api/v1/auth/register", null, new JSONObject().put("displayName", "Emulator Test").put("phone", phone)
