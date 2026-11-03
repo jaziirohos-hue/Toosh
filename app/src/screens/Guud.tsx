@@ -71,7 +71,7 @@ export function Guud() {
           <div className="w-9 h-9 rounded-full bg-white/12 flex items-center justify-center shrink-0"><Icon name="sim_card" className="text-[19px] text-on-primary-container" /></div>
           <div className="flex-1 min-w-[150px]">
             <div className="text-[15px] font-bold leading-tight whitespace-nowrap">{number ? masked(number.msisdn) : '—'}</div>
-            <div className="text-[12px] leading-[1.33] text-white/70 line-clamp-1 break-all">{number?.displayName ? `${number.displayName} · ` : ''}Hormuud EVC Plus</div>
+            <div className="text-[12px] leading-[1.33] text-white/70 line-clamp-1 break-all">{number?.displayName ? `${number.displayName} · ` : ''}{number && /^\+25268/.test(number.msisdn) ? 'Somnet Jeeb' : 'Hormuud EVC Plus'}</div>
           </div>
           <span className="flex items-center gap-1.5 min-h-7 py-0.5 px-2.5 rounded-full bg-white/12 text-[12px] font-semibold shrink-0 ml-auto leading-tight">
             <span className={`w-2 h-2 rounded-full ${source ? (sourceActive ? 'bg-primary-fixed-dim' : 'bg-tertiary-fixed-dim') : 'bg-white/50'}`} />{sourceLabel}

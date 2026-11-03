@@ -19,9 +19,9 @@
 import { parseAmount } from './money.ts';
 import { phoneFromSms } from './phone.ts';
 import { DEFAULT_TIMEZONE, zonedTimeToUtc } from './time.ts';
-import { hasEvcTag } from './relevance.ts';
+import { hasEvcTag, isJeeb } from './relevance.ts';
 
-export const PARSER_VERSION = 'evc-1.0.0';
+export const PARSER_VERSION = 'evc-1.1.0';
 
 export type Direction = 'IN' | 'OUT';
 export type ParsedKind = 'TRANSACTION' | 'BALANCE' | 'UNRECOGNIZED';
@@ -68,7 +68,13 @@ const OUT_WORDS = /\b(?:ayaad|waxaad|aad)\s+u\s?wareeji(?:say|sey|stay)\b/i;
 const IN_WORDS = /\bwaxaad\b.{0,80}?\bka\s?he(?:shay|say|ysay)\b/i;
 const OTHER_MONEY_WORDS = /\b(dirtay|bixisay|iibsatay|wareeji\w*|heshay|paid|sent|received|lacag)\b/i;
 const SHILLING = /\b\d[\d,.]*\s?(?:slsh|sos|shilin)\b|\b(?:slsh|sos)\s?\d/i;
-const TIME = /\b(?:tar(?:iikh(?:da)?)?|taariikh(?:da)?|date)\s*[:.]?\s*(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})(?:[\s,]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/i;
+// Jeeb: "$0.05 ayaad u dirtay NAME(61…)" = out, "$0.15 ayaad ka Heshay NAME(25261…)" = in. Only for [-JEEB-] messages:
+// in EVC Plus messages "u dirtay" is not yet a confirmed outgoing format and still goes to review.
+const JEEB_OUT_WORDS = /\b(?:ayaad|waxaad)\s+u\s?dirtay\b/i;
+const JEEB_IN_WORDS = /\b(?:ayaad|waxaad)\s+ka\s?he(?:shay|say|ysay)\b/i;
+// A date and time written without "Tar:" (Jeeb money in: ",01/11/26 03:15:17 via …").
+const BARE_TIME = /(?<=^|[\s,])(\d{1,2})\/(\d{1,2})\/(\d{4}|\d{2})\s+(\d{1,2}):(\d{2}):(\d{2})(?::\d{1,3})?\b/;
+const TIME = /\b(?:tar(?:iikh(?:da)?)?|taariikh(?:da)?|date)\s*[:.]?\s*(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4}|\d{2})(?:[\s,]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/i;
 const REF = /\b(?:ref(?:erence)?|tixraac(?:a)?|aqoonsiga|trx\s?id|txn\s?id|transaction\s+id|id)(?:\s*[:#]\s*|\s+)((?=[A-Z0-9.\-]*\d)[A-Z0-9][A-Z0-9.\-]{3,40})/i;
 const SEGMENT_END = /,|;|\s(?:tar(?:iikh\w*)?|taariikh\w*|hara+g\w*|ref\w*|tixraac\w*)\b|\.\s|\.$|$/i;
 
@@ -125,7 +131,7 @@ export function parseEvcSms(body: string, options: ParseOptions = {}): ParsedSms
   }
 
   // 5. Time.
-  const time = TIME.exec(work);
+  const time = TIME.exec(work) ?? BARE_TIME.exec(work);
   if (time) {
     const [, d, mo, y, h, mi, s] = time;
     const year = y.length === 2 ? 2000 + Number(y) : Number(y);
@@ -145,7 +151,9 @@ export function parseEvcSms(body: string, options: ParseOptions = {}): ParsedSms
   if (ref) result.providerRef = ref[1].replace(/[.\-]+$/, '').toUpperCase();
 
   // 3. Direction.
-  const out = OUT_WORDS.exec(work); const inn = IN_WORDS.exec(work);
+  const jeeb = isJeeb(text);
+  const out = OUT_WORDS.exec(work) ?? (jeeb ? JEEB_OUT_WORDS.exec(work) : null);
+  const inn = IN_WORDS.exec(work) ?? (jeeb ? JEEB_IN_WORDS.exec(work) : null);
   if (out && inn) issues.add('AMBIGUOUS_DIRECTION');
   else if (out) result.direction = 'OUT';
   else if (inn) result.direction = 'IN';

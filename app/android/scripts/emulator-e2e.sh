@@ -50,6 +50,10 @@ adb shell svc wifi enable
 adb shell svc data enable
 step reconnected -e expect 5
 
+# Somnet Jeeb from its real sender 898 (format from real messages; time written as dd/mm/yyyy HH:MM:SS:ms).
+send 898 "[-JEEB-] \$0.05 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: $(TZ=Africa/Mogadishu date '+%d/%m/%Y %H:%M:%S'):98 haraagaagu waa \$0.67."
+step jeeb -e expect 6
+
 # Screenshots of the native build: the launch splash, the signed-in app, and the launcher icon in the app drawer.
 adb shell am force-stop "$PKG" || true
 adb shell am start -n "$PKG/.MainActivity" || true

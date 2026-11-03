@@ -162,4 +162,28 @@ public class RealSmsFlowTest {
         assertEquals("uploaded once after reconnecting", total, counts.getInt("all"));
         Log.i(TAG, "step-ok reconnected");
     }
+
+    /** A real Somnet Jeeb SMS from 898 is stored, uploaded and recognised as money out, like EVC Plus. */
+    @Test public void jeeb() throws Exception {
+        assumeTrue(step("jeeb"));
+        int total = Integer.parseInt(args().getString("expect", "6"));
+        waitForSynced(total, 180_000);
+        JSONObject page = call("GET", "/api/v1/messages?limit=100", state().getString("token"), null);
+        assertEquals("the Jeeb SMS was stored once", total, page.getJSONObject("counts").getInt("all"));
+        boolean found = false;
+        org.json.JSONArray items = page.getJSONArray("items");
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject m = items.getJSONObject(i);
+            if (!m.getString("body").startsWith("[-JEEB-]")) continue;
+            found = true;
+            assertEquals("898", m.getString("sender"));
+            assertEquals("TRANSACTION", m.getString("classification"));
+            JSONObject t = m.getJSONObject("transaction");
+            assertEquals("OUT", t.getString("direction"));
+            assertEquals("0.05", t.getString("amount"));
+            assertEquals("SADAAM XUSEEN CALI", t.getString("counterpartyName"));
+        }
+        assertTrue("a Jeeb message is on the server", found);
+        Log.i(TAG, "step-ok jeeb");
+    }
 }

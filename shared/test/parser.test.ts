@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parseEvcSms } from '../src/parser.ts';
 
@@ -134,4 +134,42 @@ test('provider reference is extracted when present', () => {
 test('parser is deterministic', () => {
   const body = '[-EVCPLUS-] waxaad $3 ka heshay 615551288, Tar: 19/10/26 18:40:41 haraagagu waa $54.585.';
   assert.deepEqual(parseEvcSms(body), parseEvcSms(body));
+});
+
+// Somnet Jeeb, from real messages (sender 898), names and numbers as received.
+describe('Jeeb (Somnet)', () => {
+  const at = (iso: string) => ({ receivedAt: new Date(iso) });
+  test('money out: "ayaad u dirtay", time with milliseconds, balance "$0"', () => {
+    const p = parseEvcSms('[-JEEB-] $0.05 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: 22/10/2026 00:40:03:98 haraagaagu waa $0.67.', at('2026-10-22T09:42:00Z'));
+    assert.equal(p.kind, 'TRANSACTION');
+    assert.equal(p.direction, 'OUT');
+    assert.equal(p.amountMilli, 50n);
+    assert.equal(p.balanceMilli, 670n);
+    assert.equal(p.counterpartyName, 'SADAAM XUSEEN CALI');
+    assert.equal(p.counterpartyPhone, '+252612729106');
+    assert.equal(p.occurredAt, '2026-10-21T21:40:03.000Z'); // 00:40:03 in Mogadishu (UTC+3)
+    assert.equal(p.autoConfirm, true, p.issues.join(','));
+    const zero = parseEvcSms('[-JEEB-] $0.67 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: 23/10/2026 13:09:51:177 haraagaagu waa $0.', at('2026-10-23T10:11:00Z'));
+    assert.equal(zero.amountMilli, 670n);
+    assert.equal(zero.balanceMilli, 0n);
+    assert.equal(zero.occurredAt, '2026-10-23T10:09:51.000Z');
+    assert.equal(zero.autoConfirm, true, zero.issues.join(','));
+  });
+  test('money in: "ayaad ka Heshay", date without "Tar:", 12-digit number, "via Local Clearing House"', () => {
+    const p = parseEvcSms('[-JEEB-] $0.15 ayaad ka Heshay SADAAM XUSEEN CALI(252612729106),01/11/26 11:37:16 via Local Clearing House, Haraagaagu waa $0.20.', at('2026-11-01T08:37:20Z'));
+    assert.equal(p.kind, 'TRANSACTION');
+    assert.equal(p.direction, 'IN');
+    assert.equal(p.amountMilli, 150n);
+    assert.equal(p.balanceMilli, 200n);
+    assert.equal(p.counterpartyName, 'SADAAM XUSEEN CALI');
+    assert.equal(p.counterpartyPhone, '+252612729106');
+    assert.equal(p.occurredAt, '2026-11-01T08:37:16.000Z');
+    assert.equal(p.autoConfirm, true, p.issues.join(','));
+    assert.ok(!p.issues.includes('TIME_MISSING'));
+  });
+  test('"u dirtay" without the Jeeb tag still goes to review (EVC Plus format not confirmed)', () => {
+    const p = parseEvcSms('[-EVCPlus-] $7.00 waxaad u dirtay 615998822 Tariikh: 19/10/26 18:40:41.', at('2026-10-19T15:40:45Z'));
+    assert.equal(p.direction, null);
+    assert.equal(p.autoConfirm, false);
+  });
 });

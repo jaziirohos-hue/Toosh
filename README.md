@@ -53,6 +53,12 @@ fast Node server that shares the TypeScript parser with the app.
 
 ### Parser rules (`shared/src/parser.ts`)
 
+Hormuud **EVC Plus** and Somnet **Jeeb** (sender 898, tag `[-JEEB-]`) are read. Jeeb wording: "ayaad u dirtay" = money
+out, "ayaad ka Heshay" = money in; its time may carry milliseconds ("Tar: 22/10/2026 00:40:03:98") or have no
+"Tar:" (",01/11/26 03:15:17 via Local Clearing House"). "u dirtay" counts as money out only in Jeeb messages.
+eDahab (Somtel) and Golis are not read yet (no real samples).
+
+
 - **Direction only from wording:** `… ayaad uwareejisay …` = Baxay, `waxaad … ka heshay` = Soo galay. Spelling, spacing,
   capitals and line breaks are normalised. Both or neither means review. Balance changes are never used to guess direction.
 - The **balance clause** (`Haraagaagu/haraagagu/Haraaga waa $…`) is removed before looking for the amount, so the
@@ -113,7 +119,7 @@ fast Node server that shares the TypeScript parser with the app.
   type it). For a Hormuud SIM, "Track money" makes its number an EVC number and links it to that SIM on this phone,
   so its EVC Plus SMS are read.
 - Each SIM whose number is an EVC number shows this month's money in and out (EVC Plus) and opens its activity.
-  eDahab (Somtel), Jeeb (Somnet) and Golis money are not read yet.
+  EVC Plus and Jeeb money is read; eDahab (Somtel) and Golis are not yet.
 - A record is only a note in Toosh: adding, editing or deleting it never deactivates or changes the real SIM.
 - Row-level security limits every read, edit and delete to the signed-in account's own records.
 

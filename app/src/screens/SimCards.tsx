@@ -13,6 +13,9 @@ import { invalidateAll, useResource } from '../lib/sync.ts';
 import type { EvcNumber, SimCard, SimProvider } from '../lib/types.ts';
 
 const providerName = (p: SimProvider) => (p === 'HORMUUD' ? 'Hormuud' : p === 'SOMTEL' ? 'Somtel' : p === 'SOMNET' ? 'Somnet' : p === 'GOLIS' ? 'Golis' : t('Kale', 'Other'));
+/** Networks whose mobile-money SMS Toosh reads: Hormuud EVC Plus and Somnet Jeeb. */
+const trackable = (p: SimProvider) => p === 'HORMUUD' || p === 'SOMNET';
+const walletOf = (p: SimProvider) => (p === 'SOMNET' ? 'Jeeb' : 'EVC Plus');
 const providerTone: Record<SimProvider, string> = {
   HORMUUD: 'bg-primary-fixed text-on-primary-fixed-variant', SOMTEL: 'bg-secondary-fixed text-on-secondary-fixed-variant',
   SOMNET: 'bg-error-container text-on-error-container',
@@ -160,7 +163,7 @@ function SimMoney({ sim, onTrack }: { sim: SimCard; onTrack: () => void }) {
   const tr = sim.tracking;
   if (tr) {
     return <div className="mx-4 mb-2.5 rounded-2xl bg-surface-container-low px-3 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5" data-testid="sim-money">
-      <span className="w-full text-[12px] font-semibold text-on-surface-variant">{t('Bishan · EVC Plus', 'This month · EVC Plus')}</span>
+      <span className="w-full text-[12px] font-semibold text-on-surface-variant">{t(`Bishan · ${walletOf(sim.provider)}`, `This month · ${walletOf(sim.provider)}`)}</span>
       <span className="flex items-center gap-1 text-[14px] font-bold text-primary-container whitespace-nowrap"><Icon name="south_west" className="text-[16px]" />{show(cash(tr.inTotal, 'USD', '+'))}<span className="text-[12px] font-medium text-on-surface-variant">({tr.inCount})</span></span>
       <span className="flex items-center gap-1 text-[14px] font-bold text-on-surface whitespace-nowrap"><Icon name="north_east" className="text-[16px] text-error" />{show(cash(tr.outTotal, 'USD', '-'))}<span className="text-[12px] font-medium text-on-surface-variant">({tr.outCount})</span></span>
       <button type="button" onClick={() => { setSelectedNumberId(tr.evcNumberId); navigate('dhaqdhaqaaq'); }} className="ml-auto min-h-9 py-1 px-3 -mr-1 rounded-full text-[13px] font-bold text-primary-container flex items-center gap-0.5 active:bg-surface-container leading-tight">
@@ -168,17 +171,16 @@ function SimMoney({ sim, onTrack }: { sim: SimCard; onTrack: () => void }) {
       {!tr.sourceDeviceId && <span className="w-full text-[12px] text-tertiary-container">{t('Weli taleefan SMS-ka lambarkan akhriya lama xirin.', 'No phone reads this number’s SMS yet.')}</span>}
     </div>;
   }
-  if (sim.provider === 'HORMUUD') {
+  if (trackable(sim.provider)) {
     const here = isNativeAndroid && sim.simSubscriptionId !== null && sim.detectedDeviceId === me!.device.id;
     return <div className="mx-4 mb-2.5 rounded-2xl bg-surface-container-low px-3 py-2.5 flex flex-wrap items-center gap-2">
-      <span className="flex-1 min-w-[150px] text-[12.5px] leading-[1.36] text-on-surface-variant">{here ? t('La soco lacagaha soo gala iyo kuwa baxa ee SIM-kan (EVC Plus).', 'Track money in and out on this SIM (EVC Plus).') : t('Si loola socdo lacagaha, ka fur Toosh taleefanka SIM-kan ku jiro.', 'To track money, open Toosh on the phone that holds this SIM.')}</span>
+      <span className="flex-1 min-w-[150px] text-[12.5px] leading-[1.36] text-on-surface-variant">{here ? t(`La soco lacagaha soo gala iyo kuwa baxa ee SIM-kan (${walletOf(sim.provider)}).`, `Track money in and out on this SIM (${walletOf(sim.provider)}).`) : t('Si loola socdo lacagaha, ka fur Toosh taleefanka SIM-kan ku jiro.', 'To track money, open Toosh on the phone that holds this SIM.')}</span>
       {here && <button type="button" onClick={onTrack} className="min-h-9 py-1 px-3.5 rounded-full bg-primary-container text-on-primary text-[13px] font-bold pressable leading-tight">{t('La soco', 'Track')}</button>}
     </div>;
   }
   return <p className="mx-4 mb-2.5 text-[12px] leading-[1.36] text-on-surface-variant">{sim.provider === 'SOMTEL'
     ? t('Lacagaha eDahab (Somtel) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'eDahab (Somtel) money is not read yet — sample SMS are needed.')
-    : sim.provider === 'SOMNET' ? t('Lacagaha Jeeb (Somnet) weli lama akhrin karo — waxaan u baahanahay tusaalooyin SMS ah.', 'Jeeb (Somnet) money is not read yet — sample SMS are needed.')
-    : sim.provider === 'GOLIS' ? t('Lacagaha Golis weli lama akhrin karo.', 'Golis money is not read yet.') : t('Lacagaha kaliya EVC Plus (Hormuud) ayaa hadda la akhriyaa.', 'Only EVC Plus (Hormuud) money is read for now.')}</p>;
+    : sim.provider === 'GOLIS' ? t('Lacagaha Golis weli lama akhrin karo.', 'Golis money is not read yet.') : t('Lacagaha kaliya EVC Plus (Hormuud) iyo Jeeb (Somnet) ayaa hadda la akhriyaa.', 'Only EVC Plus (Hormuud) and Jeeb (Somnet) money is read for now.')}</p>;
 }
 
 /** Asks for the permissions needed to read EVC SMS for a SIM; returns an error text when one is refused. */
@@ -224,7 +226,7 @@ function DetectSims({ existing, onClose, onDone }: { existing: SimCard[]; onClos
         const phone = number?.ok ? number.e164 : null;
         const already = existing.find(e => (e.detectedDeviceId === me!.device.id && e.simSubscriptionId === sim.subscriptionId) || (phone && e.phone === phone)) ?? null;
         const provider = providerFromCarrier(sim.carrierName ?? sim.displayName);
-        return { sim, already, pick: !already, provider, track: provider === 'HORMUUD',
+        return { sim, already, pick: !already, provider, track: trackable(provider),
           name: (sim.displayName || sim.carrierName || `SIM ${sim.simSlot + 1}`).slice(0, 60), phone: phone ? formatMsisdn(phone).replace('+252 ', '') : '' };
       }));
     } catch { setError(t('SIM-yada lama akhrin karin.', 'The SIMs could not be read.')); setFound([]); }
@@ -250,7 +252,7 @@ function DetectSims({ existing, onClose, onDone }: { existing: SimCard[]; onClos
           await api('/sim-cards', { method: 'POST', body: { name: f.name.trim(), phone, provider: f.provider, registeredOn: localDate(new Date(), tz), notes: null, simSlot: f.sim.simSlot, simSubscriptionId: f.sim.subscriptionId } });
           added++;
         } catch (e) { errs[i] = offlineAware(e); continue; }
-        if (f.track && f.provider === 'HORMUUD') {
+        if (f.track && trackable(f.provider)) {
           const problem = await trackOnThisPhone(phone, f.name.trim(), f.sim, me!.evcNumbers, native?.strictFilter ?? true).catch(e => offlineAware(e));
           if (problem) problems.push(problem);
           else await refreshMe();
@@ -282,10 +284,10 @@ function DetectSims({ existing, onClose, onDone }: { existing: SimCard[]; onClos
             <div className="flex items-center gap-2"><span className="text-[15px] font-bold text-on-surface-variant shrink-0">+252</span>
               <input type="tel" inputMode="tel" value={f.phone} onChange={e => set(i, { phone: e.target.value })} placeholder="61 XXX XXXX" className={`${INPUT} font-semibold`} /></div></Field>
           <div className="flex flex-col gap-1.5"><span className={LABEL}>{t('Shirkadda', 'Network')}</span>
-            <Segmented label={t('Shirkadda', 'Network')} value={f.provider} onChange={v => set(i, { provider: v, track: v === 'HORMUUD' })} options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['SOMNET', 'Somnet'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} /></div>
-          {f.provider === 'HORMUUD' && <div className="flex items-center gap-3">
-            <span className="flex-1 text-[13.5px] leading-[1.38]"><strong className="block text-on-surface">{t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')}</strong><span className="text-on-surface-variant">{t('SMS-ka EVC ee SIM-kan ayaa la akhrinayaa: soo galay iyo baxay.', 'EVC SMS on this SIM are read: money in and out.')}</span></span>
-            <Toggle label={t('La soco lacagaha (EVC Plus)', 'Track money (EVC Plus)')} checked={f.track} onChange={v => set(i, { track: v })} /></div>}
+            <Segmented label={t('Shirkadda', 'Network')} value={f.provider} onChange={v => set(i, { provider: v, track: trackable(v) })} options={[['HORMUUD', 'Hormuud'], ['SOMTEL', 'Somtel'], ['SOMNET', 'Somnet'], ['GOLIS', 'Golis'], ['OTHER', t('Kale', 'Other')]]} /></div>
+          {trackable(f.provider) && <div className="flex items-center gap-3">
+            <span className="flex-1 text-[13.5px] leading-[1.38]"><strong className="block text-on-surface">{t(`La soco lacagaha (${walletOf(f.provider)})`, `Track money (${walletOf(f.provider)})`)}</strong><span className="text-on-surface-variant">{t(`SMS-ka ${walletOf(f.provider)} ee SIM-kan ayaa la akhrinayaa: soo galay iyo baxay.`, `${walletOf(f.provider)} SMS on this SIM are read: money in and out.`)}</span></span>
+            <Toggle label={t(`La soco lacagaha (${walletOf(f.provider)})`, `Track money (${walletOf(f.provider)})`)} checked={f.track} onChange={v => set(i, { track: v })} /></div>}
         </>}
         {errors[i] && <p role="alert" className="text-[13px] text-error">{errors[i]}</p>}
       </div>)}
@@ -310,7 +312,7 @@ function TrackSim({ sim, onClose, onDone }: { sim: SimCard; onClose: () => void;
     } catch (e) { setError(offlineAware(e)); } finally { setBusy(false); }
   }
   return <Sheet open onClose={onClose} title={t('La soco lacagaha', 'Track money')}>
-    <p className="text-[14px] leading-[1.43] text-on-surface-variant">{t(`Toosh wuxuu akhrin doonaa fariimaha EVC Plus ee SIM-ka "${sim.name}" (${formatMsisdn(sim.phone)}) ee taleefankan, si loo arko lacagaha soo gala iyo kuwa baxa. Fariimaha kale lama keydiyo.`, `Toosh will read EVC Plus messages on the SIM "${sim.name}" (${formatMsisdn(sim.phone)}) on this phone to show money in and out. Other messages are never stored.`)}</p>
+    <p className="text-[14px] leading-[1.43] text-on-surface-variant">{t(`Toosh wuxuu akhrin doonaa fariimaha ${walletOf(sim.provider)} ee SIM-ka "${sim.name}" (${formatMsisdn(sim.phone)}) ee taleefankan, si loo arko lacagaha soo gala iyo kuwa baxa. Fariimaha kale lama keydiyo.`, `Toosh will read ${walletOf(sim.provider)} messages on the SIM "${sim.name}" (${formatMsisdn(sim.phone)}) on this phone to show money in and out. Other messages are never stored.`)}</p>
     {error && <Banner tone="error" icon="error">{error}</Banner>}
     <Button id="confirmTrackBtn" disabled={busy} icon="check" onClick={go}>{t('La soco', 'Track')}</Button>
   </Sheet>;

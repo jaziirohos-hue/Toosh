@@ -114,3 +114,24 @@ describe('SIM cards found on the phone', () => {
     assert.equal(list.find((s: any) => s.name === 'Golis').detectedDeviceId, null);
   });
 });
+
+describe('Jeeb (Somnet) messages', () => {
+  test('a Jeeb SMS is recognised automatically and counts for its SIM', async () => {
+    const a = await sourceAccount(env.app);
+    const me = (await call(env.app, 'GET', '/api/v1/me', a.token)).body;
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Mogadishu', hourCycle: 'h23', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      .formatToParts(new Date(Date.now() - 60000)).map(x => [x.type, x.value]));
+    const outBody = `[-JEEB-] $0.05 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: ${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}:${p.second}:98 haraagaagu waa $0.67.`;
+    const inBody = `[-JEEB-] $0.15 ayaad ka Heshay SADAAM XUSEEN CALI(252612729106),${p.day}/${p.month}/${p.year.slice(2)} ${p.hour}:${p.minute}:${p.second} via Local Clearing House, Haraagaagu waa $0.20.`;
+    const now = new Date().toISOString();
+    const r = await ingest(env.app, a.token, [{ ...sms(a.numberId, outBody, now), sender: '898' }, { ...sms(a.numberId, inBody, now), sender: '898' }]);
+    for (const x of r) {
+      const m = (await call(env.app, 'GET', `/api/v1/messages/${x.messageId}`, a.token)).body.message;
+      assert.equal(m.classification, 'TRANSACTION', JSON.stringify(m.parsed.issues));
+      assert.equal(m.transaction.counterpartyName, 'SADAAM XUSEEN CALI');
+    }
+    await call(env.app, 'POST', '/api/v1/sim-cards', a.token, sim({ name: 'Somnet', phone: me.evcNumbers[0].msisdn, provider: 'SOMNET' }));
+    const t = (await call(env.app, 'GET', '/api/v1/sim-cards', a.token)).body.simCards[0].tracking;
+    assert.deepEqual([t.inTotal, t.inCount, t.outTotal, t.outCount], ['0.15', 1, '0.05', 1]);
+  });
+});

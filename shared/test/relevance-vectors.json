@@ -1,11 +1,16 @@
 [
-  { "sender": "192", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Qof Tusaale(61XXXXXXX), Haraagaagu waa $51.59.", "strict": true, "relevant": true },
-  { "sender": "EVCPlus", "body": "[-EVCPLUS-] waxaad $3 ka heshay 61XXXXXXX, Tar: 19/10/26 18:40:41 haraagagu waa $54.585.", "strict": true, "relevant": true },
-  { "sender": "321", "body": "Haraagaagu waa $10.00", "strict": true, "relevant": true },
-  { "sender": "192", "body": "Your OTP is 1234", "strict": true, "relevant": false },
-  { "sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": true, "relevant": false },
-  { "sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": false, "relevant": true },
-  { "sender": "+252615551288", "body": "Salaan, waxaad ka heshay hadiyad", "strict": false, "relevant": false },
-  { "sender": "Hormuud", "body": "Ku soo dhowow 4G", "strict": true, "relevant": false },
-  { "sender": "192", "body": "   ", "strict": true, "relevant": false }
+  {"sender": "192", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Qof Tusaale(61XXXXXXX), Haraagaagu waa $51.59.", "strict": true, "relevant": true},
+  {"sender": "EVCPlus", "body": "[-EVCPLUS-] waxaad $3 ka heshay 61XXXXXXX, Tar: 19/10/26 18:40:41 haraagagu waa $54.585.", "strict": true, "relevant": true},
+  {"sender": "321", "body": "Haraagaagu waa $10.00", "strict": true, "relevant": true},
+  {"sender": "192", "body": "Your OTP is 1234", "strict": true, "relevant": false},
+  {"sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": true, "relevant": false},
+  {"sender": "+252615551288", "body": "[-EVCPlus-] $3.90 ayaad uwareejisay Ali", "strict": false, "relevant": true},
+  {"sender": "+252615551288", "body": "Salaan, waxaad ka heshay hadiyad", "strict": false, "relevant": false},
+  {"sender": "Hormuud", "body": "Ku soo dhowow 4G", "strict": true, "relevant": false},
+  {"sender": "192", "body": "   ", "strict": true, "relevant": false},
+  {"sender": "898", "body": "[-JEEB-] $0.05 ayaad u dirtay SADAAM XUSEEN CALI(612729106),Tar: 22/10/2026 00:40:03:98 haraagaagu waa $0.67.", "strict": true, "relevant": true},
+  {"sender": "898", "body": "[-JEEB-] $0.15 ayaad ka Heshay SADAAM XUSEEN CALI(252612729106),01/11/26 03:15:17 via Local Clearing House, Haraagaagu waa $0.20.", "strict": true, "relevant": true},
+  {"sender": "898", "body": "Ku soo dhowow Somnet", "strict": true, "relevant": false},
+  {"sender": "+252681234567", "body": "[-JEEB-] $1 ayaad ka Heshay Ali", "strict": true, "relevant": false},
+  {"sender": "+252681234567", "body": "[-JEEB-] $1 ayaad ka Heshay Ali", "strict": false, "relevant": true}
 ]

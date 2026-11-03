@@ -115,7 +115,8 @@ test('a SIM whose number is an EVC number shows money in and out this month, and
   await expect(money).toContainText('+$25.00');
   await expect(money).toContainText('-$7.25');
   await expect(page.getByText('Lacagaha eDahab (Somtel) weli lama akhrin karo')).toBeVisible();
-  await expect(page.getByText('Lacagaha Jeeb (Somnet) weli lama akhrin karo')).toBeVisible();
+  // Jeeb (Somnet) is read now: in a browser the SIM points to the phone that holds it.
+  await expect(page.getByText('Si loola socdo lacagaha, ka fur Toosh taleefanka SIM-kan ku jiro.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Somnet', exact: true })).toBeVisible();
   // Find-on-phone is offered only in the Android app.
   await expect(page.locator('#detectSimsBtn')).toHaveCount(0);

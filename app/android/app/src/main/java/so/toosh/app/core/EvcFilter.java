@@ -6,15 +6,15 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * Which SMS Toosh keeps. Mirrors shared/src/relevance.ts exactly; both are checked against
+ * Which SMS Toosh keeps: Hormuud EVC Plus and Somnet Jeeb (sender 898, tag [-JEEB-]). Mirrors shared/src/relevance.ts exactly; both are checked against
  * shared/test/relevance-vectors.json.
  *
  * strict: known EVC Plus sender AND EVC-looking text. relaxed: also any sender whose text carries the [-EVCPlus-] tag.
  * Anything else (personal SMS, OTPs, other services) is never stored or uploaded.
  */
 public final class EvcFilter {
-    public static final List<String> EVC_SENDERS = Arrays.asList("192", "321", "EVCPLUS", "EVC PLUS", "HORMUUD");
-    private static final Pattern TAG = Pattern.compile("\\[\\s*-?\\s*evc\\s*-?\\s*plus\\s*-?\\s*\\]", Pattern.CASE_INSENSITIVE);
+    public static final List<String> EVC_SENDERS = Arrays.asList("192", "321", "EVCPLUS", "EVC PLUS", "HORMUUD", "898", "JEEB");
+    private static final Pattern TAG = Pattern.compile("\\[\\s*-?\\s*(?:evc\\s*-?\\s*plus|jeeb)\\s*-?\\s*\\]", Pattern.CASE_INSENSITIVE);
     private static final Pattern EVC_WORDS = Pattern.compile("\\b(evc\\s*-?\\s*plus|haraag\\w*|wareejis\\w*|ka\\s+heshay|ka\\s+hesay)\\b", Pattern.CASE_INSENSITIVE);
 
     private EvcFilter() {}
